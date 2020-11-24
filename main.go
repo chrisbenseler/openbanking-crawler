@@ -42,9 +42,9 @@ func main() {
 	/*
 		collection := connection.Collection("institution")
 		institutionRepository := institution.NewRepository(collection)
-		institutionService := institution.NewService(institutionRepository)
+		institutionService := services.NewInstitution(institutionRepository)
 
-		err := institutionService.Delete("5fbbb65309114e01ce8d2cd6")
+		err := institutionService.Create("teste")
 
 		if err != nil {
 			fmt.Println(err)
@@ -52,10 +52,9 @@ func main() {
 	*/
 
 	/*
-
 		collection := connection.Collection("branch")
 		branchRepository := branch.NewRepository(collection)
-		branchService := branch.NewService(branchRepository)
+		branchService := services.NewBranch(branchRepository)
 
 		err := branchService.UpdateAll("any")
 

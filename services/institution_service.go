@@ -1,21 +1,22 @@
-package institution
+package services
 
 import (
 	"errors"
+	"openbankingcrawler/domain/institution"
 )
 
-//Service service
-type Service interface {
+//InstitutionService service
+type InstitutionService interface {
 	Create(string) error
 	Delete(string) error
 }
 
 type institutionService struct {
-	repository Repository
+	repository institution.Repository
 }
 
-//NewService create a new service for institutions
-func NewService(repository Repository) Service {
+//NewInstitution create a new service for institutions
+func NewInstitution(repository institution.Repository) InstitutionService {
 
 	return &institutionService{
 		repository: repository,
@@ -31,13 +32,13 @@ func (s *institutionService) Create(name string) error {
 		return errors.New("There is already an institution saved with this name")
 	}
 
-	newInstitution := NewEntity(name)
+	newInstitution := institution.NewEntity(name)
 	return s.repository.Save(*newInstitution)
 }
 
-//Delete
+//Delete an institution
 func (s *institutionService) Delete(institutionID string) error {
 
-	newInstitution := NewEntityWithID(institutionID)
+	newInstitution := institution.NewEntityWithID(institutionID)
 	return s.repository.Delete(*newInstitution)
 }

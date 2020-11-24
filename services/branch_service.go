@@ -1,23 +1,24 @@
-package branch
+package services
 
 import (
 	"encoding/json"
 	"io/ioutil"
+	"openbankingcrawler/domain/branch"
 	"os"
 )
 
-//Service service
-type Service interface {
+//BranchService service
+type BranchService interface {
 	UpdateAll(string) error
-	Crawl(string) (*[]Entity, error)
+	Crawl(string) (*[]branch.Entity, error)
 }
 
 type branchService struct {
-	repository Repository
+	repository branch.Repository
 }
 
-//NewService create a new service for branches
-func NewService(repository Repository) Service {
+//NewBranchService create a new service for branches
+func NewBranch(repository branch.Repository) BranchService {
 
 	return &branchService{
 		repository: repository,
@@ -28,14 +29,14 @@ type branchJSON struct {
 	Data struct {
 		Brand struct {
 			Companies []struct {
-				Branches []Entity `json:"branches"`
+				Branches []branch.Entity `json:"branches"`
 			} `json:"companies"`
 		} `json:"brand"`
 	} `json:"data"`
 }
 
 type branchesList struct {
-	Branches []Entity
+	Branches []branch.Entity
 }
 
 //UpdateAll update branches from institution
@@ -62,7 +63,7 @@ func (s *branchService) UpdateAll(InstitutionID string) error {
 }
 
 //Crawl crawl branches from institution
-func (s *branchService) Crawl(InstitutionID string) (*[]Entity, error) {
+func (s *branchService) Crawl(InstitutionID string) (*[]branch.Entity, error) {
 
 	jsonFile, err := os.Open("./domain/branch/branches.json")
 
