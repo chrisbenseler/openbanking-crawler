@@ -2,6 +2,10 @@ package main
 
 import (
 	"fmt"
+	"openbankingcrawler/domain/branch"
+	"openbankingcrawler/domain/institution"
+	"openbankingcrawler/interfaces"
+	"openbankingcrawler/services"
 	"os"
 
 	"github.com/go-bongo/bongo"
@@ -39,28 +43,20 @@ func main() {
 		fmt.Println(dbErr)
 	}
 
-	/*
-		collection := connection.Collection("institution")
-		institutionRepository := institution.NewRepository(collection)
-		institutionService := services.NewInstitution(institutionRepository)
+	institutionRepository := institution.NewRepository(connection.Collection("institution"))
+	institutionService := services.NewInstitution(institutionRepository)
 
-		err := institutionService.Create("teste")
+	branchRepository := branch.NewRepository(connection.Collection("branch"))
+	branchService := services.NewBranch(branchRepository)
 
-		if err != nil {
-			fmt.Println(err)
-		}
-	*/
+	err := branchService.UpdateAll("any")
 
-	/*
-		collection := connection.Collection("branch")
-		branchRepository := branch.NewRepository(collection)
-		branchService := services.NewBranch(branchRepository)
+	if err != nil {
+		fmt.Println(err)
+	}
 
-		err := branchService.UpdateAll("any")
-
-		if err != nil {
-			fmt.Println(err)
-		}
-	*/
-
+	institutionInterface := interfaces.NewInstitution(institutionService, branchService)
+	fmt.Println(institutionInterface)
+	//deleteError := institutionInterface.Delete("5fbcf4b309114e0076164f37")
+	//fmt.Println(deleteError)
 }

@@ -11,13 +11,14 @@ import (
 type BranchService interface {
 	UpdateAll(string) error
 	Crawl(string) (*[]branch.Entity, error)
+	DeleteAllFromInstitution(string) error
 }
 
 type branchService struct {
 	repository branch.Repository
 }
 
-//NewBranchService create a new service for branches
+//NewBranch create a new service for branches
 func NewBranch(repository branch.Repository) BranchService {
 
 	return &branchService{
@@ -57,6 +58,18 @@ func (s *branchService) UpdateAll(InstitutionID string) error {
 	for _, branch := range *branches {
 		branch.InstitutionID = InstitutionID
 		s.repository.Save(branch)
+	}
+
+	return nil
+}
+
+//DeleteAllFromInstitution update branches from institution
+func (s *branchService) DeleteAllFromInstitution(InstitutionID string) error {
+
+	deleteErr := s.repository.DeleteMany(InstitutionID)
+
+	if deleteErr != nil {
+		return deleteErr
 	}
 
 	return nil
