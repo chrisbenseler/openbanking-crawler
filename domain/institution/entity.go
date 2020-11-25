@@ -19,10 +19,15 @@ func NewEntity(name string) *Entity {
 	}
 }
 
-//NewEntityWithID
+//NewEntityWithID create an institution entity with ID
 func NewEntityWithID(id string) *Entity {
 
+	if !bson.IsObjectIdHex(id) {
+		return nil
+	}
+
 	entity := &Entity{}
+	bson.ObjectIdHex(id)
 	entity.SetId(bson.ObjectIdHex(id))
 
 	return entity

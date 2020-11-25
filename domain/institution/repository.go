@@ -58,6 +58,10 @@ func (r *institutionRepository) Find(id string) (*Entity, common.CustomError) {
 
 	entity := NewEntityWithID(id)
 
+	if entity == nil {
+		return nil, common.NewBadRequestError("The provided id is not valid: " + id)
+	}
+
 	err := r.dao.FindById(entity.Id, entity)
 
 	if err != nil {
