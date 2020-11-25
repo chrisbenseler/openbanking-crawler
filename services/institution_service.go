@@ -2,6 +2,7 @@ package services
 
 import (
 	"errors"
+	"openbankingcrawler/common"
 	"openbankingcrawler/domain/institution"
 )
 
@@ -9,7 +10,7 @@ import (
 type InstitutionService interface {
 	Create(string) error
 	Delete(string) error
-	Find(string) (*institution.Entity, error)
+	Find(string) (*institution.Entity, common.CustomError)
 }
 
 type institutionService struct {
@@ -44,6 +45,6 @@ func (s *institutionService) Delete(institutionID string) error {
 	return s.repository.Delete(*newInstitution)
 }
 
-func (s *institutionService) Find(id string) (*institution.Entity, error) {
+func (s *institutionService) Find(id string) (*institution.Entity, common.CustomError) {
 	return s.repository.Find(id)
 }

@@ -2,6 +2,7 @@ package institution
 
 import (
 	"fmt"
+	"openbankingcrawler/common"
 
 	"github.com/go-bongo/bongo"
 	"go.mongodb.org/mongo-driver/bson"
@@ -12,7 +13,7 @@ type Repository interface {
 	Save(Entity) error
 	FindByName(string) (*Entity, error)
 	Delete(Entity) error
-	Find(string) (*Entity, error)
+	Find(string) (*Entity, common.CustomError)
 }
 
 type institutionRepository struct {
@@ -53,15 +54,18 @@ func (r *institutionRepository) Delete(institution Entity) error {
 }
 
 //Find find an entity
-func (r *institutionRepository) Find(id string) (*Entity, error) {
+func (r *institutionRepository) Find(id string) (*Entity, common.CustomError) {
 
 	entity := NewEntityWithID(id)
 
 	err := r.dao.FindById(entity.Id, entity)
 
 	if err != nil {
-		fmt.Println(err)
-		return nil, err
+
+		if err.Error() == "Document not found" {
+			return nil, common.NewNotFoundError("No institution found for id " + id)
+		}
+		return nil, common.NewInternalServerError("", err)
 	}
 
 	return entity, nil

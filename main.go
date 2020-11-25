@@ -58,7 +58,7 @@ func main() {
 	institutionInterface := interfaces.NewInstitution(institutionService, branchService)
 	fmt.Println(institutionInterface)
 
-	institution, err := institutionInterface.Get("5fbe441109114eb2c238017a")
+	institution, getError := institutionInterface.Get("5fbe441109114eb2c238017a")
 
-	fmt.Println(institution, err)
+	fmt.Println(institution, getError.Message(), getError.Status())
 }
