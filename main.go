@@ -57,6 +57,8 @@ func main() {
 
 	institutionInterface := interfaces.NewInstitution(institutionService, branchService)
 	fmt.Println(institutionInterface)
-	//deleteError := institutionInterface.Delete("5fbcf4b309114e0076164f37")
-	//fmt.Println(deleteError)
+
+	institution, err := institutionInterface.Get("5fbe441109114eb2c238017a")
+
+	fmt.Println(institution, err)
 }

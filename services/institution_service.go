@@ -9,6 +9,7 @@ import (
 type InstitutionService interface {
 	Create(string) error
 	Delete(string) error
+	Find(string) (*institution.Entity, error)
 }
 
 type institutionService struct {
@@ -41,4 +42,8 @@ func (s *institutionService) Delete(institutionID string) error {
 
 	newInstitution := institution.NewEntityWithID(institutionID)
 	return s.repository.Delete(*newInstitution)
+}
+
+func (s *institutionService) Find(id string) (*institution.Entity, error) {
+	return s.repository.Find(id)
 }

@@ -1,6 +1,7 @@
 package interfaces
 
 import (
+	"openbankingcrawler/domain/institution"
 	"openbankingcrawler/services"
 )
 
@@ -8,6 +9,7 @@ import (
 type InstitutionInterface interface {
 	Create(string) error
 	Delete(string) error
+	Get(string) (*institution.Entity, error)
 }
 
 type institutionInterface struct {
@@ -49,4 +51,21 @@ func (i *institutionInterface) Delete(id string) error {
 	}
 
 	return nil
+}
+
+//GetByName get an institution by its name
+func (i *institutionInterface) GetByName(name string) error {
+
+	err := i.institutionService.Create(name)
+	if err != nil {
+		return err
+	}
+
+	return nil
+
+}
+
+//Get get an institutuion
+func (i *institutionInterface) Get(id string) (*institution.Entity, error) {
+	return i.institutionService.Find(id)
 }
