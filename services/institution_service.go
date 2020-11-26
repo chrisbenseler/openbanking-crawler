@@ -11,7 +11,7 @@ import (
 type InstitutionService interface {
 	Create(dtos.Institution) (*dtos.Institution, error)
 	Delete(string) error
-	Find(string) (*institution.Entity, common.CustomError)
+	Find(string) (*dtos.Institution, common.CustomError)
 }
 
 type institutionService struct {
@@ -29,9 +29,9 @@ func NewInstitution(repository institution.Repository) InstitutionService {
 //Create create a new institution
 func (s *institutionService) Create(institutionDTO dtos.Institution) (*dtos.Institution, error) {
 
-	quueriedInstitution, _ := s.repository.FindByName(institutionDTO.Name)
+	queriedInstitution, _ := s.repository.FindByName(institutionDTO.Name)
 
-	if quueriedInstitution != nil {
+	if queriedInstitution != nil {
 		return nil, errors.New("There is already an institution saved with this name")
 	}
 
@@ -54,6 +54,12 @@ func (s *institutionService) Delete(institutionID string) error {
 	return s.repository.Delete(*newInstitution)
 }
 
-func (s *institutionService) Find(id string) (*institution.Entity, common.CustomError) {
-	return s.repository.Find(id)
+func (s *institutionService) Find(id string) (*dtos.Institution, common.CustomError) {
+	queriedInstitution, err := s.repository.Find(id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &dtos.Institution{Name: queriedInstitution.Name, ID: queriedInstitution.RetrieveID()}, nil
 }

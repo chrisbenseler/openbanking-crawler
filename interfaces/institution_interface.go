@@ -2,7 +2,6 @@ package interfaces
 
 import (
 	"openbankingcrawler/common"
-	"openbankingcrawler/domain/institution"
 	"openbankingcrawler/dtos"
 	"openbankingcrawler/services"
 )
@@ -11,7 +10,7 @@ import (
 type InstitutionInterface interface {
 	Create(string) (*dtos.Institution, error)
 	Delete(string) error
-	Get(string) (*institution.Entity, common.CustomError)
+	Get(string) (*dtos.Institution, common.CustomError)
 }
 
 type institutionInterface struct {
@@ -58,6 +57,6 @@ func (i *institutionInterface) Delete(id string) error {
 }
 
 //Get get an institutuion
-func (i *institutionInterface) Get(id string) (*institution.Entity, common.CustomError) {
+func (i *institutionInterface) Get(id string) (*dtos.Institution, common.CustomError) {
 	return i.institutionService.Find(id)
 }

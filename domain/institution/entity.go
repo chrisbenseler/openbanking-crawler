@@ -35,5 +35,5 @@ func NewEntityWithID(id string) *Entity {
 
 //RetrieveID get id as string
 func (e *Entity) RetrieveID() string {
-	return e.GetId().String()
+	return e.GetId().Hex()
 }
