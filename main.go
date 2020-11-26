@@ -39,8 +39,6 @@ func main() {
 	fmt.Printf("Connect to database %s", database)
 	connection, dbErr := bongo.Connect(config)
 
-	fmt.Println(dbErr)
-
 	if dbErr != nil {
 		fmt.Println(dbErr)
 	}
@@ -58,7 +56,6 @@ func main() {
 	}
 
 	institutionInterface := interfaces.NewInstitution(institutionService, branchService)
-	fmt.Println(institutionInterface)
 
 	router := gin.Default()
 	ginConfig := cors.DefaultConfig()
@@ -80,9 +77,6 @@ func main() {
 
 		c.JSON(200, institution)
 	})
-
-	// i, saveErr := institutionInterface.Create("testeeee")
-	// fmt.Println(i, saveErr)
 
 	router.Run(":3000")
 

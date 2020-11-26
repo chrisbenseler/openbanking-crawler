@@ -1,7 +1,6 @@
 package institution
 
 import (
-	"fmt"
 	"openbankingcrawler/common"
 
 	"github.com/go-bongo/bongo"
@@ -10,9 +9,9 @@ import (
 
 //Repository interface
 type Repository interface {
-	Save(Entity) (*Entity, error)
-	FindByName(string) (*Entity, error)
-	Delete(Entity) error
+	Save(Entity) (*Entity, common.CustomError)
+	FindByName(string) (*Entity, common.CustomError)
+	Delete(Entity) common.CustomError
 	Find(string) (*Entity, common.CustomError)
 }
 
@@ -29,34 +28,40 @@ func NewRepository(dao *bongo.Collection) Repository {
 }
 
 //Save save an entity
-func (r *institutionRepository) Save(entity Entity) (*Entity, error) {
+func (r *institutionRepository) Save(entity Entity) (*Entity, common.CustomError) {
 	err := r.dao.Save(&entity)
 
 	if err != nil {
-		return nil, err
+		return nil, common.NewInternalServerError("Error on database", err)
 	}
 
 	return &entity, nil
 }
 
 //FindByName find an entity by name
-func (r *institutionRepository) FindByName(name string) (*Entity, error) {
+func (r *institutionRepository) FindByName(name string) (*Entity, common.CustomError) {
 
 	entity := NewEntity("")
 
 	err := r.dao.FindOne(bson.M{"name": name}, entity)
 
 	if err != nil {
-		fmt.Println(err)
-		return nil, err
+
+		return nil, common.NewNotFoundError("No institution found with name " + name)
 	}
 
 	return entity, nil
 }
 
 //Delete delete an institution
-func (r *institutionRepository) Delete(institution Entity) error {
-	return r.dao.DeleteDocument(&institution)
+func (r *institutionRepository) Delete(institution Entity) common.CustomError {
+	err := r.dao.DeleteDocument(&institution)
+
+	if err != nil {
+		return common.NewInternalServerError("Error on database", err)
+	}
+
+	return nil
 }
 
 //Find find an entity

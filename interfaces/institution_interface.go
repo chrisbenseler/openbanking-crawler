@@ -8,8 +8,8 @@ import (
 
 //InstitutionInterface service
 type InstitutionInterface interface {
-	Create(string) (*dtos.Institution, error)
-	Delete(string) error
+	Create(string) (*dtos.Institution, common.CustomError)
+	Delete(string) common.CustomError
 	Get(string) (*dtos.Institution, common.CustomError)
 }
 
@@ -27,9 +27,9 @@ func NewInstitution(institutionService services.InstitutionService, branchServic
 	}
 }
 
-func (i *institutionInterface) Create(name string) (*dtos.Institution, error) {
+func (i *institutionInterface) Create(name string) (*dtos.Institution, common.CustomError) {
 
-	iDTO := dtos.Institution{Name: "teste"}
+	iDTO := dtos.Institution{Name: name}
 
 	institution, err := i.institutionService.Create(iDTO)
 	if err != nil {
@@ -40,7 +40,7 @@ func (i *institutionInterface) Create(name string) (*dtos.Institution, error) {
 
 }
 
-func (i *institutionInterface) Delete(id string) error {
+func (i *institutionInterface) Delete(id string) common.CustomError {
 
 	err := i.institutionService.Delete(id)
 	if err != nil {
@@ -50,7 +50,7 @@ func (i *institutionInterface) Delete(id string) error {
 	deleteError := i.branchService.DeleteAllFromInstitution(id)
 
 	if deleteError != nil {
-		return deleteError
+		return common.NewInternalServerError("", deleteError)
 	}
 
 	return nil

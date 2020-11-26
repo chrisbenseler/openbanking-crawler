@@ -1,7 +1,6 @@
 package services
 
 import (
-	"errors"
 	"openbankingcrawler/common"
 	"openbankingcrawler/domain/institution"
 	"openbankingcrawler/dtos"
@@ -9,8 +8,8 @@ import (
 
 //InstitutionService service
 type InstitutionService interface {
-	Create(dtos.Institution) (*dtos.Institution, error)
-	Delete(string) error
+	Create(dtos.Institution) (*dtos.Institution, common.CustomError)
+	Delete(string) common.CustomError
 	Find(string) (*dtos.Institution, common.CustomError)
 }
 
@@ -27,12 +26,12 @@ func NewInstitution(repository institution.Repository) InstitutionService {
 }
 
 //Create create a new institution
-func (s *institutionService) Create(institutionDTO dtos.Institution) (*dtos.Institution, error) {
+func (s *institutionService) Create(institutionDTO dtos.Institution) (*dtos.Institution, common.CustomError) {
 
 	queriedInstitution, _ := s.repository.FindByName(institutionDTO.Name)
 
 	if queriedInstitution != nil {
-		return nil, errors.New("There is already an institution saved with this name")
+		return nil, common.NewBadRequestError("There is already an institution saved with this name")
 	}
 
 	newInstitution := institution.NewEntity(institutionDTO.Name)
@@ -48,7 +47,7 @@ func (s *institutionService) Create(institutionDTO dtos.Institution) (*dtos.Inst
 }
 
 //Delete an institution
-func (s *institutionService) Delete(institutionID string) error {
+func (s *institutionService) Delete(institutionID string) common.CustomError {
 
 	newInstitution := institution.NewEntityWithID(institutionID)
 	return s.repository.Delete(*newInstitution)
