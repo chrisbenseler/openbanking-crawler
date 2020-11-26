@@ -8,7 +8,7 @@ import (
 //Entity institution entity
 type Entity struct {
 	bongo.DocumentBase `bson:",inline"`
-	Name               string `json:"string"`
+	Name               string `json:"name"`
 }
 
 //NewEntity create a new institution entity
@@ -31,4 +31,9 @@ func NewEntityWithID(id string) *Entity {
 	entity.SetId(bson.ObjectIdHex(id))
 
 	return entity
+}
+
+//RetrieveID get id as string
+func (e *Entity) RetrieveID() string {
+	return e.GetId().String()
 }

@@ -10,7 +10,7 @@ import (
 
 //Repository interface
 type Repository interface {
-	Save(Entity) error
+	Save(Entity) (*Entity, error)
 	FindByName(string) (*Entity, error)
 	Delete(Entity) error
 	Find(string) (*Entity, common.CustomError)
@@ -29,8 +29,14 @@ func NewRepository(dao *bongo.Collection) Repository {
 }
 
 //Save save an entity
-func (r *institutionRepository) Save(entity Entity) error {
-	return r.dao.Save(&entity)
+func (r *institutionRepository) Save(entity Entity) (*Entity, error) {
+	err := r.dao.Save(&entity)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &entity, nil
 }
 
 //FindByName find an entity by name

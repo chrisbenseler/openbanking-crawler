@@ -3,12 +3,13 @@ package interfaces
 import (
 	"openbankingcrawler/common"
 	"openbankingcrawler/domain/institution"
+	"openbankingcrawler/dtos"
 	"openbankingcrawler/services"
 )
 
 //InstitutionInterface service
 type InstitutionInterface interface {
-	Create(string) error
+	Create(string) (*dtos.Institution, error)
 	Delete(string) error
 	Get(string) (*institution.Entity, common.CustomError)
 }
@@ -27,14 +28,16 @@ func NewInstitution(institutionService services.InstitutionService, branchServic
 	}
 }
 
-func (i *institutionInterface) Create(name string) error {
+func (i *institutionInterface) Create(name string) (*dtos.Institution, error) {
 
-	err := i.institutionService.Create(name)
+	iDTO := dtos.Institution{Name: "teste"}
+
+	institution, err := i.institutionService.Create(iDTO)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return institution, nil
 
 }
 
@@ -52,18 +55,6 @@ func (i *institutionInterface) Delete(id string) error {
 	}
 
 	return nil
-}
-
-//GetByName get an institution by its name
-func (i *institutionInterface) GetByName(name string) error {
-
-	err := i.institutionService.Create(name)
-	if err != nil {
-		return err
-	}
-
-	return nil
-
 }
 
 //Get get an institutuion

@@ -81,6 +81,9 @@ func main() {
 		c.JSON(200, institution)
 	})
 
+	i, saveErr := institutionInterface.Create("testeeee")
+	fmt.Println(i, saveErr)
+
 	router.Run(":3000")
 
 }
