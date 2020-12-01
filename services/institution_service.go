@@ -28,6 +28,11 @@ func NewInstitution(repository institution.Repository) InstitutionService {
 //Create create a new institution
 func (s *institutionService) Create(institutionDTO dtos.Institution) (*dtos.Institution, common.CustomError) {
 
+	validateError := institutionDTO.Validate()
+	if validateError != nil {
+		return nil, validateError
+	}
+
 	queriedInstitution, _ := s.repository.FindByName(institutionDTO.Name)
 
 	if queriedInstitution != nil {

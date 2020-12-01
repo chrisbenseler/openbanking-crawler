@@ -70,3 +70,12 @@ func NewUnauthorizedError(message string) CustomError {
 		ErrError:   "unauthorized",
 	}
 }
+
+//NewUnprocessableEntity new bad request (usually bad data)
+func NewUnprocessableEntity(message string) CustomError {
+	return customError{
+		ErrMessage: message,
+		ErrStatus:  http.StatusUnprocessableEntity,
+		ErrError:   "unprocessable_entity",
+	}
+}

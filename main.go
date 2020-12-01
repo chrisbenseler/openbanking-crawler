@@ -78,6 +78,26 @@ func main() {
 		c.JSON(200, institution)
 	})
 
+	apiRoutes.POST("/institutions", func(c *gin.Context) {
+
+		type institutionPayload struct {
+			Name string `json:"name"`
+		}
+
+		var payload institutionPayload
+
+		c.BindJSON(&payload)
+
+		institution, err := institutionInterface.Create(payload.Name)
+
+		if err != nil {
+			c.JSON(err.Status(), gin.H{"error": err.Message()})
+			return
+		}
+
+		c.JSON(201, institution)
+	})
+
 	router.Run(":3000")
 
 }

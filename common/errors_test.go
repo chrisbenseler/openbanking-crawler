@@ -44,3 +44,13 @@ func Test_NewUnauthorizedError(t *testing.T) {
 	}
 
 }
+
+func Test_NewUnprocessableEntity(t *testing.T) {
+
+	err := NewUnprocessableEntity("message")
+
+	if err.Status() != 422 {
+		t.Error("Wrong status, expected 422, got ", err.Status())
+	}
+
+}
