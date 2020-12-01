@@ -55,7 +55,7 @@ func (i *institutionInterface) Delete(id string) common.CustomError {
 	deleteError := i.branchService.DeleteAllFromInstitution(id)
 
 	if deleteError != nil {
-		return common.NewInternalServerError("", deleteError)
+		return deleteError
 	}
 
 	return nil
@@ -78,12 +78,19 @@ func (i *institutionInterface) UpdateBranches(id string) common.CustomError {
 	branches, crawlErr := i.crawler.Crawl(institution.ID)
 
 	if crawlErr != nil {
-		return common.NewInternalServerError("Unhanlded error", crawlErr)
+		return crawlErr
 	}
 
-	i.branchService.DeleteAllFromInstitution(id)
+	delErr := i.branchService.DeleteAllFromInstitution(id)
 
-	i.branchService.InsertMany(*branches, id)
+	if delErr != nil {
+		return delErr
+	}
+
+	insertErr := i.branchService.InsertMany(*branches, id)
+	if insertErr != nil {
+		return insertErr
+	}
 
 	return nil
 

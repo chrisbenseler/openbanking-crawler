@@ -3,13 +3,14 @@ package services
 import (
 	"encoding/json"
 	"io/ioutil"
+	"openbankingcrawler/common"
 	"openbankingcrawler/domain/branch"
 	"os"
 )
 
 //Crawler service
 type Crawler interface {
-	Crawl(string) (*[]branch.Entity, error)
+	Crawl(string) (*[]branch.Entity, common.CustomError)
 }
 
 type crawler struct {
@@ -39,12 +40,12 @@ type branchesList struct {
 }
 
 //Crawl crawl branches from institution
-func (s *crawler) Crawl(InstitutionID string) (*[]branch.Entity, error) {
+func (s *crawler) Crawl(InstitutionID string) (*[]branch.Entity, common.CustomError) {
 
 	jsonFile, err := os.Open("./domain/branch/branches.json")
 
 	if err != nil {
-		return nil, err
+		return nil, common.NewInternalServerError("Unable to crawl branches from institution", err)
 	}
 
 	defer jsonFile.Close()
@@ -56,7 +57,7 @@ func (s *crawler) Crawl(InstitutionID string) (*[]branch.Entity, error) {
 	jsonUnmarshallErr := json.Unmarshal(byteValue, &branchJSONData)
 
 	if jsonUnmarshallErr != nil {
-		return nil, jsonUnmarshallErr
+		return nil, common.NewInternalServerError("Unable to unmarshall data", jsonUnmarshallErr)
 	}
 
 	companies := branchJSONData.Data.Brand.Companies[0]

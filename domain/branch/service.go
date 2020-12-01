@@ -4,7 +4,7 @@ import "openbankingcrawler/common"
 
 //Service branch service
 type Service interface {
-	DeleteAllFromInstitution(string) error
+	DeleteAllFromInstitution(string) common.CustomError
 	InsertMany([]Entity, string) common.CustomError
 }
 
@@ -21,12 +21,12 @@ func NewService(repository Repository) Service {
 }
 
 //DeleteAllFromInstitution update branches from institution
-func (s *service) DeleteAllFromInstitution(InstitutionID string) error {
+func (s *service) DeleteAllFromInstitution(InstitutionID string) common.CustomError {
 
 	deleteErr := s.repository.DeleteMany(InstitutionID)
 
 	if deleteErr != nil {
-		return deleteErr
+		return common.NewInternalServerError("Could not delete branches from sintitution", deleteErr)
 	}
 
 	return nil
