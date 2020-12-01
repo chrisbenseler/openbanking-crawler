@@ -1,32 +1,31 @@
-package services
+package institution
 
 import (
 	"openbankingcrawler/common"
-	"openbankingcrawler/domain/institution"
 	"openbankingcrawler/dtos"
 )
 
-//InstitutionService service
-type InstitutionService interface {
+//Service service
+type Service interface {
 	Create(dtos.Institution) (*dtos.Institution, common.CustomError)
 	Delete(string) common.CustomError
 	Find(string) (*dtos.Institution, common.CustomError)
 }
 
-type institutionService struct {
-	repository institution.Repository
+type service struct {
+	repository Repository
 }
 
-//NewInstitution create a new service for institutions
-func NewInstitution(repository institution.Repository) InstitutionService {
+//NewService create a new service for institutions
+func NewService(repository Repository) Service {
 
-	return &institutionService{
+	return &service{
 		repository: repository,
 	}
 }
 
 //Create create a new institution
-func (s *institutionService) Create(institutionDTO dtos.Institution) (*dtos.Institution, common.CustomError) {
+func (s *service) Create(institutionDTO dtos.Institution) (*dtos.Institution, common.CustomError) {
 
 	validateError := institutionDTO.Validate()
 	if validateError != nil {
@@ -39,7 +38,7 @@ func (s *institutionService) Create(institutionDTO dtos.Institution) (*dtos.Inst
 		return nil, common.NewBadRequestError("There is already an institution saved with this name")
 	}
 
-	newInstitution := institution.NewEntity(institutionDTO.Name)
+	newInstitution := NewEntity(institutionDTO.Name)
 	savedInstitution, saveErr := s.repository.Save(*newInstitution)
 
 	if saveErr != nil {
@@ -52,13 +51,13 @@ func (s *institutionService) Create(institutionDTO dtos.Institution) (*dtos.Inst
 }
 
 //Delete an institution
-func (s *institutionService) Delete(institutionID string) common.CustomError {
+func (s *service) Delete(institutionID string) common.CustomError {
 
-	newInstitution := institution.NewEntityWithID(institutionID)
+	newInstitution := NewEntityWithID(institutionID)
 	return s.repository.Delete(*newInstitution)
 }
 
-func (s *institutionService) Find(id string) (*dtos.Institution, common.CustomError) {
+func (s *service) Find(id string) (*dtos.Institution, common.CustomError) {
 	queriedInstitution, err := s.repository.Find(id)
 
 	if err != nil {

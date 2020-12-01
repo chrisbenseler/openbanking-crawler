@@ -2,6 +2,8 @@ package interfaces
 
 import (
 	"openbankingcrawler/common"
+	"openbankingcrawler/domain/branch"
+	"openbankingcrawler/domain/institution"
 	"openbankingcrawler/dtos"
 	"openbankingcrawler/services"
 )
@@ -11,19 +13,22 @@ type InstitutionInterface interface {
 	Create(string) (*dtos.Institution, common.CustomError)
 	Delete(string) common.CustomError
 	Get(string) (*dtos.Institution, common.CustomError)
+	UpdateBranches(string) common.CustomError
 }
 
 type institutionInterface struct {
-	institutionService services.InstitutionService
-	branchService      services.BranchService
+	institutionService institution.Service
+	branchService      branch.Service
+	crawler            services.Crawler
 }
 
 //NewInstitution create a new interface for institutions
-func NewInstitution(institutionService services.InstitutionService, branchService services.BranchService) InstitutionInterface {
+func NewInstitution(institutionService institution.Service, branchService branch.Service, crawler services.Crawler) InstitutionInterface {
 
 	return &institutionInterface{
 		institutionService: institutionService,
 		branchService:      branchService,
+		crawler:            crawler,
 	}
 }
 
@@ -59,4 +64,27 @@ func (i *institutionInterface) Delete(id string) common.CustomError {
 //Get get an institutuion
 func (i *institutionInterface) Get(id string) (*dtos.Institution, common.CustomError) {
 	return i.institutionService.Find(id)
+}
+
+//UpdateBranches update branches from institution
+func (i *institutionInterface) UpdateBranches(id string) common.CustomError {
+
+	institution, err := i.institutionService.Find(id)
+
+	if err != nil {
+		return err
+	}
+
+	branches, crawlErr := i.crawler.Crawl(institution.ID)
+
+	if crawlErr != nil {
+		return common.NewInternalServerError("Unhanlded error", crawlErr)
+	}
+
+	i.branchService.DeleteAllFromInstitution(id)
+
+	i.branchService.InsertMany(*branches, id)
+
+	return nil
+
 }

@@ -44,18 +44,14 @@ func main() {
 	}
 
 	institutionRepository := institution.NewRepository(connection.Collection("institution"))
-	institutionService := services.NewInstitution(institutionRepository)
+	institutionService := institution.NewService(institutionRepository)
 
 	branchRepository := branch.NewRepository(connection.Collection("branch"))
-	branchService := services.NewBranch(branchRepository)
+	branchService := branch.NewService(branchRepository)
 
-	err := branchService.UpdateAll("any")
+	crawler := services.NewCrawler()
 
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	institutionInterface := interfaces.NewInstitution(institutionService, branchService)
+	institutionInterface := interfaces.NewInstitution(institutionService, branchService, crawler)
 
 	router := gin.Default()
 	ginConfig := cors.DefaultConfig()
@@ -76,6 +72,19 @@ func main() {
 		}
 
 		c.JSON(200, institution)
+	})
+
+	apiRoutes.GET("/institutions/:id/branches/update", func(c *gin.Context) {
+		id := c.Param("id")
+
+		err := institutionInterface.UpdateBranches(id)
+
+		if err != nil {
+			c.JSON(err.Status(), gin.H{"error": err.Message()})
+			return
+		}
+
+		c.JSON(200, gin.H{})
 	})
 
 	apiRoutes.POST("/institutions", func(c *gin.Context) {
