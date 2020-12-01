@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"openbankingcrawler/adapters"
 	"openbankingcrawler/domain/branch"
 	"openbankingcrawler/domain/institution"
 	"openbankingcrawler/interfaces"
@@ -61,51 +62,12 @@ func main() {
 	router.Use(cors.New(ginConfig))
 
 	apiRoutes := router.Group("/api")
-	apiRoutes.GET("/institutions/:id", func(c *gin.Context) {
-		id := c.Param("id")
 
-		institution, err := institutionInterface.Get(id)
+	controller := adapters.NewController(institutionInterface)
 
-		if err != nil {
-			c.JSON(err.Status(), gin.H{"error": err.Message()})
-			return
-		}
-
-		c.JSON(200, institution)
-	})
-
-	apiRoutes.GET("/institutions/:id/branches/update", func(c *gin.Context) {
-		id := c.Param("id")
-
-		err := institutionInterface.UpdateBranches(id)
-
-		if err != nil {
-			c.JSON(err.Status(), gin.H{"error": err.Message()})
-			return
-		}
-
-		c.JSON(200, gin.H{})
-	})
-
-	apiRoutes.POST("/institutions", func(c *gin.Context) {
-
-		type institutionPayload struct {
-			Name string `json:"name"`
-		}
-
-		var payload institutionPayload
-
-		c.BindJSON(&payload)
-
-		institution, err := institutionInterface.Create(payload.Name)
-
-		if err != nil {
-			c.JSON(err.Status(), gin.H{"error": err.Message()})
-			return
-		}
-
-		c.JSON(201, institution)
-	})
+	apiRoutes.GET("/institutions/:id", controller.GetInstitution)
+	apiRoutes.GET("/institutions/:id/branches/update", controller.UpdateInstitutionBranches)
+	apiRoutes.POST("/institutions", controller.CreateInstitution)
 
 	router.Run(":3000")
 

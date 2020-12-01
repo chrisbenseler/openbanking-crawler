@@ -8,7 +8,7 @@ import (
 	"openbankingcrawler/services"
 )
 
-//InstitutionInterface service
+//InstitutionInterface interface
 type InstitutionInterface interface {
 	Create(string) (*dtos.Institution, common.CustomError)
 	Delete(string) common.CustomError
