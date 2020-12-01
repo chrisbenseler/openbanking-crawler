@@ -40,7 +40,9 @@ type branchesList struct {
 }
 
 //CrawlBranches crawl branches from institution
-func (s *crawler) CrawlBranches(InstitutionID string) (*[]branch.Entity, common.CustomError) {
+func (s *crawler) CrawlBranches(baseURL string) (*[]branch.Entity, common.CustomError) {
+
+	//TODO: concat baseURL with resource url
 
 	jsonFile, err := os.Open("./domain/branch/branches.json")
 
