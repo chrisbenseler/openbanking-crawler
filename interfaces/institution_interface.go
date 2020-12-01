@@ -14,6 +14,7 @@ type InstitutionInterface interface {
 	Delete(string) common.CustomError
 	Get(string) (*dtos.Institution, common.CustomError)
 	UpdateBranches(string) common.CustomError
+	Update(string, string) (*dtos.Institution, common.CustomError)
 }
 
 type institutionInterface struct {
@@ -45,6 +46,22 @@ func (i *institutionInterface) Create(name string) (*dtos.Institution, common.Cu
 
 }
 
+//Update update an institution attributes
+func (i *institutionInterface) Update(id string, baseURL string) (*dtos.Institution, common.CustomError) {
+
+	institution, err := i.institutionService.Read(id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	institution.BaseURL = baseURL
+
+	return i.institutionService.Update(*institution)
+
+}
+
+//Delete delete an institution
 func (i *institutionInterface) Delete(id string) common.CustomError {
 
 	err := i.institutionService.Delete(id)
@@ -63,19 +80,19 @@ func (i *institutionInterface) Delete(id string) common.CustomError {
 
 //Get get an institutuion
 func (i *institutionInterface) Get(id string) (*dtos.Institution, common.CustomError) {
-	return i.institutionService.Find(id)
+	return i.institutionService.Read(id)
 }
 
 //UpdateBranches update branches from institution
 func (i *institutionInterface) UpdateBranches(id string) common.CustomError {
 
-	institution, err := i.institutionService.Find(id)
+	institution, err := i.institutionService.Read(id)
 
 	if err != nil {
 		return err
 	}
 
-	branches, crawlErr := i.crawler.Crawl(institution.ID)
+	branches, crawlErr := i.crawler.CrawlBranches(institution.ID)
 
 	if crawlErr != nil {
 		return crawlErr

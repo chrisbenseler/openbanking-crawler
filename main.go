@@ -68,6 +68,7 @@ func main() {
 	apiRoutes.GET("/institutions/:id", controller.GetInstitution)
 	apiRoutes.GET("/institutions/:id/branches/update", controller.UpdateInstitutionBranches)
 	apiRoutes.POST("/institutions", controller.CreateInstitution)
+	apiRoutes.PUT("/institutions/:id", controller.UpdateInstitution)
 
 	router.Run(":3000")
 

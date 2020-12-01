@@ -8,8 +8,9 @@ import (
 //Service service
 type Service interface {
 	Create(dtos.Institution) (*dtos.Institution, common.CustomError)
+	Read(string) (*dtos.Institution, common.CustomError)
+	Update(dtos.Institution) (*dtos.Institution, common.CustomError)
 	Delete(string) common.CustomError
-	Find(string) (*dtos.Institution, common.CustomError)
 }
 
 type service struct {
@@ -57,12 +58,29 @@ func (s *service) Delete(institutionID string) common.CustomError {
 	return s.repository.Delete(*newInstitution)
 }
 
-func (s *service) Find(id string) (*dtos.Institution, common.CustomError) {
+//Read read an institution
+func (s *service) Read(id string) (*dtos.Institution, common.CustomError) {
 	queriedInstitution, err := s.repository.Find(id)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return &dtos.Institution{Name: queriedInstitution.Name, ID: queriedInstitution.RetrieveID()}, nil
+	return &dtos.Institution{Name: queriedInstitution.Name, ID: queriedInstitution.RetrieveID(), BaseURL: queriedInstitution.BaseURL}, nil
+}
+
+//Update update an institution
+func (s *service) Update(institutionDTO dtos.Institution) (*dtos.Institution, common.CustomError) {
+
+	newInstitution := NewEntityWithID(institutionDTO.ID)
+	newInstitution.BaseURL = institutionDTO.BaseURL
+	newInstitution.Name = institutionDTO.Name
+	savedInstitution, saveErr := s.repository.Save(*newInstitution)
+
+	if saveErr != nil {
+		return nil, saveErr
+	}
+
+	return &dtos.Institution{Name: savedInstitution.Name, ID: savedInstitution.RetrieveID(), BaseURL: savedInstitution.BaseURL}, nil
+
 }

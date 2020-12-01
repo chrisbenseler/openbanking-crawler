@@ -10,7 +10,7 @@ import (
 
 //Crawler service
 type Crawler interface {
-	Crawl(string) (*[]branch.Entity, common.CustomError)
+	CrawlBranches(string) (*[]branch.Entity, common.CustomError)
 }
 
 type crawler struct {
@@ -39,8 +39,8 @@ type branchesList struct {
 	Branches []branch.Entity
 }
 
-//Crawl crawl branches from institution
-func (s *crawler) Crawl(InstitutionID string) (*[]branch.Entity, common.CustomError) {
+//CrawlBranches crawl branches from institution
+func (s *crawler) CrawlBranches(InstitutionID string) (*[]branch.Entity, common.CustomError) {
 
 	jsonFile, err := os.Open("./domain/branch/branches.json")
 

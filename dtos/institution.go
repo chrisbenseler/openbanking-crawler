@@ -4,8 +4,9 @@ import "openbankingcrawler/common"
 
 //Institution institution DTO
 type Institution struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
+	ID      string `json:"id"`
+	Name    string `json:"name"`
+	BaseURL string `json:"baseurl"`
 }
 
 //Validate validate an institution DTO

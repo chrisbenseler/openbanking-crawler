@@ -11,6 +11,7 @@ type Controller interface {
 	GetInstitution(*gin.Context)
 	UpdateInstitutionBranches(*gin.Context)
 	CreateInstitution(*gin.Context)
+	UpdateInstitution(*gin.Context)
 }
 
 type controller struct {
@@ -56,11 +57,7 @@ func (ctrl *controller) UpdateInstitutionBranches(c *gin.Context) {
 //CreateInstitution create an institution controller
 func (ctrl *controller) CreateInstitution(c *gin.Context) {
 
-	type institutionPayload struct {
-		Name string `json:"name"`
-	}
-
-	var payload institutionPayload
+	var payload InstitutionPayload
 
 	c.BindJSON(&payload)
 
@@ -72,4 +69,23 @@ func (ctrl *controller) CreateInstitution(c *gin.Context) {
 	}
 
 	c.JSON(201, institution)
+}
+
+//UpdateInstitution update an institution controller
+func (ctrl *controller) UpdateInstitution(c *gin.Context) {
+
+	id := c.Param("id")
+
+	var payload InstitutionPayload
+
+	c.BindJSON(&payload)
+
+	institution, err := ctrl.institutionInterface.Update(id, payload.BaseURL)
+
+	if err != nil {
+		c.JSON(err.Status(), gin.H{"error": err.Message()})
+		return
+	}
+
+	c.JSON(200, institution)
 }

@@ -9,6 +9,7 @@ import (
 type Entity struct {
 	bongo.DocumentBase `bson:",inline"`
 	Name               string `json:"name"`
+	BaseURL            string `json:"baseurl"`
 }
 
 //NewEntity create a new institution entity
