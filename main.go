@@ -66,7 +66,7 @@ func main() {
 	controller := adapters.NewController(institutionInterface)
 
 	apiRoutes.GET("/institutions/:id", controller.GetInstitution)
-	apiRoutes.GET("/institutions/:id/branches/update", controller.UpdateInstitutionBranches)
+	apiRoutes.PUT("/institutions/:id/branches/update", controller.UpdateInstitutionBranches)
 	apiRoutes.POST("/institutions", controller.CreateInstitution)
 	apiRoutes.PUT("/institutions/:id", controller.UpdateInstitution)
 
