@@ -2,10 +2,11 @@ package services
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
+	"net/http"
 	"openbankingcrawler/common"
 	"openbankingcrawler/domain/branch"
-	"os"
 )
 
 //Crawler service
@@ -25,21 +26,31 @@ func NewCrawler() Crawler {
 //Branches crawl branches from institution
 func (s *crawler) Branches(baseURL string) (*[]branch.Entity, common.CustomError) {
 
+	///open-banking/channels/v1
+
 	//TODO: concat baseURL with resource url
 
-	jsonFile, err := os.Open("./domain/branch/branches.json")
+	resp, err := http.Get(baseURL + "/open-banking/channels/v1/branches")
+
+	// jsonFile, err := os.Open("./domain/branch/branches.json")
 
 	if err != nil {
 		return nil, common.NewInternalServerError("Unable to crawl branches from institution", err)
 	}
 
-	defer jsonFile.Close()
+	defer resp.Body.Close()
 
-	byteValue, _ := ioutil.ReadAll(jsonFile)
+	body, err := ioutil.ReadAll(resp.Body)
+
+	if err != nil {
+		return nil, common.NewInternalServerError("Unable to crawl branches from institution", err)
+	}
 
 	branchJSONData := &branchJSON{}
 
-	jsonUnmarshallErr := json.Unmarshal(byteValue, &branchJSONData)
+	fmt.Println(body)
+
+	jsonUnmarshallErr := json.Unmarshal(body, &branchJSONData)
 
 	if jsonUnmarshallErr != nil {
 		return nil, common.NewInternalServerError("Unable to unmarshall data", jsonUnmarshallErr)
