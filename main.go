@@ -70,6 +70,6 @@ func main() {
 	apiRoutes.POST("/institutions", controller.CreateInstitution)
 	apiRoutes.PUT("/institutions/:id", controller.UpdateInstitution)
 
-	router.Run(":3000")
+	router.Run(":" + port)
 
 }
