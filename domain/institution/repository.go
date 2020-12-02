@@ -3,8 +3,8 @@ package institution
 import (
 	"openbankingcrawler/common"
 
+	"github.com/globalsign/mgo/bson"
 	"github.com/go-bongo/bongo"
-	"go.mongodb.org/mongo-driver/bson"
 )
 
 //Repository interface
