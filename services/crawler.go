@@ -10,37 +10,20 @@ import (
 
 //Crawler service
 type Crawler interface {
-	CrawlBranches(string) (*[]branch.Entity, common.CustomError)
+	Branches(string) (*[]branch.Entity, common.CustomError)
 }
 
 type crawler struct {
-	// repository branch.Repository
 }
 
 //NewCrawler create a new service for crawl
 func NewCrawler() Crawler {
 
-	return &crawler{
-		//repository: repository,
-	}
+	return &crawler{}
 }
 
-type branchJSON struct {
-	Data struct {
-		Brand struct {
-			Companies []struct {
-				Branches []branch.Entity `json:"branches"`
-			} `json:"companies"`
-		} `json:"brand"`
-	} `json:"data"`
-}
-
-type branchesList struct {
-	Branches []branch.Entity
-}
-
-//CrawlBranches crawl branches from institution
-func (s *crawler) CrawlBranches(baseURL string) (*[]branch.Entity, common.CustomError) {
+//Branches crawl branches from institution
+func (s *crawler) Branches(baseURL string) (*[]branch.Entity, common.CustomError) {
 
 	//TODO: concat baseURL with resource url
 
@@ -66,4 +49,14 @@ func (s *crawler) CrawlBranches(baseURL string) (*[]branch.Entity, common.Custom
 
 	return &companies.Branches, nil
 
+}
+
+type branchJSON struct {
+	Data struct {
+		Brand struct {
+			Companies []struct {
+				Branches []branch.Entity `json:"branches"`
+			} `json:"companies"`
+		} `json:"brand"`
+	} `json:"data"`
 }

@@ -1,19 +1,16 @@
 package branch
 
-import "github.com/go-bongo/bongo"
+import (
+	"openbankingcrawler/domain/subentities"
+
+	"github.com/go-bongo/bongo"
+)
 
 type branchIdentification struct {
 	Type       string `json:"type"`
 	Code       string `json:"code"`
 	CheckDigit string `json:"checkDigit"`
 	Name       string `json:"name"`
-}
-
-type branchPhone struct {
-	Type        string `json:"type"`
-	CountryCode string `json:"countryCode"`
-	AreCode     string `json:"areaCode"`
-	Number      string `json:"number"`
 }
 
 type branchPostalAddress struct {
@@ -31,7 +28,7 @@ type branchPostalAddress struct {
 		Exception         string `json:"exception"`
 		AllowPublicAccess bool   `json:"allowPublicAccess"`
 	} `json:"availability"`
-	Phones  []branchPhone `json:"phones"`
+	Phones  []subentities.Phone `json:"phones"`
 	Service struct {
 		Codes          []string `json:"codes"`
 		AdditionalInfo string   `json:"additionalInfo"`

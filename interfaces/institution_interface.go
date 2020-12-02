@@ -92,7 +92,7 @@ func (i *institutionInterface) UpdateBranches(id string) common.CustomError {
 		return err
 	}
 
-	branches, crawlErr := i.crawler.CrawlBranches(institution.BaseURL)
+	branches, crawlErr := i.crawler.Branches(institution.BaseURL)
 
 	if crawlErr != nil {
 		return crawlErr
