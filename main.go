@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"net/http"
 	"openbankingcrawler/adapters"
 	"openbankingcrawler/domain/branch"
 	"openbankingcrawler/domain/institution"
@@ -50,7 +51,8 @@ func main() {
 	branchRepository := branch.NewRepository(connection.Collection("branch"))
 	branchService := branch.NewService(branchRepository)
 
-	crawler := services.NewCrawler()
+	httpClient := http.Client{}
+	crawler := services.NewCrawler(&httpClient)
 
 	institutionInterface := interfaces.NewInstitution(institutionService, branchService, crawler)
 

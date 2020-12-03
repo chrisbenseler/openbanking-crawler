@@ -14,18 +14,21 @@ type Crawler interface {
 }
 
 type crawler struct {
+	httpClient *http.Client
 }
 
 //NewCrawler create a new service for crawl
-func NewCrawler() Crawler {
+func NewCrawler(http *http.Client) Crawler {
 
-	return &crawler{}
+	return &crawler{
+		httpClient: http,
+	}
 }
 
 //Branches crawl branches from institution
 func (s *crawler) Branches(baseURL string) (*[]branch.Entity, common.CustomError) {
 
-	resp, err := http.Get(baseURL + "/open-banking/channels/v1/branches")
+	resp, err := s.httpClient.Get(baseURL + "/open-banking/channels/v1/branches")
 
 	if err != nil {
 		return nil, common.NewInternalServerError("Unable to crawl branches from institution", err)
@@ -44,6 +47,7 @@ func (s *crawler) Branches(baseURL string) (*[]branch.Entity, common.CustomError
 	jsonUnmarshallErr := json.Unmarshal(body, &branchJSONData)
 
 	if jsonUnmarshallErr != nil {
+
 		return nil, common.NewInternalServerError("Unable to unmarshall data", jsonUnmarshallErr)
 	}
 
