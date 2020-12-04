@@ -7,8 +7,8 @@ import (
 
 //Repository interface
 type Repository interface {
-	// Save(Entity) error
-	// DeleteMany(string) error
+	Save(Entity) error
+	DeleteMany(string) error
 }
 
 type channelRepository struct {
