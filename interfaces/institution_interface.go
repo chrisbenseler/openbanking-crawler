@@ -79,6 +79,12 @@ func (i *institutionInterface) Delete(id string) common.CustomError {
 		return deleteError
 	}
 
+	deleteError = i.channelService.DeleteAllFromInstitution(id)
+
+	if deleteError != nil {
+		return deleteError
+	}
+
 	return nil
 }
 
