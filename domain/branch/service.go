@@ -6,6 +6,7 @@ import "openbankingcrawler/common"
 type Service interface {
 	DeleteAllFromInstitution(string) common.CustomError
 	InsertMany([]Entity, string) common.CustomError
+	FindByInstitution(string) []Entity
 }
 
 type service struct {
@@ -33,12 +34,17 @@ func (s *service) DeleteAllFromInstitution(InstitutionID string) common.CustomEr
 }
 
 //InsertMany insert many branches in instition
-func (s *service) InsertMany(branches []Entity, institutuionID string) common.CustomError {
+func (s *service) InsertMany(branches []Entity, institututionID string) common.CustomError {
 
 	for _, branch := range branches {
-		branch.InstitutionID = institutuionID
+		branch.InstitutionID = institututionID
 		s.repository.Save(branch)
 	}
 
 	return nil
+}
+
+//FindByInstitution insert many branches in instition
+func (s *service) FindByInstitution(institututionID string) []Entity {
+	return s.FindByInstitution(institututionID)
 }
