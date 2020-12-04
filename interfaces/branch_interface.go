@@ -1,12 +1,13 @@
 package interfaces
 
 import (
+	"openbankingcrawler/common"
 	"openbankingcrawler/domain/branch"
 )
 
 //BranchInterface interface
 type BranchInterface interface {
-	GetFromInstitution(string) []branch.Entity
+	GetFromInstitution(string) ([]branch.Entity, common.CustomError)
 }
 
 type branchInterface struct {
@@ -22,6 +23,6 @@ func NewBranch(branchService branch.Service) BranchInterface {
 }
 
 //Get get branches from institutution
-func (b *branchInterface) GetFromInstitution(id string) []branch.Entity {
+func (b *branchInterface) GetFromInstitution(id string) ([]branch.Entity, common.CustomError) {
 	return b.branchService.FindByInstitution(id)
 }

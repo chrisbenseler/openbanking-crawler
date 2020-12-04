@@ -12,17 +12,20 @@ type Controller interface {
 	UpdateInstitutionBranches(*gin.Context)
 	CreateInstitution(*gin.Context)
 	UpdateInstitution(*gin.Context)
+	GetBranches(*gin.Context)
 }
 
 type controller struct {
 	institutionInterface interfaces.InstitutionInterface
+	branchInterface      interfaces.BranchInterface
 }
 
 //NewController create new controllers
-func NewController(institutionInterface interfaces.InstitutionInterface) Controller {
+func NewController(institutionInterface interfaces.InstitutionInterface, branchInterface interfaces.BranchInterface) Controller {
 
 	return &controller{
 		institutionInterface: institutionInterface,
+		branchInterface:      branchInterface,
 	}
 }
 
@@ -88,4 +91,20 @@ func (ctrl *controller) UpdateInstitution(c *gin.Context) {
 	}
 
 	c.JSON(200, institution)
+}
+
+//GetBranches get branches from institution controller
+func (ctrl *controller) GetBranches(c *gin.Context) {
+
+	id := c.Param("id")
+
+	branches, err := ctrl.branchInterface.GetFromInstitution(id)
+
+	if err != nil {
+		c.JSON(err.Status(), gin.H{"error": err.Message()})
+		return
+	}
+
+	c.JSON(200, branches)
+
 }

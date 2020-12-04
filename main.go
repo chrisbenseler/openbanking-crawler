@@ -59,6 +59,7 @@ func main() {
 	crawler := services.NewCrawler(&httpClient)
 
 	institutionInterface := interfaces.NewInstitution(institutionService, branchService, channelService, crawler)
+	branchInterface := interfaces.NewBranch(branchService)
 
 	router := gin.Default()
 	ginConfig := cors.DefaultConfig()
@@ -69,9 +70,10 @@ func main() {
 
 	apiRoutes := router.Group("/api")
 
-	controller := adapters.NewController(institutionInterface)
+	controller := adapters.NewController(institutionInterface, branchInterface)
 
 	apiRoutes.GET("/institutions/:id", controller.GetInstitution)
+	apiRoutes.GET("/institutions/:id/branches", controller.GetBranches)
 	apiRoutes.PUT("/institutions/:id/branches/update", controller.UpdateInstitutionBranches)
 	apiRoutes.POST("/institutions", controller.CreateInstitution)
 	apiRoutes.PUT("/institutions/:id", controller.UpdateInstitution)

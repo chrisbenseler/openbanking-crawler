@@ -1,7 +1,7 @@
 package branch
 
 import (
-	"fmt"
+	"openbankingcrawler/common"
 
 	"github.com/globalsign/mgo/bson"
 	"github.com/go-bongo/bongo"
@@ -11,7 +11,7 @@ import (
 type Repository interface {
 	Save(Entity) error
 	DeleteMany(string) error
-	FindByInstitution(string) []Entity
+	FindByInstitution(string) ([]Entity, common.CustomError)
 }
 
 type branchRepository struct {
@@ -38,17 +38,20 @@ func (r *branchRepository) DeleteMany(institutionID string) error {
 }
 
 //FindByInstitution find all branches from an institution
-func (r *branchRepository) FindByInstitution(institutionID string) []Entity {
+func (r *branchRepository) FindByInstitution(institutionID string) ([]Entity, common.CustomError) {
 	results := r.dao.Find(bson.M{"institutionid": institutionID})
+
+	if results.Error != nil {
+		return nil, common.NewInternalServerError("Error on database", results.Error)
+	}
 
 	branch := &Entity{}
 
-	var branches []Entity
+	branches := make([]Entity, 0)
 
 	for results.Next(branch) {
-		fmt.Print(branch)
 		branches = append(branches, *branch)
 	}
 
-	return branches
+	return branches, nil
 }
