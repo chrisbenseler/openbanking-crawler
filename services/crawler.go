@@ -6,11 +6,13 @@ import (
 	"net/http"
 	"openbankingcrawler/common"
 	"openbankingcrawler/domain/branch"
+	"openbankingcrawler/domain/channel"
 )
 
 //Crawler service
 type Crawler interface {
 	Branches(string) (*[]branch.Entity, common.CustomError)
+	Channels(string) (*[]channel.Entity, common.CustomError)
 }
 
 type crawler struct {
@@ -54,6 +56,15 @@ func (s *crawler) Branches(baseURL string) (*[]branch.Entity, common.CustomError
 	companies := branchJSONData.Data.Brand.Companies[0]
 
 	return &companies.Branches, nil
+
+}
+
+//Channels crawl channels from institution
+func (s *crawler) Channels(baseURL string) (*[]channel.Entity, common.CustomError) {
+
+	var channels = []channel.Entity{}
+
+	return &channels, nil
 
 }
 

@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"openbankingcrawler/adapters"
 	"openbankingcrawler/domain/branch"
+	"openbankingcrawler/domain/channel"
 	"openbankingcrawler/domain/institution"
 	"openbankingcrawler/interfaces"
 	"openbankingcrawler/services"
@@ -51,10 +52,13 @@ func main() {
 	branchRepository := branch.NewRepository(connection.Collection("branch"))
 	branchService := branch.NewService(branchRepository)
 
+	channelRepository := channel.NewRepository(connection.Collection("branch"))
+	channelService := channel.NewService(channelRepository)
+
 	httpClient := http.Client{}
 	crawler := services.NewCrawler(&httpClient)
 
-	institutionInterface := interfaces.NewInstitution(institutionService, branchService, crawler)
+	institutionInterface := interfaces.NewInstitution(institutionService, branchService, channelService, crawler)
 
 	router := gin.Default()
 	ginConfig := cors.DefaultConfig()

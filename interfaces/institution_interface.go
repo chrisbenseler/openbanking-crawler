@@ -3,6 +3,7 @@ package interfaces
 import (
 	"openbankingcrawler/common"
 	"openbankingcrawler/domain/branch"
+	"openbankingcrawler/domain/channel"
 	"openbankingcrawler/domain/institution"
 	"openbankingcrawler/dtos"
 	"openbankingcrawler/services"
@@ -14,21 +15,24 @@ type InstitutionInterface interface {
 	Delete(string) common.CustomError
 	Get(string) (*dtos.Institution, common.CustomError)
 	UpdateBranches(string) common.CustomError
+	UpdateChannels(string) common.CustomError
 	Update(string, string) (*dtos.Institution, common.CustomError)
 }
 
 type institutionInterface struct {
 	institutionService institution.Service
 	branchService      branch.Service
+	channelService     channel.Service
 	crawler            services.Crawler
 }
 
 //NewInstitution create a new interface for institutions
-func NewInstitution(institutionService institution.Service, branchService branch.Service, crawler services.Crawler) InstitutionInterface {
+func NewInstitution(institutionService institution.Service, branchService branch.Service, channelService channel.Service, crawler services.Crawler) InstitutionInterface {
 
 	return &institutionInterface{
 		institutionService: institutionService,
 		branchService:      branchService,
+		channelService:     channelService,
 		crawler:            crawler,
 	}
 }
@@ -105,6 +109,36 @@ func (i *institutionInterface) UpdateBranches(id string) common.CustomError {
 	}
 
 	insertErr := i.branchService.InsertMany(*branches, id)
+	if insertErr != nil {
+		return insertErr
+	}
+
+	return nil
+
+}
+
+//UpdateChannels update channels from institution
+func (i *institutionInterface) UpdateChannels(id string) common.CustomError {
+
+	institution, err := i.institutionService.Read(id)
+
+	if err != nil {
+		return err
+	}
+
+	channels, crawlErr := i.crawler.Channels(institution.BaseURL)
+
+	if crawlErr != nil {
+		return crawlErr
+	}
+
+	delErr := i.channelService.DeleteAllFromInstitution(id)
+
+	if delErr != nil {
+		return delErr
+	}
+
+	insertErr := i.channelService.InsertMany(*channels, id)
 	if insertErr != nil {
 		return insertErr
 	}
