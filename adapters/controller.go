@@ -13,6 +13,7 @@ type Controller interface {
 	CreateInstitution(*gin.Context)
 	UpdateInstitution(*gin.Context)
 	GetBranches(*gin.Context)
+	UpdateInstitutionChannels(c *gin.Context)
 }
 
 type controller struct {
@@ -107,4 +108,18 @@ func (ctrl *controller) GetBranches(c *gin.Context) {
 
 	c.JSON(200, branches)
 
+}
+
+//UpdateInstitution update an institution electronic channels controller
+func (ctrl *controller) UpdateInstitutionChannels(c *gin.Context) {
+	id := c.Param("id")
+
+	err := ctrl.institutionInterface.UpdateChannels(id)
+
+	if err != nil {
+		c.JSON(err.Status(), gin.H{"error": err.Message()})
+		return
+	}
+
+	c.JSON(200, gin.H{})
 }

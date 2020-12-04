@@ -52,7 +52,7 @@ func main() {
 	branchRepository := branch.NewRepository(connection.Collection("branch"))
 	branchService := branch.NewService(branchRepository)
 
-	channelRepository := channel.NewRepository(connection.Collection("branch"))
+	channelRepository := channel.NewRepository(connection.Collection("channel"))
 	channelService := channel.NewService(channelRepository)
 
 	httpClient := http.Client{}
@@ -75,6 +75,7 @@ func main() {
 	apiRoutes.GET("/institutions/:id", controller.GetInstitution)
 	apiRoutes.GET("/institutions/:id/branches", controller.GetBranches)
 	apiRoutes.PUT("/institutions/:id/branches/update", controller.UpdateInstitutionBranches)
+	apiRoutes.PUT("/institutions/:id/channels/update", controller.UpdateInstitutionChannels)
 	apiRoutes.POST("/institutions", controller.CreateInstitution)
 	apiRoutes.PUT("/institutions/:id", controller.UpdateInstitution)
 

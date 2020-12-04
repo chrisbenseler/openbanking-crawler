@@ -33,10 +33,10 @@ func (s *service) DeleteAllFromInstitution(InstitutionID string) common.CustomEr
 }
 
 //InsertMany insert many channels in instition
-func (s *service) InsertMany(channels []Entity, institutuionID string) common.CustomError {
+func (s *service) InsertMany(channels []Entity, institututionID string) common.CustomError {
 
 	for _, channel := range channels {
-		channel.InstitutionID = institutuionID
+		channel.InstitutionID = institututionID
 		s.repository.Save(channel)
 	}
 

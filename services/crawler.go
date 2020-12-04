@@ -62,9 +62,27 @@ func (s *crawler) Branches(baseURL string) (*[]branch.Entity, common.CustomError
 //Channels crawl channels from institution
 func (s *crawler) Channels(baseURL string) (*[]channel.Entity, common.CustomError) {
 
-	var channels = []channel.Entity{}
+	resp, err := s.httpClient.Get(baseURL + "/open-banking/channels/v1/electronic-channels")
 
-	return &channels, nil
+	if err != nil {
+		return nil, common.NewInternalServerError("Unable to crawl channels from institution", err)
+	}
+
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+
+	jsonData := &channelJSON{}
+
+	jsonUnmarshallErr := json.Unmarshal(body, &jsonData)
+
+	if jsonUnmarshallErr != nil {
+
+		return nil, common.NewInternalServerError("Unable to unmarshall data", jsonUnmarshallErr)
+	}
+
+	companies := jsonData.Data.Brand.Companies[0]
+	return &companies.Channels, nil
 
 }
 
@@ -73,6 +91,16 @@ type branchJSON struct {
 		Brand struct {
 			Companies []struct {
 				Branches []branch.Entity `json:"branches"`
+			} `json:"companies"`
+		} `json:"brand"`
+	} `json:"data"`
+}
+
+type channelJSON struct {
+	Data struct {
+		Brand struct {
+			Companies []struct {
+				Channels []channel.Entity `json:"channels"`
 			} `json:"companies"`
 		} `json:"brand"`
 	} `json:"data"`
