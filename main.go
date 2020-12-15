@@ -55,6 +55,8 @@ func main() {
 	channelRepository := channel.NewRepository(connection.Collection("channel"))
 	channelService := channel.NewService(channelRepository)
 
+	authService := services.NewAuthService()
+
 	httpClient := http.Client{}
 	crawler := services.NewCrawler(&httpClient)
 
@@ -70,9 +72,9 @@ func main() {
 
 	apiRoutes := router.Group("/api")
 
-	controller := adapters.NewController(institutionInterface, branchInterface)
+	controller := adapters.NewController(institutionInterface, branchInterface, authService)
 
-	authController := adapters.NewAuthenticateController(services.NewAuthService())
+	authController := adapters.NewAuthenticateController(authService)
 
 	apiRoutes.GET("/institutions/:id", controller.GetInstitution)
 	apiRoutes.GET("/institutions/:id/branches", controller.GetBranches)

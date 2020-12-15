@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 	"openbankingcrawler/common"
-	"os"
 	"strings"
 	"time"
 
@@ -39,7 +38,7 @@ func (s *auth) ValidateAccessToken(request *http.Request) (*jwt.Token, common.Cu
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
-		return []byte(os.Getenv("ACCESS_SECRET")), nil
+		return []byte(secret), nil
 	})
 	if err != nil {
 		return nil, common.NewUnauthorizedError("Bad credentials")
@@ -71,6 +70,7 @@ func extractToken(r *http.Request) string {
 	bearToken := r.Header.Get("Authorization")
 	//normally Authorization the_token_xxx
 	strArr := strings.Split(bearToken, " ")
+
 	if len(strArr) == 2 {
 		return strArr[1]
 	}
