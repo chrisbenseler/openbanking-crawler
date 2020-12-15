@@ -1,7 +1,6 @@
 package adapters
 
 import (
-	"fmt"
 	"openbankingcrawler/interfaces"
 	"openbankingcrawler/services"
 
@@ -51,14 +50,12 @@ func (ctrl *controller) GetInstitution(c *gin.Context) {
 //UpdateInstitution update an institution controller
 func (ctrl *controller) UpdateInstitutionBranches(c *gin.Context) {
 
-	jwtToken, validateErr := ctrl.authService.ValidateAccessToken(c.Request)
+	_, validateErr := ctrl.authService.ValidateAccessToken(c.Request)
 
 	if validateErr != nil {
 		c.JSON(validateErr.Status(), gin.H{"error": validateErr.Message()})
 		return
 	}
-
-	fmt.Print(jwtToken)
 
 	id := c.Param("id")
 
@@ -75,14 +72,12 @@ func (ctrl *controller) UpdateInstitutionBranches(c *gin.Context) {
 //CreateInstitution create an institution controller
 func (ctrl *controller) CreateInstitution(c *gin.Context) {
 
-	jwtToken, validateErr := ctrl.authService.ValidateAccessToken(c.Request)
+	_, validateErr := ctrl.authService.ValidateAccessToken(c.Request)
 
 	if validateErr != nil {
 		c.JSON(validateErr.Status(), gin.H{"error": validateErr.Message()})
 		return
 	}
-
-	fmt.Print(jwtToken)
 
 	var payload InstitutionPayload
 
