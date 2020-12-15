@@ -72,12 +72,16 @@ func main() {
 
 	controller := adapters.NewController(institutionInterface, branchInterface)
 
+	authController := adapters.NewAuthenticateController(services.NewAuthService())
+
 	apiRoutes.GET("/institutions/:id", controller.GetInstitution)
 	apiRoutes.GET("/institutions/:id/branches", controller.GetBranches)
 	apiRoutes.PUT("/institutions/:id/branches/update", controller.UpdateInstitutionBranches)
 	apiRoutes.PUT("/institutions/:id/channels/update", controller.UpdateInstitutionChannels)
 	apiRoutes.POST("/institutions", controller.CreateInstitution)
 	apiRoutes.PUT("/institutions/:id", controller.UpdateInstitution)
+
+	apiRoutes.POST("/auth/signin", authController.SignIn)
 
 	router.Run(":" + port)
 

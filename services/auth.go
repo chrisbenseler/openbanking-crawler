@@ -24,8 +24,13 @@ type Auth interface {
 type auth struct {
 }
 
+//NewAuthService create a new auth service
+func NewAuthService() Auth {
+	return &auth{}
+}
+
 //ValidateAccessToken authenticate a request
-func ValidateAccessToken(request *http.Request) (*jwt.Token, common.CustomError) {
+func (s *auth) ValidateAccessToken(request *http.Request) (*jwt.Token, common.CustomError) {
 
 	tokenString := extractToken(request)
 
@@ -43,9 +48,9 @@ func ValidateAccessToken(request *http.Request) (*jwt.Token, common.CustomError)
 }
 
 //CreateAccessToken create an access token
-func CreateAccessToken(email string, password string) (*string, common.CustomError) {
+func (s *auth) CreateAccessToken(email string, password string) (*string, common.CustomError) {
 
-	if email != "bvlab@bv.com.br" || password == " abcd1234" {
+	if email != "bvlab@bv.com.br" || password != "abcd1234" {
 		return nil, common.NewUnauthorizedError("Bad credentials")
 	}
 
@@ -55,6 +60,7 @@ func CreateAccessToken(email string, password string) (*string, common.CustomErr
 	atClaims["exp"] = time.Now().Add(time.Minute * 15).Unix()
 	at := jwt.NewWithClaims(jwt.SigningMethodHS256, atClaims)
 	token, err := at.SignedString([]byte(secret))
+
 	if err != nil {
 		return nil, common.NewInternalServerError("Token error", err)
 	}
