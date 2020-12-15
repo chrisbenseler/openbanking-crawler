@@ -46,15 +46,11 @@ func NewWeb() {
 		fmt.Println(dbErr)
 	}
 
-	institutionRepository := institution.NewRepository(connection.Collection("institution"))
+	institutionRepository, branchRepository, channelRepository := createRepositories(connection)
+
 	institutionService := institution.NewService(institutionRepository)
-
-	branchRepository := branch.NewRepository(connection.Collection("branch"))
 	branchService := branch.NewService(branchRepository)
-
-	channelRepository := channel.NewRepository(connection.Collection("channel"))
 	channelService := channel.NewService(channelRepository)
-
 	authService := services.NewAuthService()
 
 	httpClient := http.Client{}
@@ -86,4 +82,12 @@ func NewWeb() {
 	apiRoutes.POST("/auth/signin", authController.SignIn)
 
 	router.Run(":" + port)
+}
+
+func createRepositories(connection *bongo.Connection) (institution.Repository, branch.Repository, channel.Repository) {
+	institutionRepository := institution.NewRepository(connection.Collection("institution"))
+	branchRepository := branch.NewRepository(connection.Collection("branch"))
+	channelRepository := channel.NewRepository(connection.Collection("channel"))
+
+	return institutionRepository, branchRepository, channelRepository
 }
