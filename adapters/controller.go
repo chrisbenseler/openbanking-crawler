@@ -14,21 +14,27 @@ type Controller interface {
 	CreateInstitution(*gin.Context)
 	UpdateInstitution(*gin.Context)
 	GetBranches(*gin.Context)
+	GetChannels(c *gin.Context)
 	UpdateInstitutionChannels(c *gin.Context)
 }
 
 type controller struct {
 	institutionInterface interfaces.InstitutionInterface
 	branchInterface      interfaces.BranchInterface
+	channelInterface     interfaces.ChannelInterface
 	authService          services.Auth
 }
 
 //NewController create new controllers
-func NewController(institutionInterface interfaces.InstitutionInterface, branchInterface interfaces.BranchInterface, authService services.Auth) Controller {
+func NewController(institutionInterface interfaces.InstitutionInterface,
+	branchInterface interfaces.BranchInterface,
+	channelInterface interfaces.ChannelInterface,
+	authService services.Auth) Controller {
 
 	return &controller{
 		institutionInterface: institutionInterface,
 		branchInterface:      branchInterface,
+		channelInterface:     channelInterface,
 		authService:          authService,
 	}
 }
@@ -140,4 +146,20 @@ func (ctrl *controller) UpdateInstitutionChannels(c *gin.Context) {
 	}
 
 	c.JSON(200, gin.H{})
+}
+
+//GetChannels get channels from institution controller
+func (ctrl *controller) GetChannels(c *gin.Context) {
+
+	id := c.Param("id")
+
+	channels, err := ctrl.channelInterface.GetFromInstitution(id)
+
+	if err != nil {
+		c.JSON(err.Status(), gin.H{"error": err.Message()})
+		return
+	}
+
+	c.JSON(200, channels)
+
 }

@@ -58,6 +58,7 @@ func NewWeb() {
 
 	institutionInterface := interfaces.NewInstitution(institutionService, branchService, channelService, crawler)
 	branchInterface := interfaces.NewBranch(branchService)
+	channelInterface := interfaces.NewChannel(channelService)
 
 	router := gin.Default()
 	ginConfig := cors.DefaultConfig()
@@ -68,12 +69,14 @@ func NewWeb() {
 
 	apiRoutes := router.Group("/api")
 
-	controller := adapters.NewController(institutionInterface, branchInterface, authService)
+	controller := adapters.NewController(institutionInterface, branchInterface, channelInterface, authService)
 
 	authController := adapters.NewAuthenticateController(authService)
 
 	apiRoutes.GET("/institutions/:id", controller.GetInstitution)
 	apiRoutes.GET("/institutions/:id/branches", controller.GetBranches)
+	apiRoutes.GET("/institutions/:id/channels", controller.GetChannels)
+
 	apiRoutes.PUT("/institutions/:id/branches/update", controller.UpdateInstitutionBranches)
 	apiRoutes.PUT("/institutions/:id/channels/update", controller.UpdateInstitutionChannels)
 	apiRoutes.POST("/institutions", controller.CreateInstitution)
