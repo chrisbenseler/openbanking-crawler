@@ -2,7 +2,6 @@ package adapters
 
 import (
 	"openbankingcrawler/interfaces"
-	"openbankingcrawler/services"
 
 	"github.com/gin-gonic/gin"
 )
@@ -22,20 +21,17 @@ type controller struct {
 	institutionInterface interfaces.InstitutionInterface
 	branchInterface      interfaces.BranchInterface
 	channelInterface     interfaces.ChannelInterface
-	authService          services.Auth
 }
 
 //NewController create new controllers
 func NewController(institutionInterface interfaces.InstitutionInterface,
 	branchInterface interfaces.BranchInterface,
-	channelInterface interfaces.ChannelInterface,
-	authService services.Auth) Controller {
+	channelInterface interfaces.ChannelInterface) Controller {
 
 	return &controller{
 		institutionInterface: institutionInterface,
 		branchInterface:      branchInterface,
 		channelInterface:     channelInterface,
-		authService:          authService,
 	}
 }
 
@@ -56,13 +52,6 @@ func (ctrl *controller) GetInstitution(c *gin.Context) {
 //UpdateInstitution update an institution controller
 func (ctrl *controller) UpdateInstitutionBranches(c *gin.Context) {
 
-	_, validateErr := ctrl.authService.ValidateAccessToken(c.Request)
-
-	if validateErr != nil {
-		c.JSON(validateErr.Status(), gin.H{"error": validateErr.Message()})
-		return
-	}
-
 	id := c.Param("id")
 
 	err := ctrl.institutionInterface.UpdateBranches(id)
@@ -77,13 +66,6 @@ func (ctrl *controller) UpdateInstitutionBranches(c *gin.Context) {
 
 //CreateInstitution create an institution controller
 func (ctrl *controller) CreateInstitution(c *gin.Context) {
-
-	_, validateErr := ctrl.authService.ValidateAccessToken(c.Request)
-
-	if validateErr != nil {
-		c.JSON(validateErr.Status(), gin.H{"error": validateErr.Message()})
-		return
-	}
 
 	var payload InstitutionPayload
 
