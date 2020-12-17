@@ -4,6 +4,7 @@ RUN go get -v github.com/gin-gonic/gin
 RUN go get -v github.com/gin-contrib/cors
 RUN go get -v github.com/globalsign/mgo/bson
 RUN go get -v github.com/go-bongo/bongo
+RUN go get github.com/dgrijalva/jwt-go
 
 RUN mkdir /go/src/openbankingcrawler/ 
 ADD . /go/src/openbankingcrawler
