@@ -75,6 +75,7 @@ func NewWeb() {
 
 	authRequired := authMiddleware(authService)
 
+	apiRoutes.GET("/institutions", controller.ListAllInstitutions)
 	apiRoutes.GET("/institutions/:id", controller.GetInstitution)
 	apiRoutes.GET("/institutions/:id/branches", controller.GetBranches)
 	apiRoutes.GET("/institutions/:id/channels", controller.GetChannels)
@@ -85,6 +86,10 @@ func NewWeb() {
 	apiRoutes.PUT("/institutions/:id", authRequired, controller.UpdateInstitution)
 
 	apiRoutes.POST("/auth/signin", authController.SignIn)
+
+	//router.Use(static.Serve("/open-banking", static.LocalFile("../mocks/open-banking", false)))
+
+	router.Static("/open-banking", "./mocks/open-banking")
 
 	router.Run(":" + port)
 }

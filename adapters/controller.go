@@ -8,6 +8,7 @@ import (
 
 //Controller controller interface
 type Controller interface {
+	ListAllInstitutions(*gin.Context)
 	GetInstitution(*gin.Context)
 	UpdateInstitutionBranches(*gin.Context)
 	CreateInstitution(*gin.Context)
@@ -33,6 +34,19 @@ func NewController(institutionInterface interfaces.InstitutionInterface,
 		branchInterface:      branchInterface,
 		channelInterface:     channelInterface,
 	}
+}
+
+//ListAllInstitutions list all institutions
+func (ctrl *controller) ListAllInstitutions(c *gin.Context) {
+
+	institutions, err := ctrl.institutionInterface.ListAll()
+
+	if err != nil {
+		c.JSON(err.Status(), gin.H{"error": err.Message()})
+		return
+	}
+
+	c.JSON(200, institutions)
 }
 
 //GetInstitution get an institution controller

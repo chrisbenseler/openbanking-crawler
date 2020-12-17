@@ -69,9 +69,12 @@
 			"response": []
 		},
 		{
-			"name": "Update institution",
+			"name": "List all institutions",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
 			"request": {
-				"method": "PUT",
+				"method": "GET",
 				"header": [],
 				"body": {
 					"mode": "raw",
@@ -83,7 +86,39 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:3000/api/institutions/5fc66b7b09114efbfd98ca7d",
+					"raw": "http://localhost:3000/api/institutions",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"institutions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get institution branches",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"any new namedddd\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/institutions/5fc798427fd83f00016ae567/branches",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -92,7 +127,72 @@
 					"path": [
 						"api",
 						"institutions",
-						"5fc66b7b09114efbfd98ca7d"
+						"5fc798427fd83f00016ae567",
+						"branches"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get institution channels",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"any new namedddd\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/institutions/5fc78a4909114e39ab957bbe/channels",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"institutions",
+						"5fc78a4909114e39ab957bbe",
+						"channels"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update institution",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"baseurl\": \"http://localhost:3000\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/institutions/5fc798427fd83f00016ae567",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"institutions",
+						"5fc798427fd83f00016ae567"
 					]
 				}
 			},
@@ -129,6 +229,125 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "Update institution channels",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"any new namedddd\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/institutions/5fc78a4909114e39ab957bbe/channels/update",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"institutions",
+						"5fc78a4909114e39ab957bbe",
+						"channels",
+						"update"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Auth Sign In",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "945add0a-8fe6-484c-b245-51fd1858bf92",
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);",
+							"",
+							"pm.environment.set(\"auth_token\", jsonData.token);",
+							"pm.globals.set(\"auth_token\", jsonData.token);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"bvlab@bv.com.br\",\n    \"password\": \"abcd1234\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/auth/signin",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"auth",
+						"signin"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{auth_token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "8949ab07-226c-42e4-9d8b-a33879fdb3c8",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "7ca3c2de-2a39-412c-b7bf-d409c4770be1",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "39b5f4d1-07d8-4617-851f-e53a62b17ee1",
+			"key": "auth_token",
+			"value": ""
 		}
 	],
 	"protocolProfileBehavior": {}

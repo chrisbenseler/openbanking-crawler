@@ -7,6 +7,7 @@ import (
 
 //Service service
 type Service interface {
+	List() ([]dtos.Institution, common.CustomError)
 	Create(dtos.Institution) (*dtos.Institution, common.CustomError)
 	Read(string) (*dtos.Institution, common.CustomError)
 	Update(dtos.Institution) (*dtos.Institution, common.CustomError)
@@ -23,6 +24,26 @@ func NewService(repository Repository) Service {
 	return &service{
 		repository: repository,
 	}
+}
+
+//List list all institutions
+func (s *service) List() ([]dtos.Institution, common.CustomError) {
+
+	query := make(map[string]interface{})
+	entities, err := s.repository.FindMany(query)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var institutionDTOs []dtos.Institution
+
+	for _, entity := range entities {
+		newInstitution := dtos.Institution{Name: entity.Name, BaseURL: entity.BaseURL, ID: entity.RetrieveID()}
+		institutionDTOs = append(institutionDTOs, newInstitution)
+	}
+
+	return institutionDTOs, nil
 }
 
 //Create create a new institution

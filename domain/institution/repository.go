@@ -13,6 +13,7 @@ type Repository interface {
 	FindByName(string) (*Entity, common.CustomError)
 	Delete(Entity) common.CustomError
 	Find(string) (*Entity, common.CustomError)
+	FindMany(map[string]interface{}) ([]Entity, common.CustomError)
 }
 
 type institutionRepository struct {
@@ -84,4 +85,25 @@ func (r *institutionRepository) Find(id string) (*Entity, common.CustomError) {
 	}
 
 	return entity, nil
+}
+
+//GetAll get all entities
+func (r *institutionRepository) FindMany(queryFields map[string]interface{}) ([]Entity, common.CustomError) {
+
+	results := r.dao.Find(queryFields)
+
+	if results.Error != nil {
+		return nil, common.NewInternalServerError("Error on database", results.Error)
+	}
+
+	institution := &Entity{}
+
+	institutions := make([]Entity, 0)
+
+	for results.Next(institution) {
+		institutions = append(institutions, *institution)
+	}
+
+	return institutions, nil
+
 }

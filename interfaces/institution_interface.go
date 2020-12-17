@@ -11,6 +11,7 @@ import (
 
 //InstitutionInterface interface
 type InstitutionInterface interface {
+	ListAll() ([]dtos.Institution, common.CustomError)
 	Create(string) (*dtos.Institution, common.CustomError)
 	Delete(string) common.CustomError
 	Get(string) (*dtos.Institution, common.CustomError)
@@ -35,6 +36,11 @@ func NewInstitution(institutionService institution.Service, branchService branch
 		channelService:     channelService,
 		crawler:            crawler,
 	}
+}
+
+func (i *institutionInterface) ListAll() ([]dtos.Institution, common.CustomError) {
+
+	return i.institutionService.List()
 }
 
 func (i *institutionInterface) Create(name string) (*dtos.Institution, common.CustomError) {
