@@ -20,7 +20,6 @@ type channelRepository struct {
 
 //NewRepository create a new repository for channel
 func NewRepository(dao *bongo.Collection) Repository {
-
 	return &channelRepository{
 		dao: dao,
 	}
