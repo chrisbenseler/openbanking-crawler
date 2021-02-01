@@ -7,6 +7,7 @@ import (
 	"openbankingcrawler/common"
 	"openbankingcrawler/domain/branch"
 	"openbankingcrawler/domain/electronicchannel"
+	"strconv"
 )
 
 //Crawler service
@@ -74,16 +75,39 @@ func (s *crawler) ElectronicChannels(baseURL string) (*[]electronicchannel.Entit
 
 	jsonData := &electronicChannelJSON{}
 
+	metaInfo := &metaInfoJSON{}
+	json.Unmarshal(body, &metaInfo)
+
 	jsonUnmarshallErr := json.Unmarshal(body, &jsonData)
 
 	if jsonUnmarshallErr != nil {
-
 		return nil, common.NewInternalServerError("Unable to unmarshall data", jsonUnmarshallErr)
 	}
 
-	companies := jsonData.Data.Brand.Companies[0]
+	companies := []electronicchannel.Entity{}
 
-	return &companies.ElectronicChannels, nil
+	for i := range jsonData.Data.Brand.Companies {
+		company := jsonData.Data.Brand.Companies[i]
+		result := company.ElectronicChannels
+		companies = append(companies, result...)
+	}
+
+	if metaInfo.Meta.TotalPages > 1 {
+		for i := 2; i <= metaInfo.Meta.TotalPages; i++ {
+			nextPageReq, _ := s.httpClient.Get(baseURL + "/open-banking/channels/v1/electronic-channels?page=" + strconv.Itoa(i))
+			jsonDataPage := &electronicChannelJSON{}
+			body, _ = ioutil.ReadAll(nextPageReq.Body)
+			json.Unmarshal(body, &jsonDataPage)
+
+			for i := range jsonDataPage.Data.Brand.Companies {
+				company := jsonDataPage.Data.Brand.Companies[i]
+				result := company.ElectronicChannels
+				companies = append(companies, result...)
+			}
+		}
+	}
+
+	return &companies, nil
 
 }
 
@@ -105,4 +129,11 @@ type electronicChannelJSON struct {
 			} `json:"companies"`
 		} `json:"brand"`
 	} `json:"data"`
+}
+
+type metaInfoJSON struct {
+	Meta struct {
+		TotalRecords int `json:"totalRecords"`
+		TotalPages   int `json:"totalPages"`
+	} `json:"meta"`
 }
