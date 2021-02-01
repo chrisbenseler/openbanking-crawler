@@ -1,4 +1,4 @@
-# Opem Banking Crawler
+# Open Banking Crawler
 
 ## Running in docker
 
