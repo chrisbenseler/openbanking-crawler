@@ -7,13 +7,12 @@ import (
 	"openbankingcrawler/common"
 	"openbankingcrawler/domain/branch"
 	"openbankingcrawler/domain/electronicchannel"
-	"strconv"
 )
 
 //Crawler service
 type Crawler interface {
 	Branches(string) (*[]branch.Entity, common.CustomError)
-	ElectronicChannels(string) (*[]electronicchannel.Entity, common.CustomError)
+	ElectronicChannels(string, int, []electronicchannel.Entity) (*[]electronicchannel.Entity, common.CustomError)
 }
 
 type crawler struct {
@@ -61,7 +60,7 @@ func (s *crawler) Branches(baseURL string) (*[]branch.Entity, common.CustomError
 }
 
 //ElectronicChannels crawl electronicChannels from institution
-func (s *crawler) ElectronicChannels(baseURL string) (*[]electronicchannel.Entity, common.CustomError) {
+func (s *crawler) ElectronicChannels(baseURL string, page int, accumulator []electronicchannel.Entity) (*[]electronicchannel.Entity, common.CustomError) {
 
 	resp, err := s.httpClient.Get(baseURL + "/open-banking/channels/v1/electronic-channels")
 
@@ -84,7 +83,7 @@ func (s *crawler) ElectronicChannels(baseURL string) (*[]electronicchannel.Entit
 		return nil, common.NewInternalServerError("Unable to unmarshall data", jsonUnmarshallErr)
 	}
 
-	companies := []electronicchannel.Entity{}
+	companies := accumulator
 
 	for i := range jsonData.Data.Brand.Companies {
 		company := jsonData.Data.Brand.Companies[i]
@@ -92,19 +91,8 @@ func (s *crawler) ElectronicChannels(baseURL string) (*[]electronicchannel.Entit
 		companies = append(companies, result...)
 	}
 
-	if metaInfo.Meta.TotalPages > 1 {
-		for i := 2; i <= metaInfo.Meta.TotalPages; i++ {
-			nextPageReq, _ := s.httpClient.Get(baseURL + "/open-banking/channels/v1/electronic-channels?page=" + strconv.Itoa(i))
-			jsonDataPage := &electronicChannelJSON{}
-			body, _ = ioutil.ReadAll(nextPageReq.Body)
-			json.Unmarshal(body, &jsonDataPage)
-
-			for i := range jsonDataPage.Data.Brand.Companies {
-				company := jsonDataPage.Data.Brand.Companies[i]
-				result := company.ElectronicChannels
-				companies = append(companies, result...)
-			}
-		}
+	if metaInfo.Meta.TotalPages > page {
+		return s.ElectronicChannels(baseURL, page+1, companies)
 	}
 
 	return &companies, nil

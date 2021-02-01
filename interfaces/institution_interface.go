@@ -138,7 +138,7 @@ func (i *institutionInterface) UpdateElectronicChannels(id string) common.Custom
 		return err
 	}
 
-	electronicChannels, crawlErr := i.crawler.ElectronicChannels(institution.BaseURL)
+	electronicChannels, crawlErr := i.crawler.ElectronicChannels(institution.BaseURL, 1, []electronicchannel.Entity{})
 
 	if crawlErr != nil {
 		return crawlErr
