@@ -75,6 +75,10 @@ func NewWeb() {
 
 	authRequired := authMiddleware(authService)
 
+	apiRoutes.GET("/health_check", func(c *gin.Context) {
+		c.JSON(200, gin.H{"status": "OK"})
+	})
+
 	apiRoutes.GET("/institutions", controller.ListAllInstitutions)
 	apiRoutes.GET("/institutions/:id", controller.GetInstitution)
 	apiRoutes.GET("/institutions/:id/branches", controller.GetBranches)

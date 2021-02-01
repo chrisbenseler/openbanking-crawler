@@ -68,12 +68,16 @@ func (ctrl *controller) UpdateInstitutionBranches(c *gin.Context) {
 
 	id := c.Param("id")
 
-	err := ctrl.institutionInterface.UpdateBranches(id)
+	/*
+		err := ctrl.institutionInterface.UpdateBranches(id)
 
-	if err != nil {
-		c.JSON(err.Status(), gin.H{"error": err.Message()})
-		return
-	}
+		if err != nil {
+			c.JSON(err.Status(), gin.H{"error": err.Message()})
+			return
+		}
+
+	*/
+	go ctrl.institutionInterface.UpdateBranches(id)
 
 	c.JSON(200, gin.H{})
 }
@@ -134,12 +138,15 @@ func (ctrl *controller) GetBranches(c *gin.Context) {
 func (ctrl *controller) UpdateInstitutionElectronicChannels(c *gin.Context) {
 	id := c.Param("id")
 
-	err := ctrl.institutionInterface.UpdateElectronicChannels(id)
+	/*
+		err := ctrl.institutionInterface.UpdateElectronicChannels(id)
 
-	if err != nil {
-		c.JSON(err.Status(), gin.H{"error": err.Message()})
-		return
-	}
+		if err != nil {
+			c.JSON(err.Status(), gin.H{"error": err.Message()})
+			return
+		}
+	*/
+	go ctrl.institutionInterface.UpdateElectronicChannels(id)
 
 	c.JSON(200, gin.H{})
 }
