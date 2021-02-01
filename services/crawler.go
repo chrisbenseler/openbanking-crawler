@@ -6,13 +6,13 @@ import (
 	"net/http"
 	"openbankingcrawler/common"
 	"openbankingcrawler/domain/branch"
-	"openbankingcrawler/domain/channel"
+	"openbankingcrawler/domain/electronicchannel"
 )
 
 //Crawler service
 type Crawler interface {
 	Branches(string) (*[]branch.Entity, common.CustomError)
-	Channels(string) (*[]channel.Entity, common.CustomError)
+	ElectronicChannels(string) (*[]electronicchannel.Entity, common.CustomError)
 }
 
 type crawler struct {
@@ -30,7 +30,7 @@ func NewCrawler(http *http.Client) Crawler {
 //Branches crawl branches from institution
 func (s *crawler) Branches(baseURL string) (*[]branch.Entity, common.CustomError) {
 
-	resp, err := s.httpClient.Get(baseURL + "/open-banking/channels/v1/branches")
+	resp, err := s.httpClient.Get(baseURL + "/open-banking/electronicChannels/v1/branches")
 
 	if err != nil {
 		return nil, common.NewInternalServerError("Unable to crawl branches from institution", err)
@@ -59,20 +59,20 @@ func (s *crawler) Branches(baseURL string) (*[]branch.Entity, common.CustomError
 
 }
 
-//Channels crawl channels from institution
-func (s *crawler) Channels(baseURL string) (*[]channel.Entity, common.CustomError) {
+//ElectronicChannels crawl electronicChannels from institution
+func (s *crawler) ElectronicChannels(baseURL string) (*[]electronicchannel.Entity, common.CustomError) {
 
 	resp, err := s.httpClient.Get(baseURL + "/open-banking/channels/v1/electronic-channels")
 
 	if err != nil {
-		return nil, common.NewInternalServerError("Unable to crawl channels from institution", err)
+		return nil, common.NewInternalServerError("Unable to crawl electronicchannel from institution", err)
 	}
 
 	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
 
-	jsonData := &channelJSON{}
+	jsonData := &electronicChannelJSON{}
 
 	jsonUnmarshallErr := json.Unmarshal(body, &jsonData)
 
@@ -82,7 +82,8 @@ func (s *crawler) Channels(baseURL string) (*[]channel.Entity, common.CustomErro
 	}
 
 	companies := jsonData.Data.Brand.Companies[0]
-	return &companies.Channels, nil
+
+	return &companies.ElectronicChannels, nil
 
 }
 
@@ -96,11 +97,11 @@ type branchJSON struct {
 	} `json:"data"`
 }
 
-type channelJSON struct {
+type electronicChannelJSON struct {
 	Data struct {
 		Brand struct {
 			Companies []struct {
-				Channels []channel.Entity `json:"channels"`
+				ElectronicChannels []electronicchannel.Entity `json:"electronicChannels"`
 			} `json:"companies"`
 		} `json:"brand"`
 	} `json:"data"`

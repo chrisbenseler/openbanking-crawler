@@ -10,7 +10,7 @@ import (
 
 func TestConsumer_GetUsers(t *testing.T) {
 
-	dat, readError := ioutil.ReadFile("../mocks/open-banking/channels/v1/branches")
+	dat, readError := ioutil.ReadFile("../mocks/open-banking/electronicChannels/v1/branches")
 
 	if readError != nil {
 		fmt.Println(readError)

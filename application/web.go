@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"openbankingcrawler/adapters"
 	"openbankingcrawler/domain/branch"
-	"openbankingcrawler/domain/channel"
+	"openbankingcrawler/domain/electronicchannel"
 	"openbankingcrawler/domain/institution"
 	"openbankingcrawler/interfaces"
 	"openbankingcrawler/services"
@@ -46,19 +46,19 @@ func NewWeb() {
 		fmt.Println(dbErr)
 	}
 
-	institutionRepository, branchRepository, channelRepository := createRepositories(connection)
+	institutionRepository, branchRepository, electronicChannelRepository := createRepositories(connection)
 
 	institutionService := institution.NewService(institutionRepository)
 	branchService := branch.NewService(branchRepository)
-	channelService := channel.NewService(channelRepository)
+	electronicChannelService := electronicchannel.NewService(electronicChannelRepository)
 	authService := services.NewAuthService()
 
 	httpClient := http.Client{}
 	crawler := services.NewCrawler(&httpClient)
 
-	institutionInterface := interfaces.NewInstitution(institutionService, branchService, channelService, crawler)
+	institutionInterface := interfaces.NewInstitution(institutionService, branchService, electronicChannelService, crawler)
 	branchInterface := interfaces.NewBranch(branchService)
-	channelInterface := interfaces.NewChannel(channelService)
+	electronicChannelInterface := interfaces.NewChannel(electronicChannelService)
 
 	router := gin.Default()
 	ginConfig := cors.DefaultConfig()
@@ -69,7 +69,7 @@ func NewWeb() {
 
 	apiRoutes := router.Group("/api")
 
-	controller := adapters.NewController(institutionInterface, branchInterface, channelInterface)
+	controller := adapters.NewController(institutionInterface, branchInterface, electronicChannelInterface)
 
 	authController := adapters.NewAuthenticateController(authService)
 
@@ -78,10 +78,10 @@ func NewWeb() {
 	apiRoutes.GET("/institutions", controller.ListAllInstitutions)
 	apiRoutes.GET("/institutions/:id", controller.GetInstitution)
 	apiRoutes.GET("/institutions/:id/branches", controller.GetBranches)
-	apiRoutes.GET("/institutions/:id/channels", controller.GetChannels)
+	apiRoutes.GET("/institutions/:id/electronic-channels", controller.GetElectronicChannels)
 
 	apiRoutes.PUT("/institutions/:id/branches/update", authRequired, controller.UpdateInstitutionBranches)
-	apiRoutes.PUT("/institutions/:id/channels/update", authRequired, controller.UpdateInstitutionChannels)
+	apiRoutes.PUT("/institutions/:id/electronic-channels/update", authRequired, controller.UpdateInstitutionElectronicChannels)
 	apiRoutes.POST("/institutions", authRequired, controller.CreateInstitution)
 	apiRoutes.PUT("/institutions/:id", authRequired, controller.UpdateInstitution)
 
@@ -94,12 +94,12 @@ func NewWeb() {
 	router.Run(":" + port)
 }
 
-func createRepositories(connection *bongo.Connection) (institution.Repository, branch.Repository, channel.Repository) {
+func createRepositories(connection *bongo.Connection) (institution.Repository, branch.Repository, electronicchannel.Repository) {
 	institutionRepository := institution.NewRepository(connection.Collection("institution"))
 	branchRepository := branch.NewRepository(connection.Collection("branch"))
-	channelRepository := channel.NewRepository(connection.Collection("channel"))
+	electronicChannelRepository := electronicchannel.NewRepository(connection.Collection("electronicChannel"))
 
-	return institutionRepository, branchRepository, channelRepository
+	return institutionRepository, branchRepository, electronicChannelRepository
 }
 
 func authMiddleware(authService services.Auth) func(*gin.Context) {

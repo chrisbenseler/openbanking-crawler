@@ -1,8 +1,8 @@
-package channel
+package electronicchannel
 
 import "openbankingcrawler/common"
 
-//Service channel service
+//Service electronicchannel service
 type Service interface {
 	DeleteAllFromInstitution(string) common.CustomError
 	InsertMany([]Entity, string) common.CustomError
@@ -27,18 +27,18 @@ func (s *service) DeleteAllFromInstitution(InstitutionID string) common.CustomEr
 	deleteErr := s.repository.DeleteMany(InstitutionID)
 
 	if deleteErr != nil {
-		return common.NewInternalServerError("Could not delete channels from institution", deleteErr)
+		return common.NewInternalServerError("Could not delete electronicChannels from institution", deleteErr)
 	}
 
 	return nil
 }
 
-//InsertMany insert many channels in instition
-func (s *service) InsertMany(channels []Entity, institututionID string) common.CustomError {
+//InsertMany insert many electronicChannels in instition
+func (s *service) InsertMany(electronicChannels []Entity, institututionID string) common.CustomError {
 
-	for _, channel := range channels {
-		channel.InstitutionID = institututionID
-		s.repository.Save(channel)
+	for _, electronicChannel := range electronicChannels {
+		electronicChannel.InstitutionID = institututionID
+		s.repository.Save(electronicChannel)
 	}
 
 	return nil

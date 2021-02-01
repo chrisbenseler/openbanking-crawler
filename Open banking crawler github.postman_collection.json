@@ -245,7 +245,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:3000/api/institutions/5fc78a4909114e39ab957bbe/channels/update",
+					"raw": "http://localhost:3000/api/institutions/60181e6e09114e99b2e7ff22/electronic-channels/update",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -254,8 +254,8 @@
 					"path": [
 						"api",
 						"institutions",
-						"5fc78a4909114e39ab957bbe",
-						"channels",
+						"60181e6e09114e99b2e7ff22",
+						"electronic-channels",
 						"update"
 					]
 				}
@@ -345,8 +345,7 @@
 	],
 	"variable": [
 		{
-			"id": "39b5f4d1-07d8-4617-851f-e53a62b17ee1",
-			"key": "auth_token",
+			"id": "5abc114b-ffb4-4983-810f-652d73e5823d",
 			"value": ""
 		}
 	],

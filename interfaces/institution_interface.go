@@ -3,7 +3,7 @@ package interfaces
 import (
 	"openbankingcrawler/common"
 	"openbankingcrawler/domain/branch"
-	"openbankingcrawler/domain/channel"
+	"openbankingcrawler/domain/electronicchannel"
 	"openbankingcrawler/domain/institution"
 	"openbankingcrawler/dtos"
 	"openbankingcrawler/services"
@@ -16,25 +16,25 @@ type InstitutionInterface interface {
 	Delete(string) common.CustomError
 	Get(string) (*dtos.Institution, common.CustomError)
 	UpdateBranches(string) common.CustomError
-	UpdateChannels(string) common.CustomError
+	UpdateElectronicChannels(string) common.CustomError
 	Update(string, string) (*dtos.Institution, common.CustomError)
 }
 
 type institutionInterface struct {
-	institutionService institution.Service
-	branchService      branch.Service
-	channelService     channel.Service
-	crawler            services.Crawler
+	institutionService       institution.Service
+	branchService            branch.Service
+	electronicChannelService electronicchannel.Service
+	crawler                  services.Crawler
 }
 
 //NewInstitution create a new interface for institutions
-func NewInstitution(institutionService institution.Service, branchService branch.Service, channelService channel.Service, crawler services.Crawler) InstitutionInterface {
+func NewInstitution(institutionService institution.Service, branchService branch.Service, electronicChannelService electronicchannel.Service, crawler services.Crawler) InstitutionInterface {
 
 	return &institutionInterface{
-		institutionService: institutionService,
-		branchService:      branchService,
-		channelService:     channelService,
-		crawler:            crawler,
+		institutionService:       institutionService,
+		branchService:            branchService,
+		electronicChannelService: electronicChannelService,
+		crawler:                  crawler,
 	}
 }
 
@@ -85,7 +85,7 @@ func (i *institutionInterface) Delete(id string) common.CustomError {
 		return deleteError
 	}
 
-	deleteError = i.channelService.DeleteAllFromInstitution(id)
+	deleteError = i.electronicChannelService.DeleteAllFromInstitution(id)
 
 	if deleteError != nil {
 		return deleteError
@@ -129,8 +129,8 @@ func (i *institutionInterface) UpdateBranches(id string) common.CustomError {
 
 }
 
-//UpdateChannels update channels from institution
-func (i *institutionInterface) UpdateChannels(id string) common.CustomError {
+//UpdateElectronicChannels update electronicChannels from institution
+func (i *institutionInterface) UpdateElectronicChannels(id string) common.CustomError {
 
 	institution, err := i.institutionService.Read(id)
 
@@ -138,19 +138,19 @@ func (i *institutionInterface) UpdateChannels(id string) common.CustomError {
 		return err
 	}
 
-	channels, crawlErr := i.crawler.Channels(institution.BaseURL)
+	electronicChannels, crawlErr := i.crawler.ElectronicChannels(institution.BaseURL)
 
 	if crawlErr != nil {
 		return crawlErr
 	}
 
-	delErr := i.channelService.DeleteAllFromInstitution(id)
+	delErr := i.electronicChannelService.DeleteAllFromInstitution(id)
 
 	if delErr != nil {
 		return delErr
 	}
 
-	insertErr := i.channelService.InsertMany(*channels, id)
+	insertErr := i.electronicChannelService.InsertMany(*electronicChannels, id)
 	if insertErr != nil {
 		return insertErr
 	}

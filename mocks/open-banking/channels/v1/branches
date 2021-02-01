@@ -153,11 +153,11 @@
         }
     },
     "links": {
-        "self": "https://api.banco.com.br/open-banking/channels/v1/branches",
-        "first": "https://api.banco.com.br/open-banking/channels/v1/branches",
+        "self": "https://api.banco.com.br/open-banking/electronicChannels/v1/branches",
+        "first": "https://api.banco.com.br/open-banking/electronicChannels/v1/branches",
         "prev": "null",
         "next": "null",
-        "last": "https://api.banco.com.br/open-banking/channels/v1/branches"
+        "last": "https://api.banco.com.br/open-banking/electronicChannels/v1/branches"
     },
     "meta": {
         "totalRecords": 1,
