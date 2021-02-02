@@ -2,6 +2,7 @@ package adapters
 
 import (
 	"openbankingcrawler/interfaces"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -123,14 +124,20 @@ func (ctrl *controller) GetBranches(c *gin.Context) {
 
 	id := c.Param("id")
 
-	branches, err := ctrl.branchInterface.GetFromInstitution(id)
+	page, errQuery := strconv.Atoi(c.Query("page"))
+
+	if errQuery != nil {
+		page = 1
+	}
+
+	branches, pagination, err := ctrl.branchInterface.GetFromInstitution(id, page)
 
 	if err != nil {
 		c.JSON(err.Status(), gin.H{"error": err.Message()})
 		return
 	}
 
-	c.JSON(200, branches)
+	c.JSON(200, gin.H{"branches": branches, "pagination": pagination})
 
 }
 

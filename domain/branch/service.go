@@ -1,12 +1,15 @@
 package branch
 
-import "openbankingcrawler/common"
+import (
+	"openbankingcrawler/common"
+	"openbankingcrawler/domain/subentities"
+)
 
 //Service branch service
 type Service interface {
 	DeleteAllFromInstitution(string) common.CustomError
 	InsertMany([]Entity, string) common.CustomError
-	FindByInstitution(string) ([]Entity, common.CustomError)
+	FindByInstitution(string, int) ([]Entity, *subentities.Pagination, common.CustomError)
 }
 
 type service struct {
@@ -45,6 +48,6 @@ func (s *service) InsertMany(branches []Entity, institututionID string) common.C
 }
 
 //FindByInstitution insert many branches in instition
-func (s *service) FindByInstitution(institututionID string) ([]Entity, common.CustomError) {
-	return s.repository.FindByInstitution(institututionID)
+func (s *service) FindByInstitution(institututionID string, page int) ([]Entity, *subentities.Pagination, common.CustomError) {
+	return s.repository.FindByInstitution(institututionID, page)
 }

@@ -2,6 +2,7 @@ package branch
 
 import (
 	"openbankingcrawler/common"
+	"openbankingcrawler/domain/subentities"
 
 	"github.com/globalsign/mgo/bson"
 	"github.com/go-bongo/bongo"
@@ -11,7 +12,7 @@ import (
 type Repository interface {
 	Save(Entity) error
 	DeleteMany(string) error
-	FindByInstitution(string) ([]Entity, common.CustomError)
+	FindByInstitution(string, int) ([]Entity, *subentities.Pagination, common.CustomError)
 }
 
 type branchRepository struct {
@@ -38,20 +39,30 @@ func (r *branchRepository) DeleteMany(institutionID string) error {
 }
 
 //FindByInstitution find all branches from an institution
-func (r *branchRepository) FindByInstitution(institutionID string) ([]Entity, common.CustomError) {
+func (r *branchRepository) FindByInstitution(institutionID string, page int) ([]Entity, *subentities.Pagination, common.CustomError) {
 	results := r.dao.Find(bson.M{"institutionid": institutionID})
 
+	info, _ := results.Paginate(25, page)
+
 	if results.Error != nil {
-		return nil, common.NewInternalServerError("Error on database", results.Error)
+		return nil, nil, common.NewInternalServerError("Error on database", results.Error)
 	}
 
-	branch := &Entity{}
+	// branch := &Entity{}
 
-	branches := make([]Entity, 0)
+	branches := make([]Entity, info.RecordsOnPage)
 
-	for results.Next(branch) {
-		branches = append(branches, *branch)
+	for i := 0; i < info.RecordsOnPage; i++ {
+		_ = results.Next(&branches[i])
 	}
 
-	return branches, nil
+	pagination := subentities.Pagination{Total: info.TotalPages, Current: info.Current}
+
+	return branches, &pagination, nil
+
+	//	for info.RecordsOnPage.Next(branch) {
+	//		branches = append(branches, *branch)
+	//	}
+
+	// return branches, nil
 }
