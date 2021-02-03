@@ -2,6 +2,7 @@ package electronicchannel
 
 import (
 	"openbankingcrawler/common"
+	"openbankingcrawler/domain/subentities"
 
 	"github.com/globalsign/mgo/bson"
 	"github.com/go-bongo/bongo"
@@ -11,7 +12,7 @@ import (
 type Repository interface {
 	Save(Entity) error
 	DeleteMany(string) error
-	FindByInstitution(string) ([]Entity, common.CustomError)
+	FindByInstitution(string, int) ([]Entity, *subentities.Pagination, common.CustomError)
 }
 
 type electronicChannelRepository struct {
@@ -37,20 +38,22 @@ func (r *electronicChannelRepository) DeleteMany(institutionID string) error {
 }
 
 //FindByInstitution find all electronicChannels from an institution
-func (r *electronicChannelRepository) FindByInstitution(institutionID string) ([]Entity, common.CustomError) {
+func (r *electronicChannelRepository) FindByInstitution(institutionID string, page int) ([]Entity, *subentities.Pagination, common.CustomError) {
 	results := r.dao.Find(bson.M{"institutionid": institutionID})
 
+	info, _ := results.Paginate(25, page)
+
 	if results.Error != nil {
-		return nil, common.NewInternalServerError("Error on database", results.Error)
+		return nil, nil, common.NewInternalServerError("Error on database", results.Error)
 	}
 
-	electronicChannel := &Entity{}
+	electronicChannels := make([]Entity, info.RecordsOnPage)
 
-	electronicChannels := make([]Entity, 0)
-
-	for results.Next(electronicChannel) {
-		electronicChannels = append(electronicChannels, *electronicChannel)
+	for i := 0; i < info.RecordsOnPage; i++ {
+		_ = results.Next(&electronicChannels[i])
 	}
 
-	return electronicChannels, nil
+	pagination := subentities.Pagination{Total: info.TotalPages, Current: info.Current}
+
+	return electronicChannels, &pagination, nil
 }

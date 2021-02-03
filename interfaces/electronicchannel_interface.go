@@ -3,11 +3,12 @@ package interfaces
 import (
 	"openbankingcrawler/common"
 	"openbankingcrawler/domain/electronicchannel"
+	"openbankingcrawler/domain/subentities"
 )
 
 //ElectronicChannelInterface interface
 type ElectronicChannelInterface interface {
-	GetFromInstitution(string) ([]electronicchannel.Entity, common.CustomError)
+	GetFromInstitution(string, int) ([]electronicchannel.Entity, *subentities.Pagination, common.CustomError)
 }
 
 type electronicChannelInterface struct {
@@ -23,6 +24,6 @@ func NewChannel(electronicChannelService electronicchannel.Service) ElectronicCh
 }
 
 //GetFromInstitution get electronicChannels from institutution
-func (c *electronicChannelInterface) GetFromInstitution(id string) ([]electronicchannel.Entity, common.CustomError) {
-	return c.electronicChannelService.FindByInstitution(id)
+func (c *electronicChannelInterface) GetFromInstitution(id string, page int) ([]electronicchannel.Entity, *subentities.Pagination, common.CustomError) {
+	return c.electronicChannelService.FindByInstitution(id, page)
 }

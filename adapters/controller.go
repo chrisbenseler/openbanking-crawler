@@ -163,13 +163,19 @@ func (ctrl *controller) GetElectronicChannels(c *gin.Context) {
 
 	id := c.Param("id")
 
-	electronicChannels, err := ctrl.electronicChannelInterface.GetFromInstitution(id)
+	page, errQuery := strconv.Atoi(c.Query("page"))
+
+	if errQuery != nil {
+		page = 1
+	}
+
+	electronicChannels, pagination, err := ctrl.electronicChannelInterface.GetFromInstitution(id, page)
 
 	if err != nil {
 		c.JSON(err.Status(), gin.H{"error": err.Message()})
 		return
 	}
 
-	c.JSON(200, electronicChannels)
+	c.JSON(200, gin.H{"electronicChannels": electronicChannels, "pagination": pagination})
 
 }

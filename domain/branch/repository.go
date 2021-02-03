@@ -48,8 +48,6 @@ func (r *branchRepository) FindByInstitution(institutionID string, page int) ([]
 		return nil, nil, common.NewInternalServerError("Error on database", results.Error)
 	}
 
-	// branch := &Entity{}
-
 	branches := make([]Entity, info.RecordsOnPage)
 
 	for i := 0; i < info.RecordsOnPage; i++ {
@@ -60,9 +58,4 @@ func (r *branchRepository) FindByInstitution(institutionID string, page int) ([]
 
 	return branches, &pagination, nil
 
-	//	for info.RecordsOnPage.Next(branch) {
-	//		branches = append(branches, *branch)
-	//	}
-
-	// return branches, nil
 }

@@ -14,11 +14,23 @@ type branchIdentification struct {
 }
 
 type branchPostalAddress struct {
-	Address            string `json:"address"`
-	DistrictName       string `json:"districtName"`
-	TownName           string `json:"townName"`
-	CountrySubDivision string `json:"countrySubDivision"`
-	PostCode           string `json:"postCode"`
+	Address               string `json:"address"`
+	DistrictName          string `json:"districtName"`
+	TownName              string `json:"townName"`
+	CountrySubDivision    string `json:"countrySubDivision"`
+	PostCode              string `json:"postCode"`
+	GeographicCoordinates struct {
+		Latitude  float32 `json:"latitude"`
+		Longitude float32 `json:"longitude"`
+	} `json:"geographicCoordinates"`
+}
+
+//Entity branch entity
+type Entity struct {
+	bongo.DocumentBase `bson:",inline"`
+	InstitutionID      string               `json:"institutionid"`
+	Identification     branchIdentification `json:"identification"`
+	PostalAddress      branchPostalAddress  `json:"postalAddress"`
 	Availability       struct {
 		Standards []struct {
 			Weekday     string `json:"weekday"`
@@ -28,19 +40,11 @@ type branchPostalAddress struct {
 		Exception         string `json:"exception"`
 		AllowPublicAccess bool   `json:"allowPublicAccess"`
 	} `json:"availability"`
-	Phones  []subentities.Phone `json:"phones"`
-	Service struct {
+	Phones   []subentities.Phone `json:"phones"`
+	Services struct {
 		Codes          []string `json:"codes"`
 		AdditionalInfo string   `json:"additionalInfo"`
-	} `json:"service"`
-}
-
-//Entity branch entity
-type Entity struct {
-	bongo.DocumentBase `bson:",inline"`
-	InstitutionID      string               `json:"institutionid"`
-	Identification     branchIdentification `json:"identification"`
-	PostalAddress      branchPostalAddress  `json:"postalAddress"`
+	} `json:"services"`
 }
 
 //NewEntity create a new branch entity

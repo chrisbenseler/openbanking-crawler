@@ -3,14 +3,15 @@ package electronicchannel
 import "github.com/go-bongo/bongo"
 
 type electronicChannelIdentification struct {
-	Type           string `json:"type"`
-	AdditionalInfo string `json:"additionalInfo"`
-	URL            string `json:"url"`
+	Type           string   `json:"type"`
+	AdditionalInfo string   `json:"additionalInfo"`
+	URLS           []string `json:"urls"`
 }
 
 type electronicChannelService struct {
-	Codes          []string `json:"codes"`
-	AdditionalInfo string   `json:"additionalInfo"`
+	Code           string `json:"code"`
+	Name           string `json:"name"`
+	AdditionalInfo string `json:"additionalInfo"`
 }
 
 //Entity branch entity
@@ -18,7 +19,7 @@ type Entity struct {
 	bongo.DocumentBase `bson:",inline"`
 	InstitutionID      string                          `json:"institutionid"`
 	Identification     electronicChannelIdentification `json:"identification"`
-	Service            electronicChannelService        `json:"service"`
+	Services           []electronicChannelService      `json:"services"`
 }
 
 //NewEntity create a new electronicchannel entity
