@@ -17,6 +17,8 @@ type Controller interface {
 	GetBranches(*gin.Context)
 	GetElectronicChannels(c *gin.Context)
 	UpdateInstitutionElectronicChannels(c *gin.Context)
+	GetPersonalCreditCards(c *gin.Context)
+	UpdatePersonalCreditCards(c *gin.Context)
 
 	GetPersonalLoans(c *gin.Context)
 	UpdatePersonalLoans(c *gin.Context)
@@ -161,7 +163,7 @@ func (ctrl *controller) GetElectronicChannels(c *gin.Context) {
 
 }
 
-//UpdateInstitution update an institution electronic electronicChannels controller
+//UpdatePersonalLoans update an institution electronic electronicChannels controller
 func (ctrl *controller) UpdatePersonalLoans(c *gin.Context) {
 	id := c.Param("id")
 	go ctrl.institutionInterface.UpdatePersonalLoans(id)
@@ -187,5 +189,34 @@ func (ctrl *controller) GetPersonalLoans(c *gin.Context) {
 	}
 
 	c.JSON(200, gin.H{"personalLoans": personalLoans, "pagination": pagination})
+
+}
+
+//UpdatePersonalCreditCards update an institution credit cards controller
+func (ctrl *controller) UpdatePersonalCreditCards(c *gin.Context) {
+	id := c.Param("id")
+	go ctrl.institutionInterface.UpdatePersonalCreditCards(id)
+	c.JSON(200, gin.H{})
+}
+
+//GetPersonalCreditCards get personal credit cards from institution controller
+func (ctrl *controller) GetPersonalCreditCards(c *gin.Context) {
+
+	id := c.Param("id")
+
+	page, errQuery := strconv.Atoi(c.Query("page"))
+
+	if errQuery != nil {
+		page = 1
+	}
+
+	personalCreditCards, pagination, err := ctrl.productsServicesInterface.GetPersonalCreditCards(id, page)
+
+	if err != nil {
+		c.JSON(err.Status(), gin.H{"error": err.Message()})
+		return
+	}
+
+	c.JSON(200, gin.H{"personalCreditCards": personalCreditCards, "pagination": pagination})
 
 }

@@ -38,8 +38,8 @@ type Applications struct {
 	Indexer   Indexer   `json:"indexer"`
 }
 
-//InterestRates interests rates
-type InterestRates struct {
+//Rates interests rates
+type Rates struct {
 	ReferentialRateIndexer string         `json:"referentialRateIndexer"`
 	Rate                   string         `json:"rate"`
 	Applications           []Applications `json:"applications"`

@@ -8,6 +8,7 @@ import (
 	"openbankingcrawler/common"
 	"openbankingcrawler/domain/branch"
 	"openbankingcrawler/domain/electronicchannel"
+	"openbankingcrawler/domain/personalcreditcard"
 	"openbankingcrawler/domain/personalloan"
 	"strconv"
 )
@@ -17,6 +18,7 @@ type Crawler interface {
 	Branches(string, int, []branch.Entity) (*[]branch.Entity, common.CustomError)
 	ElectronicChannels(string, int, []electronicchannel.Entity) (*[]electronicchannel.Entity, common.CustomError)
 	PersonalLoans(string, int, []personalloan.Entity) (*[]personalloan.Entity, common.CustomError)
+	PersonalCreditCards(string, int, []personalcreditcard.Entity) (*[]personalcreditcard.Entity, common.CustomError)
 }
 
 type crawler struct {
@@ -139,12 +141,50 @@ func (s *crawler) PersonalLoans(baseURL string, page int, accumulator []personal
 
 }
 
+//PersonalLoans crawl personal loans from institution
+func (s *crawler) PersonalCreditCards(baseURL string, page int, accumulator []personalcreditcard.Entity) (*[]personalcreditcard.Entity, common.CustomError) {
+
+	fmt.Println("Start crawl personal credit cards for", baseURL, page)
+
+	body, _ := s.do(baseURL, "products-services/v1/personal-credit-cards", page)
+
+	jsonData := &personalCreditCardJSON{}
+
+	metaInfo := &metaInfoJSON{}
+	json.Unmarshal(body, &metaInfo)
+
+	jsonUnmarshallErr := json.Unmarshal(body, &jsonData)
+
+	if jsonUnmarshallErr != nil {
+		fmt.Println(jsonUnmarshallErr)
+		return nil, common.NewInternalServerError("Unable to unmarshall data", jsonUnmarshallErr)
+	}
+
+	personalcreditcards := accumulator
+
+	for i := range jsonData.Data.Brand.Companies {
+		company := jsonData.Data.Brand.Companies[i]
+		result := company.PersonalCreditCards
+
+		personalcreditcards = append(personalcreditcards, result...)
+	}
+
+	if metaInfo.Meta.TotalPages > page {
+		return s.PersonalCreditCards(baseURL, page+1, personalcreditcards)
+	}
+
+	fmt.Println("End crawl personal credit cards for", baseURL)
+
+	return &personalcreditcards, nil
+
+}
+
 func (s *crawler) do(baseURL string, url string, page int) ([]byte, common.CustomError) {
 
 	resp, err := s.httpClient.Get(baseURL + "/open-banking/" + url + "?page-size=50&page=" + strconv.Itoa(page))
 
 	if err != nil {
-		return nil, common.NewInternalServerError("Unable to crawl personalloan from institution", err)
+		return nil, common.NewInternalServerError("Unable to crawl from institution", err)
 	}
 
 	defer resp.Body.Close()
@@ -178,6 +218,16 @@ type personalLoanJSON struct {
 		Brand struct {
 			Companies []struct {
 				PersonalLoans []personalloan.Entity `json:"personalLoans"`
+			} `json:"companies"`
+		} `json:"brand"`
+	} `json:"data"`
+}
+
+type personalCreditCardJSON struct {
+	Data struct {
+		Brand struct {
+			Companies []struct {
+				PersonalCreditCards []personalcreditcard.Entity `json:"personalCreditCards"`
 			} `json:"companies"`
 		} `json:"brand"`
 	} `json:"data"`
