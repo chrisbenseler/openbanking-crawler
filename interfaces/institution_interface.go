@@ -5,6 +5,7 @@ import (
 	"openbankingcrawler/domain/branch"
 	"openbankingcrawler/domain/electronicchannel"
 	"openbankingcrawler/domain/institution"
+	"openbankingcrawler/domain/personalloan"
 	"openbankingcrawler/dtos"
 	"openbankingcrawler/services"
 )
@@ -18,22 +19,25 @@ type InstitutionInterface interface {
 	UpdateBranches(string) common.CustomError
 	UpdateElectronicChannels(string) common.CustomError
 	Update(string, string) (*dtos.Institution, common.CustomError)
+	UpdatePersonalLoans(string) common.CustomError
 }
 
 type institutionInterface struct {
 	institutionService       institution.Service
 	branchService            branch.Service
 	electronicChannelService electronicchannel.Service
+	personalLoanService      personalloan.Service
 	crawler                  services.Crawler
 }
 
 //NewInstitution create a new interface for institutions
-func NewInstitution(institutionService institution.Service, branchService branch.Service, electronicChannelService electronicchannel.Service, crawler services.Crawler) InstitutionInterface {
+func NewInstitution(institutionService institution.Service, branchService branch.Service, electronicChannelService electronicchannel.Service, personalLoanService personalloan.Service, crawler services.Crawler) InstitutionInterface {
 
 	return &institutionInterface{
 		institutionService:       institutionService,
 		branchService:            branchService,
 		electronicChannelService: electronicChannelService,
+		personalLoanService:      personalLoanService,
 		crawler:                  crawler,
 	}
 }
@@ -151,6 +155,36 @@ func (i *institutionInterface) UpdateElectronicChannels(id string) common.Custom
 	}
 
 	insertErr := i.electronicChannelService.InsertMany(*electronicChannels, id)
+	if insertErr != nil {
+		return insertErr
+	}
+
+	return nil
+
+}
+
+//UpdatePersonalLoans update personalLoans from institution
+func (i *institutionInterface) UpdatePersonalLoans(id string) common.CustomError {
+
+	institution, err := i.institutionService.Read(id)
+
+	if err != nil {
+		return err
+	}
+
+	personalLoans, crawlErr := i.crawler.PersonalLoans(institution.BaseURL, 1, []personalloan.Entity{})
+
+	if crawlErr != nil {
+		return crawlErr
+	}
+
+	delErr := i.personalLoanService.DeleteAllFromInstitution(id)
+
+	if delErr != nil {
+		return delErr
+	}
+
+	insertErr := i.personalLoanService.InsertMany(*personalLoans, id)
 	if insertErr != nil {
 		return insertErr
 	}

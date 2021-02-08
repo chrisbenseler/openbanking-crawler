@@ -8,6 +8,7 @@ import (
 	"openbankingcrawler/common"
 	"openbankingcrawler/domain/branch"
 	"openbankingcrawler/domain/electronicchannel"
+	"openbankingcrawler/domain/personalloan"
 	"strconv"
 )
 
@@ -15,6 +16,7 @@ import (
 type Crawler interface {
 	Branches(string, int, []branch.Entity) (*[]branch.Entity, common.CustomError)
 	ElectronicChannels(string, int, []electronicchannel.Entity) (*[]electronicchannel.Entity, common.CustomError)
+	PersonalLoans(string, int, []personalloan.Entity) (*[]personalloan.Entity, common.CustomError)
 }
 
 type crawler struct {
@@ -113,6 +115,48 @@ func (s *crawler) ElectronicChannels(baseURL string, page int, accumulator []ele
 
 }
 
+//PersonalLoans crawl personal loans from institution
+func (s *crawler) PersonalLoans(baseURL string, page int, accumulator []personalloan.Entity) (*[]personalloan.Entity, common.CustomError) {
+
+	resp, err := s.httpClient.Get(baseURL + "/open-banking/products-services/v1/personal-loans?page-size=50&page=" + strconv.Itoa(page))
+
+	if err != nil {
+		return nil, common.NewInternalServerError("Unable to crawl personalloan from institution", err)
+	}
+
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+
+	jsonData := &personalLoanJSON{}
+
+	metaInfo := &metaInfoJSON{}
+	json.Unmarshal(body, &metaInfo)
+
+	jsonUnmarshallErr := json.Unmarshal(body, &jsonData)
+
+	if jsonUnmarshallErr != nil {
+		return nil, common.NewInternalServerError("Unable to unmarshall data", jsonUnmarshallErr)
+	}
+
+	personalloans := accumulator
+
+	for i := range jsonData.Data.Brand.Companies {
+		company := jsonData.Data.Brand.Companies[i]
+		result := company.PersonalLoans
+		personalloans = append(personalloans, result...)
+	}
+
+	if metaInfo.Meta.TotalPages > page {
+		return s.PersonalLoans(baseURL, page+1, personalloans)
+	}
+
+	fmt.Println("end craw personalloans for", baseURL)
+
+	return &personalloans, nil
+
+}
+
 type branchJSON struct {
 	Data struct {
 		Brand struct {
@@ -128,6 +172,16 @@ type electronicChannelJSON struct {
 		Brand struct {
 			Companies []struct {
 				ElectronicChannels []electronicchannel.Entity `json:"electronicChannels"`
+			} `json:"companies"`
+		} `json:"brand"`
+	} `json:"data"`
+}
+
+type personalLoanJSON struct {
+	Data struct {
+		Brand struct {
+			Companies []struct {
+				PersonalLoans []personalloan.Entity `json:"personalLoans"`
 			} `json:"companies"`
 		} `json:"brand"`
 	} `json:"data"`

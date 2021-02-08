@@ -17,23 +17,29 @@ type Controller interface {
 	GetBranches(*gin.Context)
 	GetElectronicChannels(c *gin.Context)
 	UpdateInstitutionElectronicChannels(c *gin.Context)
+
+	GetPersonalLoans(c *gin.Context)
+	UpdatePersonalLoans(c *gin.Context)
 }
 
 type controller struct {
 	institutionInterface       interfaces.InstitutionInterface
 	branchInterface            interfaces.BranchInterface
 	electronicChannelInterface interfaces.ElectronicChannelInterface
+	personalLoanInterface      interfaces.PersonalLoanInterface
 }
 
 //NewController create new controllers
 func NewController(institutionInterface interfaces.InstitutionInterface,
 	branchInterface interfaces.BranchInterface,
-	electronicChannelInterface interfaces.ElectronicChannelInterface) Controller {
+	electronicChannelInterface interfaces.ElectronicChannelInterface,
+	personalLoanInterface interfaces.PersonalLoanInterface) Controller {
 
 	return &controller{
 		institutionInterface:       institutionInterface,
 		branchInterface:            branchInterface,
 		electronicChannelInterface: electronicChannelInterface,
+		personalLoanInterface:      personalLoanInterface,
 	}
 }
 
@@ -66,20 +72,8 @@ func (ctrl *controller) GetInstitution(c *gin.Context) {
 
 //UpdateInstitution update an institution controller
 func (ctrl *controller) UpdateInstitutionBranches(c *gin.Context) {
-
 	id := c.Param("id")
-
-	/*
-		err := ctrl.institutionInterface.UpdateBranches(id)
-
-		if err != nil {
-			c.JSON(err.Status(), gin.H{"error": err.Message()})
-			return
-		}
-
-	*/
 	go ctrl.institutionInterface.UpdateBranches(id)
-
 	c.JSON(200, gin.H{})
 }
 
@@ -144,17 +138,7 @@ func (ctrl *controller) GetBranches(c *gin.Context) {
 //UpdateInstitution update an institution electronic electronicChannels controller
 func (ctrl *controller) UpdateInstitutionElectronicChannels(c *gin.Context) {
 	id := c.Param("id")
-
-	/*
-		err := ctrl.institutionInterface.UpdateElectronicChannels(id)
-
-		if err != nil {
-			c.JSON(err.Status(), gin.H{"error": err.Message()})
-			return
-		}
-	*/
 	go ctrl.institutionInterface.UpdateElectronicChannels(id)
-
 	c.JSON(200, gin.H{})
 }
 
@@ -177,5 +161,34 @@ func (ctrl *controller) GetElectronicChannels(c *gin.Context) {
 	}
 
 	c.JSON(200, gin.H{"electronicChannels": electronicChannels, "pagination": pagination})
+
+}
+
+//UpdateInstitution update an institution electronic electronicChannels controller
+func (ctrl *controller) UpdatePersonalLoans(c *gin.Context) {
+	id := c.Param("id")
+	go ctrl.institutionInterface.UpdatePersonalLoans(id)
+	c.JSON(200, gin.H{})
+}
+
+//GetPersonalLoans get personal loans from institution controller
+func (ctrl *controller) GetPersonalLoans(c *gin.Context) {
+
+	id := c.Param("id")
+
+	page, errQuery := strconv.Atoi(c.Query("page"))
+
+	if errQuery != nil {
+		page = 1
+	}
+
+	personalLoans, pagination, err := ctrl.personalLoanInterface.GetFromInstitution(id, page)
+
+	if err != nil {
+		c.JSON(err.Status(), gin.H{"error": err.Message()})
+		return
+	}
+
+	c.JSON(200, gin.H{"personalLoans": personalLoans, "pagination": pagination})
 
 }
