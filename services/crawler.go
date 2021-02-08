@@ -48,6 +48,7 @@ func (s *crawler) Branches(baseURL string, page int, accumulator []branch.Entity
 	jsonUnmarshallErr := json.Unmarshal(body, &jsonData)
 
 	if jsonUnmarshallErr != nil {
+		fmt.Println(jsonUnmarshallErr)
 		return nil, common.NewInternalServerError("Unable to unmarshall data", jsonUnmarshallErr)
 	}
 
@@ -72,18 +73,22 @@ func (s *crawler) Branches(baseURL string, page int, accumulator []branch.Entity
 //ElectronicChannels crawl electronicChannels from institution
 func (s *crawler) ElectronicChannels(baseURL string, page int, accumulator []electronicchannel.Entity) (*[]electronicchannel.Entity, common.CustomError) {
 
-	fmt.Println("End crawl electronic channels for", baseURL, page)
+	fmt.Println("Start crawl electronic channels for", baseURL, page)
 
 	body, _ := s.do(baseURL, "channels/v1/electronic-channels", page)
 
 	jsonData := &electronicChannelJSON{}
 
 	metaInfo := &metaInfoJSON{}
-	json.Unmarshal(body, &metaInfo)
+	metaInfoErr := json.Unmarshal(body, &metaInfo)
+	if metaInfoErr != nil {
+		fmt.Println(metaInfoErr)
+	}
 
 	jsonUnmarshallErr := json.Unmarshal(body, &jsonData)
 
 	if jsonUnmarshallErr != nil {
+		fmt.Println(jsonUnmarshallErr)
 		return nil, common.NewInternalServerError("Unable to unmarshall data", jsonUnmarshallErr)
 	}
 
@@ -99,7 +104,7 @@ func (s *crawler) ElectronicChannels(baseURL string, page int, accumulator []ele
 		return s.ElectronicChannels(baseURL, page+1, channels)
 	}
 
-	fmt.Println("End craw channels for", baseURL)
+	fmt.Println("End crawl electronic channels for", baseURL)
 
 	return &channels, nil
 
@@ -110,7 +115,11 @@ func (s *crawler) PersonalLoans(baseURL string, page int, accumulator []personal
 
 	fmt.Println("Start crawl personal loans for", baseURL, page)
 
-	body, _ := s.do(baseURL, "products-services/v1/personal-loans", page)
+	body, crawlErr := s.do(baseURL, "products-services/v1/personal-loans", page)
+
+	if crawlErr != nil {
+		fmt.Println(crawlErr)
+	}
 
 	jsonData := &personalLoanJSON{}
 
@@ -120,6 +129,7 @@ func (s *crawler) PersonalLoans(baseURL string, page int, accumulator []personal
 	jsonUnmarshallErr := json.Unmarshal(body, &jsonData)
 
 	if jsonUnmarshallErr != nil {
+		fmt.Println(jsonUnmarshallErr)
 		return nil, common.NewInternalServerError("Unable to unmarshall data", jsonUnmarshallErr)
 	}
 
@@ -181,14 +191,20 @@ func (s *crawler) PersonalCreditCards(baseURL string, page int, accumulator []pe
 
 func (s *crawler) do(baseURL string, url string, page int) ([]byte, common.CustomError) {
 
-	resp, err := s.httpClient.Get(baseURL + "/open-banking/" + url + "?page-size=50&page=" + strconv.Itoa(page))
+	resp, err := s.httpClient.Get(baseURL + "/open-banking/" + url + "?&page=" + strconv.Itoa(page))
+
+	fmt.Println(baseURL + "/open-banking/" + url + "?page=" + strconv.Itoa(page))
 
 	if err != nil {
+		fmt.Println(err)
 		return nil, common.NewInternalServerError("Unable to crawl from institution", err)
 	}
 
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Println(err)
+	}
 	return body, nil
 
 }

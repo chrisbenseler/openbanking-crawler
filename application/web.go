@@ -48,7 +48,7 @@ func NewWeb() {
 		fmt.Println(dbErr)
 	}
 
-	institutionRepository, branchRepository, electronicChannelRepository, personalLoanRepository, personalCreditCardRepository := createRepositories(connection)
+	institutionRepository, branchRepository, electronicChannelRepository, personalLoanRepository, personalCreditCardRepository := CreateRepositories(connection)
 
 	institutionService := institution.NewService(institutionRepository)
 	branchService := branch.NewService(branchRepository)
@@ -78,7 +78,7 @@ func NewWeb() {
 
 	authController := adapters.NewAuthenticateController(authService)
 
-	authRequired := authMiddleware(authService)
+	authRequired := AuthMiddleware(authService)
 
 	apiRoutes.GET("/health_check", func(c *gin.Context) {
 		c.JSON(200, gin.H{"status": "OK"})
@@ -108,7 +108,8 @@ func NewWeb() {
 	router.Run(":" + port)
 }
 
-func createRepositories(connection *bongo.Connection) (institution.Repository, branch.Repository, electronicchannel.Repository, personalloan.Repository, personalcreditcard.Repository) {
+//CreateRepositories CreateRepositories
+func CreateRepositories(connection *bongo.Connection) (institution.Repository, branch.Repository, electronicchannel.Repository, personalloan.Repository, personalcreditcard.Repository) {
 	institutionRepository := institution.NewRepository(connection.Collection("institution"))
 	branchRepository := branch.NewRepository(connection.Collection("branch"))
 	electronicChannelRepository := electronicchannel.NewRepository(connection.Collection("electronicChannel"))
@@ -118,7 +119,8 @@ func createRepositories(connection *bongo.Connection) (institution.Repository, b
 	return institutionRepository, branchRepository, electronicChannelRepository, personalLoanRepository, personalCreditCardRepository
 }
 
-func authMiddleware(authService services.Auth) func(*gin.Context) {
+//AuthMiddleware AuthMiddleware
+func AuthMiddleware(authService services.Auth) func(*gin.Context) {
 	f := func(c *gin.Context) {
 		_, validateErr := authService.ValidateAccessToken(c.Request)
 		if validateErr != nil {

@@ -20,8 +20,8 @@ type branchPostalAddress struct {
 	CountrySubDivision    string `json:"countrySubDivision"`
 	PostCode              string `json:"postCode"`
 	GeographicCoordinates struct {
-		Latitude  float32 `json:"latitude"`
-		Longitude float32 `json:"longitude"`
+		Latitude  string `json:"latitude"`
+		Longitude string `json:"longitude"`
 	} `json:"geographicCoordinates"`
 }
 
@@ -41,9 +41,10 @@ type Entity struct {
 		AllowPublicAccess bool   `json:"allowPublicAccess"`
 	} `json:"availability"`
 	Phones   []subentities.Phone `json:"phones"`
-	Services struct {
-		Codes          []string `json:"codes"`
-		AdditionalInfo string   `json:"additionalInfo"`
+	Services []struct {
+		Name           string `json:"name"`
+		Code           string `json:"code"`
+		AdditionalInfo string `json:"additionalInfo"`
 	} `json:"services"`
 }
 
