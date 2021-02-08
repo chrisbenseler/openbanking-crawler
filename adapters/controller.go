@@ -23,23 +23,20 @@ type Controller interface {
 }
 
 type controller struct {
-	institutionInterface       interfaces.InstitutionInterface
-	branchInterface            interfaces.BranchInterface
-	electronicChannelInterface interfaces.ElectronicChannelInterface
-	personalLoanInterface      interfaces.PersonalLoanInterface
+	institutionInterface      interfaces.InstitutionInterface
+	channelsInterface         interfaces.ChannelsInterface
+	productsServicesInterface interfaces.ProductsServicesInterface
 }
 
 //NewController create new controllers
 func NewController(institutionInterface interfaces.InstitutionInterface,
-	branchInterface interfaces.BranchInterface,
-	electronicChannelInterface interfaces.ElectronicChannelInterface,
-	personalLoanInterface interfaces.PersonalLoanInterface) Controller {
+	channelsInterface interfaces.ChannelsInterface,
+	productsServicesInterface interfaces.ProductsServicesInterface) Controller {
 
 	return &controller{
-		institutionInterface:       institutionInterface,
-		branchInterface:            branchInterface,
-		electronicChannelInterface: electronicChannelInterface,
-		personalLoanInterface:      personalLoanInterface,
+		institutionInterface:      institutionInterface,
+		channelsInterface:         channelsInterface,
+		productsServicesInterface: productsServicesInterface,
 	}
 }
 
@@ -124,7 +121,7 @@ func (ctrl *controller) GetBranches(c *gin.Context) {
 		page = 1
 	}
 
-	branches, pagination, err := ctrl.branchInterface.GetFromInstitution(id, page)
+	branches, pagination, err := ctrl.channelsInterface.GetBranches(id, page)
 
 	if err != nil {
 		c.JSON(err.Status(), gin.H{"error": err.Message()})
@@ -153,7 +150,7 @@ func (ctrl *controller) GetElectronicChannels(c *gin.Context) {
 		page = 1
 	}
 
-	electronicChannels, pagination, err := ctrl.electronicChannelInterface.GetFromInstitution(id, page)
+	electronicChannels, pagination, err := ctrl.channelsInterface.GetElectronicChannels(id, page)
 
 	if err != nil {
 		c.JSON(err.Status(), gin.H{"error": err.Message()})
@@ -182,7 +179,7 @@ func (ctrl *controller) GetPersonalLoans(c *gin.Context) {
 		page = 1
 	}
 
-	personalLoans, pagination, err := ctrl.personalLoanInterface.GetFromInstitution(id, page)
+	personalLoans, pagination, err := ctrl.productsServicesInterface.GetPersonalLoans(id, page)
 
 	if err != nil {
 		c.JSON(err.Status(), gin.H{"error": err.Message()})

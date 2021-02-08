@@ -34,15 +34,9 @@ func NewCrawler(http *http.Client) Crawler {
 //Branches crawl branches from institution
 func (s *crawler) Branches(baseURL string, page int, accumulator []branch.Entity) (*[]branch.Entity, common.CustomError) {
 
-	resp, err := s.httpClient.Get(baseURL + "/open-banking/channels/v1/branches?page-size=50&page=" + strconv.Itoa(page))
+	fmt.Println("Start crawl branches for", baseURL, page)
 
-	if err != nil {
-		return nil, common.NewInternalServerError("Unable to crawl branches from institution", err)
-	}
-
-	defer resp.Body.Close()
-
-	body, err := ioutil.ReadAll(resp.Body)
+	body, _ := s.do(baseURL, "channels/v1/branches", page)
 
 	jsonData := &branchJSON{}
 
@@ -67,7 +61,7 @@ func (s *crawler) Branches(baseURL string, page int, accumulator []branch.Entity
 		return s.Branches(baseURL, page+1, branches)
 	}
 
-	fmt.Println("end craw branches for", baseURL)
+	fmt.Println("End crawl branches for", baseURL)
 
 	return &branches, nil
 
@@ -76,15 +70,9 @@ func (s *crawler) Branches(baseURL string, page int, accumulator []branch.Entity
 //ElectronicChannels crawl electronicChannels from institution
 func (s *crawler) ElectronicChannels(baseURL string, page int, accumulator []electronicchannel.Entity) (*[]electronicchannel.Entity, common.CustomError) {
 
-	resp, err := s.httpClient.Get(baseURL + "/open-banking/channels/v1/electronic-channels?page-size=50&page=" + strconv.Itoa(page))
+	fmt.Println("End crawl electronic channels for", baseURL, page)
 
-	if err != nil {
-		return nil, common.NewInternalServerError("Unable to crawl electronicchannel from institution", err)
-	}
-
-	defer resp.Body.Close()
-
-	body, err := ioutil.ReadAll(resp.Body)
+	body, _ := s.do(baseURL, "channels/v1/electronic-channels", page)
 
 	jsonData := &electronicChannelJSON{}
 
@@ -109,7 +97,7 @@ func (s *crawler) ElectronicChannels(baseURL string, page int, accumulator []ele
 		return s.ElectronicChannels(baseURL, page+1, channels)
 	}
 
-	fmt.Println("end craw channels for", baseURL)
+	fmt.Println("End craw channels for", baseURL)
 
 	return &channels, nil
 
@@ -118,15 +106,9 @@ func (s *crawler) ElectronicChannels(baseURL string, page int, accumulator []ele
 //PersonalLoans crawl personal loans from institution
 func (s *crawler) PersonalLoans(baseURL string, page int, accumulator []personalloan.Entity) (*[]personalloan.Entity, common.CustomError) {
 
-	resp, err := s.httpClient.Get(baseURL + "/open-banking/products-services/v1/personal-loans?page-size=50&page=" + strconv.Itoa(page))
+	fmt.Println("Start crawl personal loans for", baseURL, page)
 
-	if err != nil {
-		return nil, common.NewInternalServerError("Unable to crawl personalloan from institution", err)
-	}
-
-	defer resp.Body.Close()
-
-	body, err := ioutil.ReadAll(resp.Body)
+	body, _ := s.do(baseURL, "products-services/v1/personal-loans", page)
 
 	jsonData := &personalLoanJSON{}
 
@@ -151,9 +133,23 @@ func (s *crawler) PersonalLoans(baseURL string, page int, accumulator []personal
 		return s.PersonalLoans(baseURL, page+1, personalloans)
 	}
 
-	fmt.Println("end craw personalloans for", baseURL)
+	fmt.Println("End crawl personal loans for", baseURL)
 
 	return &personalloans, nil
+
+}
+
+func (s *crawler) do(baseURL string, url string, page int) ([]byte, common.CustomError) {
+
+	resp, err := s.httpClient.Get(baseURL + "/open-banking/" + url + "?page-size=50&page=" + strconv.Itoa(page))
+
+	if err != nil {
+		return nil, common.NewInternalServerError("Unable to crawl personalloan from institution", err)
+	}
+
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	return body, nil
 
 }
 

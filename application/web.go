@@ -59,9 +59,9 @@ func NewWeb() {
 	crawler := services.NewCrawler(&httpClient)
 
 	institutionInterface := interfaces.NewInstitution(institutionService, branchService, electronicChannelService, personalLoanService, crawler)
-	branchInterface := interfaces.NewBranch(branchService)
-	electronicChannelInterface := interfaces.NewChannel(electronicChannelService)
-	personalLoanInterface := interfaces.NewPersonalLoan(personalLoanService)
+
+	channelsInterface := interfaces.NewChannels(branchService, electronicChannelService)
+	productsServicesInterface := interfaces.NewProductsServicesInterface(personalLoanService)
 
 	router := gin.Default()
 	ginConfig := cors.DefaultConfig()
@@ -72,7 +72,7 @@ func NewWeb() {
 
 	apiRoutes := router.Group("/api")
 
-	controller := adapters.NewController(institutionInterface, branchInterface, electronicChannelInterface, personalLoanInterface)
+	controller := adapters.NewController(institutionInterface, channelsInterface, productsServicesInterface)
 
 	authController := adapters.NewAuthenticateController(authService)
 
