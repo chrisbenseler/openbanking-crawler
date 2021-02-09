@@ -1,6 +1,8 @@
 package personalaccount
 
 import (
+	"openbankingcrawler/domain/subentities"
+
 	"github.com/go-bongo/bongo"
 )
 
@@ -9,9 +11,10 @@ type Entity struct {
 	bongo.DocumentBase `bson:",inline"`
 	InstitutionID      string `json:"institutionid"`
 	Type               string `json:"type"`
-	// Fees               subentities.Fees    `json:"fees"`
-	// InterestRates      []subentities.Rates `json:"interestRates"`
-	// TermsConditions    string              `json:"termsConditions"`
+	Fees               struct {
+		PriorityServices []subentities.FeeService `json:"priorityServices"`
+		OtherServices    []subentities.FeeService `json:"otherServices"`
+	} `json:"fees"`
 }
 
 //NewEntity create a new personal load entity

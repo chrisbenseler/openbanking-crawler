@@ -41,8 +41,6 @@ func ForPersonalAccounts(httpCrawlService func(string, string, int) ([]byte, com
 
 	fmt.Println("End crawl personal accounts for", baseURL)
 
-	fmt.Println(personalaccounts)
-
 	return &personalaccounts, nil
 
 }
