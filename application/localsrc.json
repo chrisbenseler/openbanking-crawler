@@ -1,0 +1,27 @@
+{
+    "institutions": [{
+            "name": "banco bv",
+            "baseURL": "https://api-openbanking.bvopen.com.br"
+        },
+        {
+            "name": "itau",
+            "baseURL": "https://api.itau"
+        },
+        {
+            "name": "banco do brasil",
+            "baseURL": "https://opendata.api.bb.com.br"
+        },
+        {
+            "name": "banco safra",
+            "baseURL": "https://api.safra.com.br"
+        },
+        {
+            "name": "btg pactual",
+            "baseURL": "https://btgpactual.openbanking.btgpactual.com"
+        },
+        {
+            "name": "banrisul",
+            "baseURL": "https://openbanking.banrisul.com.br"
+        }
+    ]
+}

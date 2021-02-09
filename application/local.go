@@ -1,7 +1,9 @@
 package application
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"openbankingcrawler/domain/branch"
 	"openbankingcrawler/domain/electronicchannel"
@@ -12,14 +14,20 @@ import (
 	"openbankingcrawler/interfaces"
 	"openbankingcrawler/services"
 	"os"
+	"time"
 
 	"github.com/go-bongo/bongo"
 )
 
-//IF
+//IF IF struct
 type IF struct {
-	name    string
-	baseURL string
+	Name    string `json:"name"`
+	BaseURL string `json:"baseURL"`
+}
+
+//IFs struct - to read from file
+type IFs struct {
+	Institutions []IF `json:"institutions"`
 }
 
 //NewLocal create a new web application
@@ -60,41 +68,48 @@ func NewLocal() {
 
 	institutionInterface := interfaces.NewInstitution(institutionService, branchService, electronicChannelService, personalLoanService, personalCreditCardService, crawler)
 
-	/*
-		authService := services.NewAuthService()
+	ifs := readFile()
 
-		httpClient := http.Client{}
-		crawler := services.NewCrawler(&httpClient)
+	for _, _if := range *ifs {
 
+		ifDTO := dtos.Institution{Name: _if.Name, BaseURL: _if.BaseURL}
 
-		channelsInterface := interfaces.NewChannels(branchService, electronicChannelService)
-		productsServicesInterface := interfaces.NewProductsServicesInterface(personalLoanService, personalCreditCardService)
+		savedIF, _ := institutionService.FindByName(_if.Name)
 
-	*/
-
-	ifs := []IF{
-		IF{name: "banco bv", baseURL: "https://api-openbanking.bvopen.com.br"},
-		IF{name: "itau", baseURL: "https://api.itau"},
-		IF{name: "banco do brasil", baseURL: "https://opendata.api.bb.com.br"},
-		IF{name: "banco safra", baseURL: "https://api.safra.com.br"},
-	}
-
-	for _, _if := range ifs {
-		ifDTO := dtos.Institution{Name: _if.name, BaseURL: _if.baseURL}
-		savedIF, err := institutionService.Create(ifDTO)
-
-		if err != nil {
-			fmt.Println(err)
+		if savedIF == nil {
+			savedIF, _ = institutionService.Create(ifDTO)
 		}
+		institutionService.Update(dtos.Institution{Name: savedIF.Name, BaseURL: _if.BaseURL, ID: savedIF.ID})
 
-		institutionService.Update(dtos.Institution{Name: savedIF.Name, BaseURL: _if.baseURL, ID: savedIF.ID})
+		fmt.Println("Start crawl for", _if.Name)
 
 		go institutionInterface.UpdatePersonalCreditCards(savedIF.ID)
+		time.NewTimer(1 * time.Second)
 		go institutionInterface.UpdatePersonalLoans(savedIF.ID)
+		time.NewTimer(1 * time.Second)
 
 	}
 
 	fmt.Scanln()
 	fmt.Println("done")
 
+}
+
+func readFile() *[]IF {
+	jsonFile, err := os.Open("./application/localsrc.json")
+	// if we os.Open returns an error then handle it
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println("Successfully opened src file")
+	// defer the closing of our jsonFile so that we can parse it later on
+	defer jsonFile.Close()
+	byteValue, _ := ioutil.ReadAll(jsonFile)
+
+	var ifs IFs
+	unmarshallErr := json.Unmarshal(byteValue, &ifs)
+	if unmarshallErr != nil {
+		panic(unmarshallErr)
+	}
+	return &ifs.Institutions
 }

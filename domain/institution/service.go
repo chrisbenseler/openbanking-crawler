@@ -12,6 +12,7 @@ type Service interface {
 	Read(string) (*dtos.Institution, common.CustomError)
 	Update(dtos.Institution) (*dtos.Institution, common.CustomError)
 	Delete(string) common.CustomError
+	FindByName(string) (*dtos.Institution, common.CustomError)
 }
 
 type service struct {
@@ -82,6 +83,17 @@ func (s *service) Delete(institutionID string) common.CustomError {
 //Read read an institution
 func (s *service) Read(id string) (*dtos.Institution, common.CustomError) {
 	queriedInstitution, err := s.repository.Find(id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &dtos.Institution{Name: queriedInstitution.Name, ID: queriedInstitution.RetrieveID(), BaseURL: queriedInstitution.BaseURL}, nil
+}
+
+//FindByName find an institution by name
+func (s *service) FindByName(name string) (*dtos.Institution, common.CustomError) {
+	queriedInstitution, err := s.repository.FindByName(name)
 
 	if err != nil {
 		return nil, err
