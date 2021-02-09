@@ -4,11 +4,6 @@ import (
 	"fmt"
 	"net/http"
 	"openbankingcrawler/adapters"
-	"openbankingcrawler/domain/branch"
-	"openbankingcrawler/domain/electronicchannel"
-	"openbankingcrawler/domain/institution"
-	"openbankingcrawler/domain/personalcreditcard"
-	"openbankingcrawler/domain/personalloan"
 	"openbankingcrawler/interfaces"
 	"openbankingcrawler/services"
 	"os"
@@ -48,19 +43,19 @@ func NewWeb() {
 		fmt.Println(dbErr)
 	}
 
-	institutionRepository, branchRepository, electronicChannelRepository, personalLoanRepository, personalCreditCardRepository := CreateRepositories(connection)
+	institutionService,
+		branchService,
+		electronicChannelService,
+		personalLoanService,
+		personalCreditCardService,
+		personalAccountService := CreateServices(connection)
 
-	institutionService := institution.NewService(institutionRepository)
-	branchService := branch.NewService(branchRepository)
-	electronicChannelService := electronicchannel.NewService(electronicChannelRepository)
-	personalLoanService := personalloan.NewService(personalLoanRepository)
-	personalCreditCardService := personalcreditcard.NewService(personalCreditCardRepository)
 	authService := services.NewAuthService()
 
 	httpClient := http.Client{}
 	crawler := services.NewCrawler(&httpClient)
 
-	institutionInterface := interfaces.NewInstitution(institutionService, branchService, electronicChannelService, personalLoanService, personalCreditCardService, crawler)
+	institutionInterface := interfaces.NewInstitution(institutionService, branchService, electronicChannelService, personalLoanService, personalCreditCardService, personalAccountService, crawler)
 
 	channelsInterface := interfaces.NewChannels(branchService, electronicChannelService)
 	productsServicesInterface := interfaces.NewProductsServicesInterface(personalLoanService, personalCreditCardService)
@@ -106,17 +101,6 @@ func NewWeb() {
 	router.Static("/open-banking", "./mocks/open-banking")
 
 	router.Run(":" + port)
-}
-
-//CreateRepositories CreateRepositories
-func CreateRepositories(connection *bongo.Connection) (institution.Repository, branch.Repository, electronicchannel.Repository, personalloan.Repository, personalcreditcard.Repository) {
-	institutionRepository := institution.NewRepository(connection.Collection("institution"))
-	branchRepository := branch.NewRepository(connection.Collection("branch"))
-	electronicChannelRepository := electronicchannel.NewRepository(connection.Collection("electronicChannel"))
-	personalLoanRepository := personalloan.NewRepository(connection.Collection("personalLoan"))
-	personalCreditCardRepository := personalcreditcard.NewRepository(connection.Collection("personalCreditCard"))
-
-	return institutionRepository, branchRepository, electronicChannelRepository, personalLoanRepository, personalCreditCardRepository
 }
 
 //AuthMiddleware AuthMiddleware

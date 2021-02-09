@@ -8,8 +8,10 @@ import (
 	"openbankingcrawler/common"
 	"openbankingcrawler/domain/branch"
 	"openbankingcrawler/domain/electronicchannel"
+	"openbankingcrawler/domain/personalaccount"
 	"openbankingcrawler/domain/personalcreditcard"
 	"openbankingcrawler/domain/personalloan"
+	"openbankingcrawler/services/crawlerservices"
 	"strconv"
 )
 
@@ -19,6 +21,8 @@ type Crawler interface {
 	ElectronicChannels(string, int, []electronicchannel.Entity) (*[]electronicchannel.Entity, common.CustomError)
 	PersonalLoans(string, int, []personalloan.Entity) (*[]personalloan.Entity, common.CustomError)
 	PersonalCreditCards(string, int, []personalcreditcard.Entity) (*[]personalcreditcard.Entity, common.CustomError)
+	PersonalAccounts(string, int, []personalaccount.Entity) (*[]personalaccount.Entity, common.CustomError)
+	Do(baseURL string, url string, page int) ([]byte, common.CustomError)
 }
 
 type crawler struct {
@@ -38,11 +42,11 @@ func (s *crawler) Branches(baseURL string, page int, accumulator []branch.Entity
 
 	fmt.Println("Start crawl branches for", baseURL, page)
 
-	body, _ := s.do(baseURL, "channels/v1/branches", page)
+	body, _ := s.Do(baseURL, "channels/v1/branches", page)
 
 	jsonData := &branchJSON{}
 
-	metaInfo := &metaInfoJSON{}
+	metaInfo := &MetaInfoJSON{}
 	json.Unmarshal(body, &metaInfo)
 
 	jsonUnmarshallErr := json.Unmarshal(body, &jsonData)
@@ -75,11 +79,11 @@ func (s *crawler) ElectronicChannels(baseURL string, page int, accumulator []ele
 
 	fmt.Println("Start crawl electronic channels for", baseURL, page)
 
-	body, _ := s.do(baseURL, "channels/v1/electronic-channels", page)
+	body, _ := s.Do(baseURL, "channels/v1/electronic-channels", page)
 
 	jsonData := &electronicChannelJSON{}
 
-	metaInfo := &metaInfoJSON{}
+	metaInfo := &MetaInfoJSON{}
 	metaInfoErr := json.Unmarshal(body, &metaInfo)
 	if metaInfoErr != nil {
 		fmt.Println(metaInfoErr)
@@ -112,84 +116,29 @@ func (s *crawler) ElectronicChannels(baseURL string, page int, accumulator []ele
 
 //PersonalLoans crawl personal loans from institution
 func (s *crawler) PersonalLoans(baseURL string, page int, accumulator []personalloan.Entity) (*[]personalloan.Entity, common.CustomError) {
-
 	fmt.Println("Start crawl personal loans for", baseURL, page)
-
-	body, crawlErr := s.do(baseURL, "products-services/v1/personal-loans", page)
-
-	if crawlErr != nil {
-		fmt.Println(crawlErr)
-	}
-
-	jsonData := &personalLoanJSON{}
-
-	metaInfo := &metaInfoJSON{}
-	json.Unmarshal(body, &metaInfo)
-
-	jsonUnmarshallErr := json.Unmarshal(body, &jsonData)
-
-	if jsonUnmarshallErr != nil {
-		fmt.Println(jsonUnmarshallErr)
-		return nil, common.NewInternalServerError("Unable to unmarshall data", jsonUnmarshallErr)
-	}
-
-	personalloans := accumulator
-
-	for i := range jsonData.Data.Brand.Companies {
-		company := jsonData.Data.Brand.Companies[i]
-		result := company.PersonalLoans
-		personalloans = append(personalloans, result...)
-	}
-
-	if metaInfo.Meta.TotalPages > page {
-		return s.PersonalLoans(baseURL, page+1, personalloans)
-	}
-
+	result, err := crawlerservices.ForPersonalLoans(s.Do, baseURL, page, accumulator)
 	fmt.Println("End crawl personal loans for", baseURL)
-
-	return &personalloans, nil
-
+	return result, err
 }
 
 //PersonalLoans crawl personal loans from institution
 func (s *crawler) PersonalCreditCards(baseURL string, page int, accumulator []personalcreditcard.Entity) (*[]personalcreditcard.Entity, common.CustomError) {
-
-	fmt.Println("Start crawl personal credit cards for", baseURL, page)
-
-	body, _ := s.do(baseURL, "products-services/v1/personal-credit-cards", page)
-
-	jsonData := &personalCreditCardJSON{}
-
-	metaInfo := &metaInfoJSON{}
-	json.Unmarshal(body, &metaInfo)
-
-	jsonUnmarshallErr := json.Unmarshal(body, &jsonData)
-
-	if jsonUnmarshallErr != nil {
-		fmt.Println(jsonUnmarshallErr)
-		return nil, common.NewInternalServerError("Unable to unmarshall data", jsonUnmarshallErr)
-	}
-
-	personalcreditcards := accumulator
-
-	for i := range jsonData.Data.Brand.Companies {
-		company := jsonData.Data.Brand.Companies[i]
-		result := company.PersonalCreditCards
-
-		personalcreditcards = append(personalcreditcards, result...)
-	}
-
-	if metaInfo.Meta.TotalPages > page {
-		return s.PersonalCreditCards(baseURL, page+1, personalcreditcards)
-	}
-
-	fmt.Println("End crawl personal credit cards for", baseURL)
-
-	return &personalcreditcards, nil
-
+	fmt.Println("Start crawl personal credit card cards for", baseURL, page)
+	result, err := crawlerservices.ForPersonalCreditCards(s.Do, baseURL, page, accumulator)
+	fmt.Println("End crawl personal credit card for", baseURL)
+	return result, err
 }
 
-func (s *crawler) do(baseURL string, url string, page int) ([]byte, common.CustomError) {
+func (s *crawler) PersonalAccounts(baseURL string, page int, accumulator []personalaccount.Entity) (*[]personalaccount.Entity, common.CustomError) {
+	fmt.Println("Start crawl personal account cards for", baseURL, page)
+	result, err := crawlerservices.ForPersonalAccounts(s.Do, baseURL, page, accumulator)
+	fmt.Println("End crawl personal accounts for", baseURL)
+	return result, err
+}
+
+//Do do
+func (s *crawler) Do(baseURL string, url string, page int) ([]byte, common.CustomError) {
 
 	resp, err := s.httpClient.Get(baseURL + "/open-banking/" + url + "?&page=" + strconv.Itoa(page))
 
@@ -229,27 +178,8 @@ type electronicChannelJSON struct {
 	} `json:"data"`
 }
 
-type personalLoanJSON struct {
-	Data struct {
-		Brand struct {
-			Companies []struct {
-				PersonalLoans []personalloan.Entity `json:"personalLoans"`
-			} `json:"companies"`
-		} `json:"brand"`
-	} `json:"data"`
-}
-
-type personalCreditCardJSON struct {
-	Data struct {
-		Brand struct {
-			Companies []struct {
-				PersonalCreditCards []personalcreditcard.Entity `json:"personalCreditCards"`
-			} `json:"companies"`
-		} `json:"brand"`
-	} `json:"data"`
-}
-
-type metaInfoJSON struct {
+//MetaInfoJSON MetaInfoJSON
+type MetaInfoJSON struct {
 	Meta struct {
 		TotalRecords int `json:"totalRecords"`
 		TotalPages   int `json:"totalPages"`

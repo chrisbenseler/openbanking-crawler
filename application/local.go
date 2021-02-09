@@ -5,11 +5,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"openbankingcrawler/domain/branch"
-	"openbankingcrawler/domain/electronicchannel"
-	"openbankingcrawler/domain/institution"
-	"openbankingcrawler/domain/personalcreditcard"
-	"openbankingcrawler/domain/personalloan"
 	"openbankingcrawler/dtos"
 	"openbankingcrawler/interfaces"
 	"openbankingcrawler/services"
@@ -55,18 +50,17 @@ func NewLocal() {
 		fmt.Println(dbErr)
 	}
 
-	institutionRepository, branchRepository, electronicChannelRepository, personalLoanRepository, personalCreditCardRepository := CreateRepositories(connection)
-
-	institutionService := institution.NewService(institutionRepository)
-	branchService := branch.NewService(branchRepository)
-	electronicChannelService := electronicchannel.NewService(electronicChannelRepository)
-	personalLoanService := personalloan.NewService(personalLoanRepository)
-	personalCreditCardService := personalcreditcard.NewService(personalCreditCardRepository)
+	institutionService,
+		branchService,
+		electronicChannelService,
+		personalLoanService,
+		personalCreditCardService,
+		personalAccountService := CreateServices(connection)
 
 	httpClient := http.Client{}
 	crawler := services.NewCrawler(&httpClient)
 
-	institutionInterface := interfaces.NewInstitution(institutionService, branchService, electronicChannelService, personalLoanService, personalCreditCardService, crawler)
+	institutionInterface := interfaces.NewInstitution(institutionService, branchService, electronicChannelService, personalLoanService, personalCreditCardService, personalAccountService, crawler)
 
 	ifs := readFile()
 
@@ -86,6 +80,8 @@ func NewLocal() {
 		go institutionInterface.UpdatePersonalCreditCards(savedIF.ID)
 		time.NewTimer(1 * time.Second)
 		go institutionInterface.UpdatePersonalLoans(savedIF.ID)
+		time.NewTimer(1 * time.Second)
+		go institutionInterface.UpdatePersonalAccounts(savedIF.ID)
 		time.NewTimer(1 * time.Second)
 
 	}
