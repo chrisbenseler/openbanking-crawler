@@ -3,6 +3,7 @@ package interfaces
 import (
 	"openbankingcrawler/common"
 	"openbankingcrawler/domain/branch"
+	"openbankingcrawler/domain/businessaccount"
 	"openbankingcrawler/domain/electronicchannel"
 	"openbankingcrawler/domain/institution"
 	"openbankingcrawler/domain/personalaccount"
@@ -24,6 +25,7 @@ type InstitutionInterface interface {
 	UpdatePersonalLoans(string) common.CustomError
 	UpdatePersonalCreditCards(string) common.CustomError
 	UpdatePersonalAccounts(string) common.CustomError
+	UpdateBusinessAccounts(string) common.CustomError
 }
 
 type institutionInterface struct {
@@ -33,11 +35,19 @@ type institutionInterface struct {
 	personalLoanService       personalloan.Service
 	personalCreditCardService personalcreditcard.Service
 	personalAccountService    personalaccount.Service
+	businessAccountService    businessaccount.Service
 	crawler                   services.Crawler
 }
 
 //NewInstitution create a new interface for institutions
-func NewInstitution(institutionService institution.Service, branchService branch.Service, electronicChannelService electronicchannel.Service, personalLoanService personalloan.Service, personalCreditCardService personalcreditcard.Service, personalAccountService personalaccount.Service, crawler services.Crawler) InstitutionInterface {
+func NewInstitution(institutionService institution.Service,
+	branchService branch.Service,
+	electronicChannelService electronicchannel.Service,
+	personalLoanService personalloan.Service,
+	personalCreditCardService personalcreditcard.Service,
+	personalAccountService personalaccount.Service,
+	businessAccountService businessaccount.Service,
+	crawler services.Crawler) InstitutionInterface {
 
 	return &institutionInterface{
 		institutionService:        institutionService,
@@ -46,6 +56,7 @@ func NewInstitution(institutionService institution.Service, branchService branch
 		personalLoanService:       personalLoanService,
 		personalCreditCardService: personalCreditCardService,
 		personalAccountService:    personalAccountService,
+		businessAccountService:    businessAccountService,
 		crawler:                   crawler,
 	}
 }
@@ -235,28 +246,42 @@ func (i *institutionInterface) UpdatePersonalCreditCards(id string) common.Custo
 func (i *institutionInterface) UpdatePersonalAccounts(id string) common.CustomError {
 
 	institution, err := i.institutionService.Read(id)
-
 	if err != nil {
 		return err
 	}
-
-	personalCreditCards, crawlErr := i.crawler.PersonalAccounts(institution.BaseURL, 1, []personalaccount.Entity{})
-
+	personalAccounts, crawlErr := i.crawler.PersonalAccounts(institution.BaseURL, 1, []personalaccount.Entity{})
 	if crawlErr != nil {
 		return crawlErr
 	}
-
 	delErr := i.personalAccountService.DeleteAllFromInstitution(id)
-
 	if delErr != nil {
 		return delErr
 	}
-
-	insertErr := i.personalAccountService.InsertMany(*personalCreditCards, id)
+	insertErr := i.personalAccountService.InsertMany(*personalAccounts, id)
 	if insertErr != nil {
 		return insertErr
 	}
-
 	return nil
+}
 
+//UpdateBusinessAccounts update accounts from institution
+func (i *institutionInterface) UpdateBusinessAccounts(id string) common.CustomError {
+
+	institution, err := i.institutionService.Read(id)
+	if err != nil {
+		return err
+	}
+	businessAccounts, crawlErr := i.crawler.BusinessAccounts(institution.BaseURL, 1, []businessaccount.Entity{})
+	if crawlErr != nil {
+		return crawlErr
+	}
+	delErr := i.businessAccountService.DeleteAllFromInstitution(id)
+	if delErr != nil {
+		return delErr
+	}
+	insertErr := i.businessAccountService.InsertMany(*businessAccounts, id)
+	if insertErr != nil {
+		return insertErr
+	}
+	return nil
 }
