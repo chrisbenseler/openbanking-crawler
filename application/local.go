@@ -77,10 +77,10 @@ func NewLocal() {
 
 		fmt.Println("Start crawl for", _if.Name)
 
-		go institutionInterface.UpdatePersonalCreditCards(savedIF.ID)
-		time.NewTimer(1 * time.Second)
-		go institutionInterface.UpdatePersonalLoans(savedIF.ID)
-		time.NewTimer(1 * time.Second)
+		//go institutionInterface.UpdatePersonalCreditCards(savedIF.ID)
+		//time.NewTimer(1 * time.Second)
+		//go institutionInterface.UpdatePersonalLoans(savedIF.ID)
+		//time.NewTimer(1 * time.Second)
 		go institutionInterface.UpdatePersonalAccounts(savedIF.ID)
 		time.NewTimer(1 * time.Second)
 

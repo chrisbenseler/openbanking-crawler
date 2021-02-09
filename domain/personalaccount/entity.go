@@ -15,6 +15,12 @@ type Entity struct {
 		PriorityServices []subentities.FeeService `json:"priorityServices"`
 		OtherServices    []subentities.FeeService `json:"otherServices"`
 	} `json:"fees"`
+	ServiceBundles         []subentities.ServiceBundle `json:"serviceBundles"`
+	OpeningClosingChannels []string                    `json:"openingClosingChannels"`
+	AdditionalInfo         string                      `json:"additionalInfo"`
+	TransactionsMethods    []string                    `json:"transactionsMethods"`
+	TermsConditions        subentities.TermsConditions `json:"termsConditions"`
+	IncomeRate             subentities.IncomeRate      `json:"incomeRate"`
 }
 
 //NewEntity create a new personal load entity
