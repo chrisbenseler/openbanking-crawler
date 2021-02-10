@@ -12,41 +12,56 @@ import (
 	"github.com/go-bongo/bongo"
 )
 
-//CreateRepositories CreateRepositories
-func CreateRepositories(connection *bongo.Connection) (institution.Repository, branch.Repository, electronicchannel.Repository, personalloan.Repository, personalcreditcard.Repository, personalaccount.Repository, businessaccount.Repository) {
+//createRepositories createRepositories
+func createRepositories(connection *bongo.Connection) (institution.Repository, branch.Repository, electronicchannel.Repository) {
 	institutionRepository := institution.NewRepository(connection.Collection("institution"))
 	branchRepository := branch.NewRepository(connection.Collection("branch"))
 	electronicChannelRepository := electronicchannel.NewRepository(connection.Collection("electronicChannel"))
+
+	return institutionRepository, branchRepository, electronicChannelRepository
+}
+
+//CreateBasicServices create all services
+func CreateBasicServices(connection *bongo.Connection) (
+	institution.Service, branch.Service, electronicchannel.Service) {
+
+	institutionRepository, branchRepository,
+		electronicChannelRepository := createRepositories(connection)
+
+	institutionService := institution.NewService(institutionRepository)
+	branchService := branch.NewService(branchRepository)
+	electronicChannelService := electronicchannel.NewService(electronicChannelRepository)
+
+	return institutionService, branchService, electronicChannelService
+}
+
+//createProductsServicesRepositories create ProductsServices Repositories
+func createProductsServicesRepositories(connection *bongo.Connection) (personalloan.Repository, personalcreditcard.Repository, personalaccount.Repository, businessaccount.Repository) {
+
 	personalLoanRepository := personalloan.NewRepository(connection.Collection("personalLoan"))
 	personalCreditCardRepository := personalcreditcard.NewRepository(connection.Collection("personalCreditCard"))
 	personalAccountRepository := personalaccount.NewRepository(connection.Collection("personalAccount"))
 
 	businessAccountRepository := businessaccount.NewRepository(connection.Collection("businessAccount"))
 
-	return institutionRepository, branchRepository, electronicChannelRepository, personalLoanRepository, personalCreditCardRepository, personalAccountRepository, businessAccountRepository
+	return personalLoanRepository, personalCreditCardRepository, personalAccountRepository, businessAccountRepository
 }
 
-//CreateServices create all services
-func CreateServices(connection *bongo.Connection) (
-	institution.Service, branch.Service, electronicchannel.Service, personalloan.Service, personalcreditcard.Service,
+//CreateProductsServicesServices create products services services
+func CreateProductsServicesServices(connection *bongo.Connection) (
+	personalloan.Service, personalcreditcard.Service,
 	personalaccount.Service, businessaccount.Service) {
 
-	institutionRepository, branchRepository,
-		electronicChannelRepository,
-		personalLoanRepository,
+	personalLoanRepository,
 		personalCreditCardRepository,
 		personalAccountRepository,
-		businessAccountRepository := CreateRepositories(connection)
+		businessAccountRepository := createProductsServicesRepositories(connection)
 
-	institutionService := institution.NewService(institutionRepository)
-	branchService := branch.NewService(branchRepository)
-	electronicChannelService := electronicchannel.NewService(electronicChannelRepository)
 	personalLoanService := personalloan.NewService(personalLoanRepository)
 	personalCreditCardService := personalcreditcard.NewService(personalCreditCardRepository)
 	personalAccountService := personalaccount.NewService(personalAccountRepository)
 	businessAccountService := businessaccount.NewService(businessAccountRepository)
 
-	return institutionService, branchService, electronicChannelService,
-		personalLoanService, personalCreditCardService,
+	return personalLoanService, personalCreditCardService,
 		personalAccountService, businessAccountService
 }

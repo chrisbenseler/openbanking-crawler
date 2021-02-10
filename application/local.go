@@ -52,11 +52,12 @@ func NewLocal() {
 
 	institutionService,
 		branchService,
-		electronicChannelService,
-		personalLoanService,
+		electronicChannelService := CreateBasicServices(connection)
+
+	personalLoanService,
 		personalCreditCardService,
 		personalAccountService,
-		businessAccountService := CreateServices(connection)
+		businessAccountService := CreateProductsServicesServices(connection)
 
 	httpClient := http.Client{}
 	crawler := services.NewCrawler(&httpClient)

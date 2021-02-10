@@ -45,11 +45,12 @@ func NewWeb() {
 
 	institutionService,
 		branchService,
-		electronicChannelService,
-		personalLoanService,
+		electronicChannelService := CreateBasicServices(connection)
+
+	personalLoanService,
 		personalCreditCardService,
 		personalAccountService,
-		businessAccountService := CreateServices(connection)
+		businessAccountService := CreateProductsServicesServices(connection)
 
 	authService := services.NewAuthService()
 
