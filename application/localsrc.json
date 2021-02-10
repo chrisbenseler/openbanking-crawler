@@ -8,8 +8,12 @@
             "baseURL": "https://api.itau"
         },
         {
-            "name": "banco do brasil",
-            "baseURL": "https://opendata.api.bb.com.br"
+            "name": "santander",
+            "baseURL": "https://openbanking.api.santander.com.br"
+        },
+        {
+            "name": "caixa econômica",
+            "baseURL": "https://api.caixa.gov.br:8443"
         },
         {
             "name": "banco safra",
@@ -20,8 +24,20 @@
             "baseURL": "https://btgpactual.openbanking.btgpactual.com"
         },
         {
+            "name": "banco do brasil",
+            "baseURL": "https://opendata.api.bb.com.br"
+        },
+        {
             "name": "banrisul",
             "baseURL": "https://openbanking.banrisul.com.br"
+        },
+        {
+            "name": "bndes",
+            "baseURL": "https://api-openbanking.bndes.gov.br"
+        },
+        {
+            "name": "banco do nordeste",
+            "baseURL": "https://api.bnb.gov.br"
         }
     ]
 }

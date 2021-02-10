@@ -7,7 +7,7 @@ import (
 )
 
 type branchIdentification struct {
-	Type       string `json:"type"`
+	Type       string `json:"type" bson:"type"`
 	Code       string `json:"code"`
 	CheckDigit string `json:"checkDigit"`
 	Name       string `json:"name"`
@@ -44,7 +44,7 @@ type Entity struct {
 	Services []struct {
 		Name           string `json:"name"`
 		Code           string `json:"code"`
-		AdditionalInfo string `json:"additionalInfo"`
+		AdditionalInfo string `json:"additionalInfo" bson:"additionalInfo"`
 	} `json:"services"`
 }
 

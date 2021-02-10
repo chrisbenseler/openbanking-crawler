@@ -17,6 +17,12 @@ func main() {
 		return
 	}
 
+	if mode == "report" {
+		fmt.Println("Start Open Banking Crawler application - report")
+		application.NewReport()
+		return
+	}
+
 	fmt.Println("Start Open Banking Crawler application - web")
 
 	application.NewWeb()

@@ -8,14 +8,14 @@ type RewardsProgram struct {
 
 //IdentificationProduct IdentificationProduct
 type IdentificationProduct struct {
-	Type           string `json:"type"`
-	AdditionalInfo string `json:"additionalInfo"`
+	Type           string `json:"type" bson:"type"`
+	AdditionalInfo string `json:"additionalInfo" bson:"additionalInfo"`
 }
 
 //CreditCardFlag CreditCardFlag
 type CreditCardFlag struct {
 	Network        string `json:"network"`
-	AdditionalInfo string `json:"additionalInfo"`
+	AdditionalInfo string `json:"additionalInfo" bson:"additionalInfo"`
 }
 
 //CreditCardIdentification CreditCardIdentification
