@@ -50,7 +50,7 @@ func NewWeb() {
 	personalLoanService,
 		personalCreditCardService,
 		personalAccountService,
-		businessAccountService := CreateProductsServicesServices(connection)
+		businessAccountService, personalFinanceService := CreateProductsServicesServices(connection)
 
 	authService := services.NewAuthService()
 
@@ -59,7 +59,7 @@ func NewWeb() {
 
 	institutionInterface := interfaces.NewInstitution(
 		institutionService, branchService, electronicChannelService, personalLoanService, personalCreditCardService,
-		personalAccountService, businessAccountService,
+		personalAccountService, personalFinanceService, businessAccountService,
 		crawler)
 
 	channelsInterface := interfaces.NewChannels(branchService, electronicChannelService)

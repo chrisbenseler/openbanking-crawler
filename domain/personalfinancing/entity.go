@@ -14,8 +14,9 @@ type Entity struct {
 	Fees               struct {
 		Services []subentities.FeeService `json:"services"`
 	} `json:"fees"`
-	InterestRates   []subentities.Rates `json:"interestRates"`
-	TermsConditions string              `json:"termsConditions"`
+	RequiredWarranties []string            `json:"requiredWarranties"`
+	InterestRates      []subentities.Rates `json:"interestRates"`
+	TermsConditions    string              `json:"termsConditions"`
 }
 
 //NewEntity create a new personal load entity

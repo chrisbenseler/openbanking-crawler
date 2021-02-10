@@ -8,6 +8,7 @@ import (
 	"openbankingcrawler/domain/institution"
 	"openbankingcrawler/domain/personalaccount"
 	"openbankingcrawler/domain/personalcreditcard"
+	"openbankingcrawler/domain/personalfinancing"
 	"openbankingcrawler/domain/personalloan"
 	"openbankingcrawler/dtos"
 	"openbankingcrawler/services"
@@ -25,6 +26,7 @@ type InstitutionInterface interface {
 	UpdatePersonalLoans(string) common.CustomError
 	UpdatePersonalCreditCards(string) common.CustomError
 	UpdatePersonalAccounts(string) common.CustomError
+	UpdatePersonalFinancings(string) common.CustomError
 	UpdateBusinessAccounts(string) common.CustomError
 }
 
@@ -35,6 +37,7 @@ type institutionInterface struct {
 	personalLoanService       personalloan.Service
 	personalCreditCardService personalcreditcard.Service
 	personalAccountService    personalaccount.Service
+	personalFinancingService  personalfinancing.Service
 	businessAccountService    businessaccount.Service
 	crawler                   services.Crawler
 }
@@ -46,6 +49,7 @@ func NewInstitution(institutionService institution.Service,
 	personalLoanService personalloan.Service,
 	personalCreditCardService personalcreditcard.Service,
 	personalAccountService personalaccount.Service,
+	personalFinancingService personalfinancing.Service,
 	businessAccountService businessaccount.Service,
 	crawler services.Crawler) InstitutionInterface {
 
@@ -53,9 +57,10 @@ func NewInstitution(institutionService institution.Service,
 		institutionService:        institutionService,
 		branchService:             branchService,
 		electronicChannelService:  electronicChannelService,
-		personalLoanService:       personalLoanService,
-		personalCreditCardService: personalCreditCardService,
 		personalAccountService:    personalAccountService,
+		personalLoanService:       personalLoanService,
+		personalFinancingService:  personalFinancingService,
+		personalCreditCardService: personalCreditCardService,
 		businessAccountService:    businessAccountService,
 		crawler:                   crawler,
 	}
@@ -182,34 +187,68 @@ func (i *institutionInterface) UpdateElectronicChannels(id string) common.Custom
 
 }
 
-//UpdatePersonalLoans update personalLoans from institution
-func (i *institutionInterface) UpdatePersonalLoans(id string) common.CustomError {
+//UpdatePersonalAccounts update accounts from institution
+func (i *institutionInterface) UpdatePersonalAccounts(id string) common.CustomError {
 
 	institution, err := i.institutionService.Read(id)
-
 	if err != nil {
 		return err
 	}
-
-	personalLoans, crawlErr := i.crawler.PersonalLoans(institution.BaseURL, 1, []personalloan.Entity{})
-
+	personalAccounts, crawlErr := i.crawler.PersonalAccounts(institution.BaseURL, 1, []personalaccount.Entity{})
 	if crawlErr != nil {
 		return crawlErr
 	}
-
-	delErr := i.personalLoanService.DeleteAllFromInstitution(id)
-
+	delErr := i.personalAccountService.DeleteAllFromInstitution(id)
 	if delErr != nil {
 		return delErr
 	}
+	insertErr := i.personalAccountService.InsertMany(*personalAccounts, id)
+	if insertErr != nil {
+		return insertErr
+	}
+	return nil
+}
 
+//UpdatePersonalLoans update personalLoans from institution
+func (i *institutionInterface) UpdatePersonalLoans(id string) common.CustomError {
+	institution, err := i.institutionService.Read(id)
+	if err != nil {
+		return err
+	}
+	personalLoans, crawlErr := i.crawler.PersonalLoans(institution.BaseURL, 1, []personalloan.Entity{})
+	if crawlErr != nil {
+		return crawlErr
+	}
+	delErr := i.personalLoanService.DeleteAllFromInstitution(id)
+	if delErr != nil {
+		return delErr
+	}
 	insertErr := i.personalLoanService.InsertMany(*personalLoans, id)
 	if insertErr != nil {
 		return insertErr
 	}
-
 	return nil
+}
 
+//UpdatePersonalFinancings update personal financings from institution
+func (i *institutionInterface) UpdatePersonalFinancings(id string) common.CustomError {
+	institution, err := i.institutionService.Read(id)
+	if err != nil {
+		return err
+	}
+	personalFinancings, crawlErr := i.crawler.PersonalFinancings(institution.BaseURL, 1, []personalfinancing.Entity{})
+	if crawlErr != nil {
+		return crawlErr
+	}
+	delErr := i.personalFinancingService.DeleteAllFromInstitution(id)
+	if delErr != nil {
+		return delErr
+	}
+	insertErr := i.personalFinancingService.InsertMany(*personalFinancings, id)
+	if insertErr != nil {
+		return insertErr
+	}
+	return nil
 }
 
 //UpdatePersonalCreditCards update creditcards from institution
@@ -240,28 +279,6 @@ func (i *institutionInterface) UpdatePersonalCreditCards(id string) common.Custo
 
 	return nil
 
-}
-
-//UpdatePersonalAccounts update accounts from institution
-func (i *institutionInterface) UpdatePersonalAccounts(id string) common.CustomError {
-
-	institution, err := i.institutionService.Read(id)
-	if err != nil {
-		return err
-	}
-	personalAccounts, crawlErr := i.crawler.PersonalAccounts(institution.BaseURL, 1, []personalaccount.Entity{})
-	if crawlErr != nil {
-		return crawlErr
-	}
-	delErr := i.personalAccountService.DeleteAllFromInstitution(id)
-	if delErr != nil {
-		return delErr
-	}
-	insertErr := i.personalAccountService.InsertMany(*personalAccounts, id)
-	if insertErr != nil {
-		return insertErr
-	}
-	return nil
 }
 
 //UpdateBusinessAccounts update accounts from institution
