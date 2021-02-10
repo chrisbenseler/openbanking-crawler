@@ -3,6 +3,7 @@ package application
 import (
 	"openbankingcrawler/domain/branch"
 	"openbankingcrawler/domain/businessaccount"
+	"openbankingcrawler/domain/businessloan"
 	"openbankingcrawler/domain/electronicchannel"
 	"openbankingcrawler/domain/institution"
 	"openbankingcrawler/domain/personalaccount"
@@ -38,7 +39,8 @@ func CreateBasicServices(connection *bongo.Connection) (
 
 //createProductsServicesRepositories create ProductsServices Repositories
 func createProductsServicesRepositories(connection *bongo.Connection) (
-	personalaccount.Repository, personalloan.Repository, personalfinancing.Repository, personalcreditcard.Repository, businessaccount.Repository) {
+	personalaccount.Repository, personalloan.Repository, personalfinancing.Repository, personalcreditcard.Repository,
+	businessaccount.Repository, businessloan.Repository) {
 
 	personalLoanRepository := personalloan.NewRepository(connection.Collection("personalLoan"))
 	personalCreditCardRepository := personalcreditcard.NewRepository(connection.Collection("personalCreditCard"))
@@ -46,27 +48,32 @@ func createProductsServicesRepositories(connection *bongo.Connection) (
 	personalFinancingRepository := personalfinancing.NewRepository(connection.Collection("personalFinancing"))
 
 	businessAccountRepository := businessaccount.NewRepository(connection.Collection("businessAccount"))
+	businessLoanRepository := businessloan.NewRepository(connection.Collection("businessLoan"))
 
-	return personalAccountRepository, personalLoanRepository, personalFinancingRepository, personalCreditCardRepository, businessAccountRepository
+	return personalAccountRepository, personalLoanRepository, personalFinancingRepository, personalCreditCardRepository,
+		businessAccountRepository, businessLoanRepository
 }
 
 //CreateProductsServicesServices create products services services
 func CreateProductsServicesServices(connection *bongo.Connection) (
 	personalaccount.Service, personalloan.Service, personalfinancing.Service, personalcreditcard.Service,
-	businessaccount.Service) {
+	businessaccount.Service, businessloan.Service) {
 
 	personalAccountRepository,
 		personalLoanRepository,
 		personalFinancingRepository,
 		personalCreditCardRepository,
-		businessAccountRepository := createProductsServicesRepositories(connection)
+		businessAccountRepository,
+		businessLoanRepository := createProductsServicesRepositories(connection)
 
 	personalLoanService := personalloan.NewService(personalLoanRepository)
 	personalCreditCardService := personalcreditcard.NewService(personalCreditCardRepository)
 	personalAccountService := personalaccount.NewService(personalAccountRepository)
-	businessAccountService := businessaccount.NewService(businessAccountRepository)
 	personalFinanceService := personalfinancing.NewService(personalFinancingRepository)
 
+	businessAccountService := businessaccount.NewService(businessAccountRepository)
+	businessLoanService := businessloan.NewService(businessLoanRepository)
+
 	return personalAccountService, personalLoanService, personalFinanceService, personalCreditCardService,
-		businessAccountService
+		businessAccountService, businessLoanService
 }
