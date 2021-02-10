@@ -37,7 +37,8 @@ func CreateBasicServices(connection *bongo.Connection) (
 }
 
 //createProductsServicesRepositories create ProductsServices Repositories
-func createProductsServicesRepositories(connection *bongo.Connection) (personalloan.Repository, personalcreditcard.Repository, personalaccount.Repository, businessaccount.Repository, personalfinancing.Repository) {
+func createProductsServicesRepositories(connection *bongo.Connection) (
+	personalaccount.Repository, personalloan.Repository, personalfinancing.Repository, personalcreditcard.Repository, businessaccount.Repository) {
 
 	personalLoanRepository := personalloan.NewRepository(connection.Collection("personalLoan"))
 	personalCreditCardRepository := personalcreditcard.NewRepository(connection.Collection("personalCreditCard"))
@@ -46,19 +47,19 @@ func createProductsServicesRepositories(connection *bongo.Connection) (personall
 
 	businessAccountRepository := businessaccount.NewRepository(connection.Collection("businessAccount"))
 
-	return personalLoanRepository, personalCreditCardRepository, personalAccountRepository, businessAccountRepository, personalFinancingRepository
+	return personalAccountRepository, personalLoanRepository, personalFinancingRepository, personalCreditCardRepository, businessAccountRepository
 }
 
 //CreateProductsServicesServices create products services services
 func CreateProductsServicesServices(connection *bongo.Connection) (
-	personalloan.Service, personalcreditcard.Service,
-	personalaccount.Service, businessaccount.Service,
-	personalfinancing.Service) {
+	personalaccount.Service, personalloan.Service, personalfinancing.Service, personalcreditcard.Service,
+	businessaccount.Service) {
 
-	personalLoanRepository,
+	personalAccountRepository,
+		personalLoanRepository,
+		personalFinancingRepository,
 		personalCreditCardRepository,
-		personalAccountRepository,
-		businessAccountRepository, personalFinancingRepository := createProductsServicesRepositories(connection)
+		businessAccountRepository := createProductsServicesRepositories(connection)
 
 	personalLoanService := personalloan.NewService(personalLoanRepository)
 	personalCreditCardService := personalcreditcard.NewService(personalCreditCardRepository)
@@ -66,6 +67,6 @@ func CreateProductsServicesServices(connection *bongo.Connection) (
 	businessAccountService := businessaccount.NewService(businessAccountRepository)
 	personalFinanceService := personalfinancing.NewService(personalFinancingRepository)
 
-	return personalLoanService, personalCreditCardService,
-		personalAccountService, businessAccountService, personalFinanceService
+	return personalAccountService, personalLoanService, personalFinanceService, personalCreditCardService,
+		businessAccountService
 }

@@ -23,10 +23,10 @@ type InstitutionInterface interface {
 	UpdateBranches(string) common.CustomError
 	UpdateElectronicChannels(string) common.CustomError
 	Update(string, string) (*dtos.Institution, common.CustomError)
-	UpdatePersonalLoans(string) common.CustomError
-	UpdatePersonalCreditCards(string) common.CustomError
 	UpdatePersonalAccounts(string) common.CustomError
+	UpdatePersonalLoans(string) common.CustomError
 	UpdatePersonalFinancings(string) common.CustomError
+	UpdatePersonalCreditCards(string) common.CustomError
 	UpdateBusinessAccounts(string) common.CustomError
 }
 
@@ -34,10 +34,10 @@ type institutionInterface struct {
 	institutionService        institution.Service
 	branchService             branch.Service
 	electronicChannelService  electronicchannel.Service
-	personalLoanService       personalloan.Service
-	personalCreditCardService personalcreditcard.Service
 	personalAccountService    personalaccount.Service
+	personalLoanService       personalloan.Service
 	personalFinancingService  personalfinancing.Service
+	personalCreditCardService personalcreditcard.Service
 	businessAccountService    businessaccount.Service
 	crawler                   services.Crawler
 }
@@ -46,10 +46,10 @@ type institutionInterface struct {
 func NewInstitution(institutionService institution.Service,
 	branchService branch.Service,
 	electronicChannelService electronicchannel.Service,
-	personalLoanService personalloan.Service,
-	personalCreditCardService personalcreditcard.Service,
 	personalAccountService personalaccount.Service,
+	personalLoanService personalloan.Service,
 	personalFinancingService personalfinancing.Service,
+	personalCreditCardService personalcreditcard.Service,
 	businessAccountService businessaccount.Service,
 	crawler services.Crawler) InstitutionInterface {
 

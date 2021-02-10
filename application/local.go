@@ -53,17 +53,19 @@ func NewLocal() {
 		branchService,
 		electronicChannelService := CreateBasicServices(connection)
 
-	personalLoanService,
+	personalAccountService,
+		personalLoanService,
+		personalFinancingService,
 		personalCreditCardService,
-		personalAccountService,
-		businessAccountService, personalFinanceService := CreateProductsServicesServices(connection)
+		businessAccountService := CreateProductsServicesServices(connection)
 
 	httpClient := http.Client{}
 	crawler := services.NewCrawler(&httpClient)
 
 	institutionInterface := interfaces.NewInstitution(
-		institutionService, branchService, electronicChannelService, personalLoanService, personalCreditCardService,
-		personalAccountService, personalFinanceService, businessAccountService,
+		institutionService, branchService, electronicChannelService,
+		personalAccountService, personalLoanService, personalFinancingService, personalCreditCardService,
+		businessAccountService,
 		crawler)
 
 	ifs := readFile()
