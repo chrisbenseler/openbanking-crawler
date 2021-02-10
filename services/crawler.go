@@ -8,6 +8,7 @@ import (
 	"openbankingcrawler/common"
 	"openbankingcrawler/domain/branch"
 	"openbankingcrawler/domain/businessaccount"
+	"openbankingcrawler/domain/businessfinancing"
 	"openbankingcrawler/domain/businessloan"
 	"openbankingcrawler/domain/electronicchannel"
 	"openbankingcrawler/domain/personalaccount"
@@ -24,10 +25,11 @@ type Crawler interface {
 	ElectronicChannels(string, int, []electronicchannel.Entity) (*[]electronicchannel.Entity, common.CustomError)
 	PersonalAccounts(string, int, []personalaccount.Entity) (*[]personalaccount.Entity, common.CustomError)
 	PersonalLoans(string, int, []personalloan.Entity) (*[]personalloan.Entity, common.CustomError)
-	PersonalFinancings(baseURL string, page int, accumulator []personalfinancing.Entity) (*[]personalfinancing.Entity, common.CustomError)
+	PersonalFinancings(string, int, []personalfinancing.Entity) (*[]personalfinancing.Entity, common.CustomError)
 	PersonalCreditCards(string, int, []personalcreditcard.Entity) (*[]personalcreditcard.Entity, common.CustomError)
 	BusinessAccounts(string, int, []businessaccount.Entity) (*[]businessaccount.Entity, common.CustomError)
 	BusinessLoans(string, int, []businessloan.Entity) (*[]businessloan.Entity, common.CustomError)
+	BusinessFinancings(string, int, []businessfinancing.Entity) (*[]businessfinancing.Entity, common.CustomError)
 	Do(string, string, int) ([]byte, common.CustomError)
 }
 
@@ -164,6 +166,14 @@ func (s *crawler) BusinessLoans(baseURL string, page int, accumulator []business
 	fmt.Println("Start crawl business loan for", baseURL, page)
 	result, err := crawlerservices.ForBusinessLoans(s.Do, baseURL, page, accumulator)
 	fmt.Println("End crawl business loan for", baseURL)
+	return result, err
+}
+
+//BusinessFinancings BusinessFinancings
+func (s *crawler) BusinessFinancings(baseURL string, page int, accumulator []businessfinancing.Entity) (*[]businessfinancing.Entity, common.CustomError) {
+	fmt.Println("Start crawl business account cards for", baseURL, page)
+	result, err := crawlerservices.ForBusinessFinancings(s.Do, baseURL, page, accumulator)
+	fmt.Println("End crawl business accounts for", baseURL)
 	return result, err
 }
 

@@ -3,6 +3,7 @@ package application
 import (
 	"openbankingcrawler/domain/branch"
 	"openbankingcrawler/domain/businessaccount"
+	"openbankingcrawler/domain/businessfinancing"
 	"openbankingcrawler/domain/businessloan"
 	"openbankingcrawler/domain/electronicchannel"
 	"openbankingcrawler/domain/institution"
@@ -40,7 +41,7 @@ func CreateBasicServices(connection *bongo.Connection) (
 //createProductsServicesRepositories create ProductsServices Repositories
 func createProductsServicesRepositories(connection *bongo.Connection) (
 	personalaccount.Repository, personalloan.Repository, personalfinancing.Repository, personalcreditcard.Repository,
-	businessaccount.Repository, businessloan.Repository) {
+	businessaccount.Repository, businessloan.Repository, businessfinancing.Repository) {
 
 	personalLoanRepository := personalloan.NewRepository(connection.Collection("personalLoan"))
 	personalCreditCardRepository := personalcreditcard.NewRepository(connection.Collection("personalCreditCard"))
@@ -49,22 +50,24 @@ func createProductsServicesRepositories(connection *bongo.Connection) (
 
 	businessAccountRepository := businessaccount.NewRepository(connection.Collection("businessAccount"))
 	businessLoanRepository := businessloan.NewRepository(connection.Collection("businessLoan"))
+	businessFinancingRepository := businessfinancing.NewRepository(connection.Collection("businessFinancing"))
 
 	return personalAccountRepository, personalLoanRepository, personalFinancingRepository, personalCreditCardRepository,
-		businessAccountRepository, businessLoanRepository
+		businessAccountRepository, businessLoanRepository, businessFinancingRepository
 }
 
 //CreateProductsServicesServices create products services services
 func CreateProductsServicesServices(connection *bongo.Connection) (
 	personalaccount.Service, personalloan.Service, personalfinancing.Service, personalcreditcard.Service,
-	businessaccount.Service, businessloan.Service) {
+	businessaccount.Service, businessloan.Service, businessfinancing.Service) {
 
 	personalAccountRepository,
 		personalLoanRepository,
 		personalFinancingRepository,
 		personalCreditCardRepository,
 		businessAccountRepository,
-		businessLoanRepository := createProductsServicesRepositories(connection)
+		businessLoanRepository,
+		businessFinancingRepository := createProductsServicesRepositories(connection)
 
 	personalLoanService := personalloan.NewService(personalLoanRepository)
 	personalCreditCardService := personalcreditcard.NewService(personalCreditCardRepository)
@@ -73,7 +76,8 @@ func CreateProductsServicesServices(connection *bongo.Connection) (
 
 	businessAccountService := businessaccount.NewService(businessAccountRepository)
 	businessLoanService := businessloan.NewService(businessLoanRepository)
+	businessFinancingService := businessfinancing.NewService(businessFinancingRepository)
 
 	return personalAccountService, personalLoanService, personalFinanceService, personalCreditCardService,
-		businessAccountService, businessLoanService
+		businessAccountService, businessLoanService, businessFinancingService
 }

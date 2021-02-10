@@ -9,7 +9,6 @@ import (
 	"openbankingcrawler/interfaces"
 	"openbankingcrawler/services"
 	"os"
-	"time"
 
 	"github.com/go-bongo/bongo"
 )
@@ -59,7 +58,7 @@ func NewLocal() {
 		personalFinancingService,
 		personalCreditCardService,
 		businessAccountService,
-		businessLoanService := CreateProductsServicesServices(connection)
+		businessLoanService, businessFinancingService := CreateProductsServicesServices(connection)
 
 	httpClient := http.Client{}
 	crawler := services.NewCrawler(&httpClient)
@@ -67,7 +66,7 @@ func NewLocal() {
 	institutionInterface := interfaces.NewInstitution(
 		institutionService, branchService, electronicChannelService,
 		personalAccountService, personalLoanService, personalFinancingService, personalCreditCardService,
-		businessAccountService, businessLoanService,
+		businessAccountService, businessLoanService, businessFinancingService,
 		crawler)
 
 	ifs := readFile()
@@ -95,8 +94,9 @@ func NewLocal() {
 		// time.NewTimer(1 * time.Second)
 		// go institutionInterface.UpdatePersonalFinancings(savedIF.ID)
 		// time.NewTimer(1 * time.Second)
-		go institutionInterface.UpdateBusinessLoans(savedIF.ID)
-		time.NewTimer(1 * time.Second)
+		// go institutionInterface.UpdateBusinessLoans(savedIF.ID)
+		// time.NewTimer(1 * time.Second)
+		go institutionInterface.UpdateBusinessFinancings(savedIF.ID)
 	}
 
 	fmt.Scanln()
