@@ -47,7 +47,7 @@ func NewReport() {
 		_,
 		_, _ := CreateProductsServicesServices(connection)
 
-	path := "./"
+	path := "./outputs/"
 	filename := "report"
 
 	personalCreditCardReportInterface := report.NewPersonalCreditCard(institutionService, personalCreditCardService)
@@ -55,12 +55,22 @@ func NewReport() {
 
 	output := personalCreditCardReportInterface.Fees()
 
+	writeErr := write(output, path, filename)
+
+	if writeErr != nil {
+		panic(writeErr)
+	}
+
+	fmt.Println("Report done")
+}
+
+func write(st interface{}, path string, filename string) error {
 	buff := &bytes.Buffer{}
 	w := struct2csv.NewWriter(buff)
-	err := w.WriteStructs(output)
+	err := w.WriteStructs(st)
 
 	if err != nil {
-		fmt.Println(err)
+		return err
 	}
 
 	writeErr := ioutil.WriteFile(path+filename+".csv", buff.Bytes(), 0644)
@@ -68,6 +78,5 @@ func NewReport() {
 		panic(writeErr)
 	}
 
-	fmt.Scanln()
-	fmt.Println("done")
+	return nil
 }
