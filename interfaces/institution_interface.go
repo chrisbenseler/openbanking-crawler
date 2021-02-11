@@ -4,6 +4,7 @@ import (
 	"openbankingcrawler/common"
 	"openbankingcrawler/domain/branch"
 	"openbankingcrawler/domain/businessaccount"
+	"openbankingcrawler/domain/businesscreditcard"
 	"openbankingcrawler/domain/businessfinancing"
 	"openbankingcrawler/domain/businessloan"
 	"openbankingcrawler/domain/electronicchannel"
@@ -32,6 +33,7 @@ type InstitutionInterface interface {
 	UpdateBusinessAccounts(string) common.CustomError
 	UpdateBusinessLoans(string) common.CustomError
 	UpdateBusinessFinancings(string) common.CustomError
+	UpdateBusinessCreditCards(string) common.CustomError
 }
 
 type institutionInterface struct {
@@ -45,6 +47,7 @@ type institutionInterface struct {
 	businessAccountService    businessaccount.Service
 	businessLoanService       businessloan.Service
 	businessFinancingService  businessfinancing.Service
+	businessCreditCardService businesscreditcard.Service
 	crawler                   services.Crawler
 }
 
@@ -59,6 +62,7 @@ func NewInstitution(institutionService institution.Service,
 	businessAccountService businessaccount.Service,
 	businessLoanService businessloan.Service,
 	businessFinancingService businessfinancing.Service,
+	businessCreditCardService businesscreditcard.Service,
 	crawler services.Crawler) InstitutionInterface {
 
 	return &institutionInterface{
@@ -72,6 +76,7 @@ func NewInstitution(institutionService institution.Service,
 		businessAccountService:    businessAccountService,
 		businessLoanService:       businessLoanService,
 		businessFinancingService:  businessFinancingService,
+		businessCreditCardService: businessCreditCardService,
 		crawler:                   crawler,
 	}
 }
@@ -350,6 +355,27 @@ func (i *institutionInterface) UpdateBusinessFinancings(id string) common.Custom
 		return delErr
 	}
 	insertErr := i.businessFinancingService.InsertMany(*businessFinancings, id)
+	if insertErr != nil {
+		return insertErr
+	}
+	return nil
+}
+
+//UpdateBusinessCreditCards update business credit cards from institution
+func (i *institutionInterface) UpdateBusinessCreditCards(id string) common.CustomError {
+	institution, err := i.institutionService.Read(id)
+	if err != nil {
+		return err
+	}
+	businessCreditCards, crawlErr := i.crawler.BusinessCreditCards(institution.BaseURL, 1, []businesscreditcard.Entity{})
+	if crawlErr != nil {
+		return crawlErr
+	}
+	delErr := i.businessCreditCardService.DeleteAllFromInstitution(id)
+	if delErr != nil {
+		return delErr
+	}
+	insertErr := i.businessCreditCardService.InsertMany(*businessCreditCards, id)
 	if insertErr != nil {
 		return insertErr
 	}

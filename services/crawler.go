@@ -8,6 +8,7 @@ import (
 	"openbankingcrawler/common"
 	"openbankingcrawler/domain/branch"
 	"openbankingcrawler/domain/businessaccount"
+	"openbankingcrawler/domain/businesscreditcard"
 	"openbankingcrawler/domain/businessfinancing"
 	"openbankingcrawler/domain/businessloan"
 	"openbankingcrawler/domain/electronicchannel"
@@ -30,6 +31,7 @@ type Crawler interface {
 	BusinessAccounts(string, int, []businessaccount.Entity) (*[]businessaccount.Entity, common.CustomError)
 	BusinessLoans(string, int, []businessloan.Entity) (*[]businessloan.Entity, common.CustomError)
 	BusinessFinancings(string, int, []businessfinancing.Entity) (*[]businessfinancing.Entity, common.CustomError)
+	BusinessCreditCards(string, int, []businesscreditcard.Entity) (*[]businesscreditcard.Entity, common.CustomError)
 	Do(string, string, int) ([]byte, common.CustomError)
 }
 
@@ -174,6 +176,14 @@ func (s *crawler) BusinessFinancings(baseURL string, page int, accumulator []bus
 	fmt.Println("Start crawl business account cards for", baseURL, page)
 	result, err := crawlerservices.ForBusinessFinancings(s.Do, baseURL, page, accumulator)
 	fmt.Println("End crawl business accounts for", baseURL)
+	return result, err
+}
+
+//BusinessCreditCards crawl business credit cards from institution
+func (s *crawler) BusinessCreditCards(baseURL string, page int, accumulator []businesscreditcard.Entity) (*[]businesscreditcard.Entity, common.CustomError) {
+	fmt.Println("Start crawl business business card cards for", baseURL, page)
+	result, err := crawlerservices.ForBusinessCreditCards(s.Do, baseURL, page, accumulator)
+	fmt.Println("End crawl business business card for", baseURL)
 	return result, err
 }
 

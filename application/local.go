@@ -59,7 +59,9 @@ func NewLocal() {
 		personalFinancingService,
 		personalCreditCardService,
 		businessAccountService,
-		businessLoanService, businessFinancingService := CreateProductsServicesServices(connection)
+		businessLoanService,
+		businessFinancingService,
+		businessCreditCardService := CreateProductsServicesServices(connection)
 
 	httpClient := http.Client{}
 	crawler := services.NewCrawler(&httpClient)
@@ -67,7 +69,7 @@ func NewLocal() {
 	institutionInterface := interfaces.NewInstitution(
 		institutionService, branchService, electronicChannelService,
 		personalAccountService, personalLoanService, personalFinancingService, personalCreditCardService,
-		businessAccountService, businessLoanService, businessFinancingService,
+		businessAccountService, businessLoanService, businessFinancingService, businessCreditCardService,
 		crawler)
 
 	ifs := readFile()
@@ -98,6 +100,8 @@ func NewLocal() {
 		go institutionInterface.UpdateBusinessLoans(savedIF.ID)
 		time.NewTimer(1 * time.Second)
 		go institutionInterface.UpdateBusinessFinancings(savedIF.ID)
+		time.NewTimer(1 * time.Second)
+		go institutionInterface.UpdateBusinessCreditCards(savedIF.ID)
 	}
 
 	fmt.Scanln()

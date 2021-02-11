@@ -28,13 +28,13 @@ type TermsConditions struct {
 	MinimumBalance struct {
 		Value    string `json:"value"`
 		Currency string `json:"currency"`
-	} `json:"minimumBalance"`
-	ElegibilityCriteriaInfo string `json:"elegibilityCriteriaInfo"`
-	ClosingProcessInfo      string `json:"closingProcessInfo"`
+	} `json:"minimumBalance" bson:"minimumBalance"`
+	ElegibilityCriteriaInfo string `json:"elegibilityCriteriaInfo" bson:"elegibilityCriteriaInfo"`
+	ClosingProcessInfo      string `json:"closingProcessInfo" bson:"closingProcessInfo"`
 }
 
 //IncomeRate IncomeRate
 type IncomeRate struct {
-	SavingAccount         string `json:"savingAccount"`
-	PrepaidPaymentAccount string `json:"prepaidPaymentAccount"`
+	SavingAccount         string `json:"savingAccount" bson:"savingAccount"`
+	PrepaidPaymentAccount string `json:"prepaidPaymentAccount" bson:"prepaidPaymentAccount"`
 }

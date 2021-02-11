@@ -6,6 +6,14 @@ type FeeService struct {
 	Code                string         `json:"code"`
 	ChargingTriggerInfo string         `json:"chargingTriggerInfo"`
 	Prices              []ServicePrice `json:"prices"`
+	Minimun             struct {
+		Value    string `json:"value"`
+		Currency string `json:"currency"`
+	} `json:"minimum"`
+	Maximun struct {
+		Value    string `json:"value"`
+		Currency string `json:"currency"`
+	} `json:"maximum"`
 }
 
 //ServicePrice service price
@@ -40,9 +48,9 @@ type Applications struct {
 
 //Rates interests rates
 type Rates struct {
-	ReferentialRateIndexer string         `json:"referentialRateIndexer"`
+	ReferentialRateIndexer string         `json:"referentialRateIndexer" bson:"referentialRateIndexer"`
 	Rate                   string         `json:"rate"`
 	Applications           []Applications `json:"applications"`
-	MinimumRate            string         `json:"minimumRate"`
-	MaximumRate            string         `json:"maximumRate"`
+	MinimumRate            string         `json:"minimumRate" bson:"minimumRate"`
+	MaximumRate            string         `json:"maximumRate" bson:"maximumRate"`
 }

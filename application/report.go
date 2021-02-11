@@ -45,7 +45,9 @@ func NewReport() {
 		_,
 		personalCreditCardService,
 		_,
-		_, _ := CreateProductsServicesServices(connection)
+		_,
+		_,
+		_ := CreateProductsServicesServices(connection)
 
 	path := "./outputs/"
 	filename := "report"
