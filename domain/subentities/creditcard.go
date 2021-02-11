@@ -30,7 +30,7 @@ type CreditCardInterests struct {
 	InstalmentRates []Rates `json:"instalmentRates"`
 }
 
-//CreditCardOthers
+//CreditCardOthers CreditCardOthers
 type CreditCardOthers struct {
 	Code string `json:"code"`
 }

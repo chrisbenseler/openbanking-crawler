@@ -3,11 +3,13 @@ package report
 import (
 	"openbankingcrawler/domain/institution"
 	"openbankingcrawler/domain/personalcreditcard"
+	"openbankingcrawler/domain/subentities"
+	"openbankingcrawler/dtos"
 )
 
 //Report Report interface for personal credit card
 type Report interface {
-	Fees() []Output
+	Fees() *[]OutputPrice
 }
 
 type report struct {
@@ -23,56 +25,47 @@ func NewPersonalCreditCard(institutionService institution.Service, personalCredi
 	}
 }
 
-//Fees list all fees from all institutuons
-func (r *report) Fees() []Output {
+//Fees list all fees from personal credirt cards all institutuons
+func (r *report) Fees() *[]OutputPrice {
 	institutions, err := r.institutionService.List()
 	if err != nil {
 		panic(err)
 	}
-
-	var entries []Output
+	var entries []OutputPrice
 
 	for _, institution := range institutions {
-		// fmt.Println(institution)
+		iEntries := getFromInstitution(r.personalCreditCardService, &institution)
+		entries = append(entries, iEntries...)
+	}
+	return &entries
+}
 
-		var accumulator []personalcreditcard.Entity
+func getFromInstitution(personalCreditCardService personalcreditcard.Service, institution *dtos.Institution) []OutputPrice {
+	var entries []OutputPrice
+	var accumulator []personalcreditcard.Entity
 
-		result, pagination, _ := r.personalCreditCardService.FindByInstitution(institution.ID, 1)
-		accumulator = append(accumulator, result...)
-		for i := 2; i < pagination.Total; i++ {
-			pageResult, _, _ := r.personalCreditCardService.FindByInstitution(institution.ID, i)
-			accumulator = append(accumulator, pageResult...)
-		}
+	result, pagination, _ := personalCreditCardService.FindByInstitution(institution.ID, 1)
+	accumulator = append(accumulator, result...)
+	for i := 2; i < pagination.Total; i++ {
+		pageResult, _, _ := personalCreditCardService.FindByInstitution(institution.ID, i)
+		accumulator = append(accumulator, pageResult...)
+	}
 
-		for _, creditCard := range accumulator {
-			services := creditCard.Fees.Services
-
-			for _, service := range services {
-				for _, price := range service.Prices {
-
-					entry := Output{
-						InstitutionName: institution.Name,
-						CreditCardName:  creditCard.Name,
-						Name:            service.Name,
-						Code:            service.Code,
-						Interval:        price.Interval,
-						Value:           price.Value,
-						Currency:        price.Currency,
-					}
-
-					entries = append(entries, entry)
-				}
+	for _, creditCard := range accumulator {
+		services := creditCard.Fees.Services
+		for _, service := range services {
+			for _, price := range service.Prices {
+				entry := newOutputPrice(institution, &creditCard, &service, &price)
+				entries = append(entries, *entry)
 			}
 		}
-
 	}
 
 	return entries
-
 }
 
-//Output output struct
-type Output struct {
+//OutputPrice output price struct
+type OutputPrice struct {
 	InstitutionName string
 	CreditCardName  string
 	Name            string
@@ -80,4 +73,16 @@ type Output struct {
 	Interval        string
 	Value           string
 	Currency        string
+}
+
+func newOutputPrice(institution *dtos.Institution, creditCard *personalcreditcard.Entity, service *subentities.FeeService, price *subentities.ServicePrice) *OutputPrice {
+	return &OutputPrice{
+		InstitutionName: institution.Name,
+		CreditCardName:  creditCard.Name,
+		Name:            service.Name,
+		Code:            service.Code,
+		Interval:        price.Interval,
+		Value:           price.Value,
+		Currency:        price.Currency,
+	}
 }

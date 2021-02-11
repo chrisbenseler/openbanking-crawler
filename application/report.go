@@ -53,7 +53,7 @@ func NewReport() {
 	personalCreditCardReportInterface := report.NewPersonalCreditCard(institutionService, personalCreditCardService)
 	filename = "report_personalcreditcard"
 
-	output := personalCreditCardReportInterface.Fees()
+	output := *personalCreditCardReportInterface.Fees()
 
 	writeErr := write(output, path, filename)
 
