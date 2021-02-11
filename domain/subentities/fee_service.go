@@ -6,14 +6,8 @@ type FeeService struct {
 	Code                string         `json:"code"`
 	ChargingTriggerInfo string         `json:"chargingTriggerInfo"`
 	Prices              []ServicePrice `json:"prices"`
-	Minimun             struct {
-		Value    string `json:"value"`
-		Currency string `json:"currency"`
-	} `json:"minimum"`
-	Maximun struct {
-		Value    string `json:"value"`
-		Currency string `json:"currency"`
-	} `json:"maximum"`
+	Minimun             Minimun        `json:"minimum"`
+	Maximun             Maximun        `json:"maximum"`
 }
 
 //ServicePrice service price

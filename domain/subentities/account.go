@@ -13,24 +13,15 @@ type ServiceBundle struct {
 	Name     string                 `json:"name"`
 	Services []ServiceBundleService `json:"services"`
 	Prices   []Price                `json:"prices"`
-	Minimun  struct {
-		Value    string `json:"value"`
-		Currency string `json:"currency"`
-	} `json:"minimum"`
-	Maximun struct {
-		Value    string `json:"value"`
-		Currency string `json:"currency"`
-	} `json:"maximum"`
+	Minimun  Minimun                `json:"minimum"`
+	Maximun  Maximun                `json:"maximum"`
 }
 
 //TermsConditions TermsConditions
 type TermsConditions struct {
-	MinimumBalance struct {
-		Value    string `json:"value"`
-		Currency string `json:"currency"`
-	} `json:"minimumBalance" bson:"minimumBalance"`
-	ElegibilityCriteriaInfo string `json:"elegibilityCriteriaInfo" bson:"elegibilityCriteriaInfo"`
-	ClosingProcessInfo      string `json:"closingProcessInfo" bson:"closingProcessInfo"`
+	MinimumBalance          MinimumBalance `json:"minimumBalance" bson:"minimumBalance"`
+	ElegibilityCriteriaInfo string         `json:"elegibilityCriteriaInfo" bson:"elegibilityCriteriaInfo"`
+	ClosingProcessInfo      string         `json:"closingProcessInfo" bson:"closingProcessInfo"`
 }
 
 //IncomeRate IncomeRate
