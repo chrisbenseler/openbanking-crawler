@@ -15,6 +15,7 @@ import (
 	"openbankingcrawler/domain/personalaccount"
 	"openbankingcrawler/domain/personalcreditcard"
 	"openbankingcrawler/domain/personalfinancing"
+	"openbankingcrawler/domain/personalinvoicefinancing"
 	"openbankingcrawler/domain/personalloan"
 	"openbankingcrawler/services/crawlerservices"
 	"strconv"
@@ -27,6 +28,7 @@ type Crawler interface {
 	PersonalAccounts(string, int, []personalaccount.Entity) (*[]personalaccount.Entity, common.CustomError)
 	PersonalLoans(string, int, []personalloan.Entity) (*[]personalloan.Entity, common.CustomError)
 	PersonalFinancings(string, int, []personalfinancing.Entity) (*[]personalfinancing.Entity, common.CustomError)
+	PersonalInvoiceFinancings(string, int, []personalinvoicefinancing.Entity) (*[]personalinvoicefinancing.Entity, common.CustomError)
 	PersonalCreditCards(string, int, []personalcreditcard.Entity) (*[]personalcreditcard.Entity, common.CustomError)
 	BusinessAccounts(string, int, []businessaccount.Entity) (*[]businessaccount.Entity, common.CustomError)
 	BusinessLoans(string, int, []businessloan.Entity) (*[]businessloan.Entity, common.CustomError)
@@ -151,6 +153,14 @@ func (s *crawler) PersonalAccounts(baseURL string, page int, accumulator []perso
 func (s *crawler) PersonalFinancings(baseURL string, page int, accumulator []personalfinancing.Entity) (*[]personalfinancing.Entity, common.CustomError) {
 	fmt.Println("Start crawl personal account cards for", baseURL, page)
 	result, err := crawlerservices.ForPersonalFinancings(s.Do, baseURL, page, accumulator)
+	fmt.Println("End crawl personal accounts for", baseURL)
+	return result, err
+}
+
+//PersonalInvoiceFinancings PersonalInvoiceFinancings
+func (s *crawler) PersonalInvoiceFinancings(baseURL string, page int, accumulator []personalinvoicefinancing.Entity) (*[]personalinvoicefinancing.Entity, common.CustomError) {
+	fmt.Println("Start crawl personal account cards for", baseURL, page)
+	result, err := crawlerservices.ForPersonalInvoiceFinancings(s.Do, baseURL, page, accumulator)
 	fmt.Println("End crawl personal accounts for", baseURL)
 	return result, err
 }

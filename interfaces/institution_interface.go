@@ -12,6 +12,7 @@ import (
 	"openbankingcrawler/domain/personalaccount"
 	"openbankingcrawler/domain/personalcreditcard"
 	"openbankingcrawler/domain/personalfinancing"
+	"openbankingcrawler/domain/personalinvoicefinancing"
 	"openbankingcrawler/domain/personalloan"
 	"openbankingcrawler/dtos"
 	"openbankingcrawler/services"
@@ -29,6 +30,7 @@ type InstitutionInterface interface {
 	UpdatePersonalAccounts(string) common.CustomError
 	UpdatePersonalLoans(string) common.CustomError
 	UpdatePersonalFinancings(string) common.CustomError
+	UpdatePersonalInvoiceFinancings(string) common.CustomError
 	UpdatePersonalCreditCards(string) common.CustomError
 	UpdateBusinessAccounts(string) common.CustomError
 	UpdateBusinessLoans(string) common.CustomError
@@ -37,18 +39,19 @@ type InstitutionInterface interface {
 }
 
 type institutionInterface struct {
-	institutionService        institution.Service
-	branchService             branch.Service
-	electronicChannelService  electronicchannel.Service
-	personalAccountService    personalaccount.Service
-	personalLoanService       personalloan.Service
-	personalFinancingService  personalfinancing.Service
-	personalCreditCardService personalcreditcard.Service
-	businessAccountService    businessaccount.Service
-	businessLoanService       businessloan.Service
-	businessFinancingService  businessfinancing.Service
-	businessCreditCardService businesscreditcard.Service
-	crawler                   services.Crawler
+	institutionService              institution.Service
+	branchService                   branch.Service
+	electronicChannelService        electronicchannel.Service
+	personalAccountService          personalaccount.Service
+	personalLoanService             personalloan.Service
+	personalFinancingService        personalfinancing.Service
+	personalInvoiceFinancingService personalinvoicefinancing.Service
+	personalCreditCardService       personalcreditcard.Service
+	businessAccountService          businessaccount.Service
+	businessLoanService             businessloan.Service
+	businessFinancingService        businessfinancing.Service
+	businessCreditCardService       businesscreditcard.Service
+	crawler                         services.Crawler
 }
 
 //NewInstitution create a new interface for institutions
@@ -58,6 +61,7 @@ func NewInstitution(institutionService institution.Service,
 	personalAccountService personalaccount.Service,
 	personalLoanService personalloan.Service,
 	personalFinancingService personalfinancing.Service,
+	personalInvoiceFinancingService personalinvoicefinancing.Service,
 	personalCreditCardService personalcreditcard.Service,
 	businessAccountService businessaccount.Service,
 	businessLoanService businessloan.Service,
@@ -66,18 +70,19 @@ func NewInstitution(institutionService institution.Service,
 	crawler services.Crawler) InstitutionInterface {
 
 	return &institutionInterface{
-		institutionService:        institutionService,
-		branchService:             branchService,
-		electronicChannelService:  electronicChannelService,
-		personalAccountService:    personalAccountService,
-		personalLoanService:       personalLoanService,
-		personalFinancingService:  personalFinancingService,
-		personalCreditCardService: personalCreditCardService,
-		businessAccountService:    businessAccountService,
-		businessLoanService:       businessLoanService,
-		businessFinancingService:  businessFinancingService,
-		businessCreditCardService: businessCreditCardService,
-		crawler:                   crawler,
+		institutionService:              institutionService,
+		branchService:                   branchService,
+		electronicChannelService:        electronicChannelService,
+		personalAccountService:          personalAccountService,
+		personalLoanService:             personalLoanService,
+		personalFinancingService:        personalFinancingService,
+		personalInvoiceFinancingService: personalInvoiceFinancingService,
+		personalCreditCardService:       personalCreditCardService,
+		businessAccountService:          businessAccountService,
+		businessLoanService:             businessLoanService,
+		businessFinancingService:        businessFinancingService,
+		businessCreditCardService:       businessCreditCardService,
+		crawler:                         crawler,
 	}
 }
 
@@ -260,6 +265,27 @@ func (i *institutionInterface) UpdatePersonalFinancings(id string) common.Custom
 		return delErr
 	}
 	insertErr := i.personalFinancingService.InsertMany(*personalFinancings, id)
+	if insertErr != nil {
+		return insertErr
+	}
+	return nil
+}
+
+//UpdatePersonalInvoiceFinancings update personal financings from institution
+func (i *institutionInterface) UpdatePersonalInvoiceFinancings(id string) common.CustomError {
+	institution, err := i.institutionService.Read(id)
+	if err != nil {
+		return err
+	}
+	personalInvoiceFinancings, crawlErr := i.crawler.PersonalInvoiceFinancings(institution.BaseURL, 1, []personalinvoicefinancing.Entity{})
+	if crawlErr != nil {
+		return crawlErr
+	}
+	delErr := i.personalInvoiceFinancingService.DeleteAllFromInstitution(id)
+	if delErr != nil {
+		return delErr
+	}
+	insertErr := i.personalInvoiceFinancingService.InsertMany(*personalInvoiceFinancings, id)
 	if insertErr != nil {
 		return insertErr
 	}

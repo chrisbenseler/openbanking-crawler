@@ -2,6 +2,7 @@ package application
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"openbankingcrawler/interfaces/report"
@@ -29,11 +30,11 @@ func NewReport() {
 		Database:         database,
 	}
 
-	fmt.Printf("Connect to database %s", database)
+	fmt.Printf("Connect to database %s %s", database, "\n")
 	connection, dbErr := bongo.Connect(config)
 
 	if dbErr != nil {
-		fmt.Println(dbErr)
+		panic(dbErr)
 	}
 
 	institutionService,
@@ -41,6 +42,7 @@ func NewReport() {
 		_ := CreateBasicServices(connection)
 
 	_,
+		_,
 		_,
 		_,
 		personalCreditCardService,
@@ -52,12 +54,17 @@ func NewReport() {
 	path := "./outputs/"
 	filename := "report"
 
-	personalCreditCardReportInterface := report.NewPersonalCreditCard(institutionService, personalCreditCardService)
-	filename = "report_personalcreditcard"
+	reportType := os.Getenv("TYPE")
 
-	output := *personalCreditCardReportInterface.Fees()
+	writeErr := errors.New("No report type defined")
 
-	writeErr := write(output, path, filename)
+	if reportType == "PERSONAL_CC" {
+		personalCreditCardReportInterface := report.NewPersonalCreditCard(institutionService, personalCreditCardService)
+		filename = "report_personalcreditcard"
+		output := *personalCreditCardReportInterface.Fees()
+
+		writeErr = write(output, path, filename)
+	}
 
 	if writeErr != nil {
 		panic(writeErr)

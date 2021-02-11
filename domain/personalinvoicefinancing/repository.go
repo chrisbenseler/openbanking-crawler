@@ -1,4 +1,4 @@
-package personalfinancing
+package personalinvoicefinancing
 
 import (
 	"openbankingcrawler/common"
@@ -15,30 +15,30 @@ type Repository interface {
 	FindByInstitution(string, int) ([]Entity, *subentities.Pagination, common.CustomError)
 }
 
-type personalFinancing struct {
+type personalInvoiceFinancing struct {
 	dao *bongo.Collection
 }
 
 //NewRepository create a new repository for personalLoan
 func NewRepository(dao *bongo.Collection) Repository {
-	return &personalFinancing{
+	return &personalInvoiceFinancing{
 		dao: dao,
 	}
 }
 
 //Save save an entity
-func (r *personalFinancing) Save(entity Entity) error {
+func (r *personalInvoiceFinancing) Save(entity Entity) error {
 	return r.dao.Save(&entity)
 }
 
 //DeleteMany delete all branches from an institution
-func (r *personalFinancing) DeleteMany(institutionID string) error {
+func (r *personalInvoiceFinancing) DeleteMany(institutionID string) error {
 	_, err := r.dao.Delete(bson.M{"institutionid": institutionID})
 	return err
 }
 
 //FindByInstitution find all personalLoan from an institution
-func (r *personalFinancing) FindByInstitution(institutionID string, page int) ([]Entity, *subentities.Pagination, common.CustomError) {
+func (r *personalInvoiceFinancing) FindByInstitution(institutionID string, page int) ([]Entity, *subentities.Pagination, common.CustomError) {
 	results := r.dao.Find(bson.M{"institutionid": institutionID})
 
 	info, _ := results.Paginate(25, page)
@@ -47,13 +47,13 @@ func (r *personalFinancing) FindByInstitution(institutionID string, page int) ([
 		return nil, nil, common.NewInternalServerError("Error on database", results.Error)
 	}
 
-	personalFinancings := make([]Entity, info.RecordsOnPage)
+	personalInvoices := make([]Entity, info.RecordsOnPage)
 
 	for i := 0; i < info.RecordsOnPage; i++ {
-		_ = results.Next(&personalFinancings[i])
+		_ = results.Next(&personalInvoices[i])
 	}
 
 	pagination := subentities.Pagination{Total: info.TotalPages, Current: info.Current}
 
-	return personalFinancings, &pagination, nil
+	return personalInvoices, &pagination, nil
 }
