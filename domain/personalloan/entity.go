@@ -9,11 +9,13 @@ import (
 //Entity branch entity
 type Entity struct {
 	bongo.DocumentBase `bson:",inline"`
-	InstitutionID      string              `json:"institutionid"`
-	Type               string              `json:"type" bson:"type"`
-	Fees               subentities.Fees    `json:"fees"`
-	InterestRates      []subentities.Rates `json:"interestRates" bson:"interestRates"`
-	TermsConditions    string              `json:"termsConditions" bson:"termsConditions"`
+	InstitutionID      string `json:"institutionid"`
+	Type               string `json:"type" bson:"type"`
+	Fees               struct {
+		Services []subentities.FeeService `json:"services"`
+	} `json:"fees"`
+	InterestRates   []subentities.Rates `json:"interestRates" bson:"interestRates"`
+	TermsConditions string              `json:"termsConditions" bson:"termsConditions"`
 }
 
 //NewEntity create a new personal load entity

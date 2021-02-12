@@ -89,28 +89,27 @@ func NewLocal() {
 
 		fmt.Println("Start crawl for", _if.Name)
 
-		/*
-			go institutionInterface.UpdatePersonalAccounts(savedIF.ID)
-			time.NewTimer(1 * time.Second)
-			go institutionInterface.UpdatePersonalFinancings(savedIF.ID)
-			time.NewTimer(1 * time.Second)
-			go institutionInterface.UpdatePersonalInvoiceFinancings(savedIF.ID)
-			time.NewTimer(1 * time.Second)
-			go institutionInterface.UpdatePersonalLoans(savedIF.ID)
-			time.NewTimer(1 * time.Second)
-			go institutionInterface.UpdatePersonalCreditCards(savedIF.ID)
-			time.NewTimer(1 * time.Second)
-			go institutionInterface.UpdateBusinessAccounts(savedIF.ID)
-			time.NewTimer(1 * time.Second)
-			go institutionInterface.UpdateBusinessLoans(savedIF.ID)
-			time.NewTimer(1 * time.Second)
-			go institutionInterface.UpdateBusinessFinancings(savedIF.ID)
-			time.NewTimer(1 * time.Second)
-			go institutionInterface.UpdateBusinessCreditCards(savedIF.ID)
-		*/
-
+		go institutionInterface.UpdatePersonalAccounts(savedIF.ID)
+		time.NewTimer(1 * time.Second)
+		go institutionInterface.UpdatePersonalFinancings(savedIF.ID)
+		time.NewTimer(1 * time.Second)
+		go institutionInterface.UpdatePersonalInvoiceFinancings(savedIF.ID)
+		time.NewTimer(1 * time.Second)
+		go institutionInterface.UpdatePersonalLoans(savedIF.ID)
+		time.NewTimer(1 * time.Second)
+		go institutionInterface.UpdatePersonalCreditCards(savedIF.ID)
+		time.NewTimer(1 * time.Second)
+		go institutionInterface.UpdateBusinessAccounts(savedIF.ID)
+		time.NewTimer(1 * time.Second)
+		go institutionInterface.UpdateBusinessLoans(savedIF.ID)
+		time.NewTimer(1 * time.Second)
+		go institutionInterface.UpdateBusinessFinancings(savedIF.ID)
+		time.NewTimer(1 * time.Second)
 		go institutionInterface.UpdateBusinessInvoiceFinancings(savedIF.ID)
 		time.NewTimer(1 * time.Second)
+		go institutionInterface.UpdateBusinessCreditCards(savedIF.ID)
+
+		// go institutionInterface.UpdatePersonalLoans(savedIF.ID)
 
 	}
 
