@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"openbankingcrawler/domain/institution"
 	"openbankingcrawler/dtos"
 	"openbankingcrawler/interfaces"
 	"openbankingcrawler/services"
@@ -77,45 +78,47 @@ func NewLocal() {
 	ifs := readFile()
 
 	for _, _if := range *ifs {
-
-		ifDTO := dtos.Institution{Name: _if.Name, BaseURL: _if.BaseURL}
-
-		savedIF, _ := institutionService.FindByName(_if.Name)
-
-		if savedIF == nil {
-			savedIF, _ = institutionService.Create(ifDTO)
-		}
-		institutionService.Update(dtos.Institution{Name: savedIF.Name, BaseURL: _if.BaseURL, ID: savedIF.ID})
-
-		fmt.Println("Start crawl for", _if.Name)
-
-		go institutionInterface.UpdatePersonalAccounts(savedIF.ID)
-		time.NewTimer(1 * time.Second)
-		go institutionInterface.UpdatePersonalFinancings(savedIF.ID)
-		time.NewTimer(1 * time.Second)
-		go institutionInterface.UpdatePersonalInvoiceFinancings(savedIF.ID)
-		time.NewTimer(1 * time.Second)
-		go institutionInterface.UpdatePersonalLoans(savedIF.ID)
-		time.NewTimer(1 * time.Second)
-		go institutionInterface.UpdatePersonalCreditCards(savedIF.ID)
-		time.NewTimer(1 * time.Second)
-		go institutionInterface.UpdateBusinessAccounts(savedIF.ID)
-		time.NewTimer(1 * time.Second)
-		go institutionInterface.UpdateBusinessLoans(savedIF.ID)
-		time.NewTimer(1 * time.Second)
-		go institutionInterface.UpdateBusinessFinancings(savedIF.ID)
-		time.NewTimer(1 * time.Second)
-		go institutionInterface.UpdateBusinessInvoiceFinancings(savedIF.ID)
-		time.NewTimer(1 * time.Second)
-		go institutionInterface.UpdateBusinessCreditCards(savedIF.ID)
-
-		// go institutionInterface.UpdatePersonalLoans(savedIF.ID)
-
+		crawlForIF(_if, institutionService, institutionInterface)
 	}
+
+	// crawlForIF((*ifs)[4], institutionService, institutionInterface)
 
 	fmt.Scanln()
 	fmt.Println("done")
 
+}
+
+func crawlForIF(_if IF, institutionService institution.Service, institutionInterface interfaces.InstitutionInterface) {
+	ifDTO := dtos.Institution{Name: _if.Name, BaseURL: _if.BaseURL}
+
+	savedIF, _ := institutionService.FindByName(_if.Name)
+
+	if savedIF == nil {
+		savedIF, _ = institutionService.Create(ifDTO)
+	}
+	institutionService.Update(dtos.Institution{Name: savedIF.Name, BaseURL: _if.BaseURL, ID: savedIF.ID})
+
+	fmt.Println("Start crawl for", _if.Name)
+
+	go institutionInterface.UpdatePersonalAccounts(savedIF.ID)
+	time.NewTimer(1 * time.Second)
+	go institutionInterface.UpdatePersonalFinancings(savedIF.ID)
+	time.NewTimer(1 * time.Second)
+	go institutionInterface.UpdatePersonalInvoiceFinancings(savedIF.ID)
+	time.NewTimer(1 * time.Second)
+	go institutionInterface.UpdatePersonalLoans(savedIF.ID)
+	time.NewTimer(1 * time.Second)
+	go institutionInterface.UpdatePersonalCreditCards(savedIF.ID)
+	time.NewTimer(1 * time.Second)
+	go institutionInterface.UpdateBusinessAccounts(savedIF.ID)
+	time.NewTimer(1 * time.Second)
+	go institutionInterface.UpdateBusinessLoans(savedIF.ID)
+	time.NewTimer(1 * time.Second)
+	go institutionInterface.UpdateBusinessFinancings(savedIF.ID)
+	time.NewTimer(1 * time.Second)
+	go institutionInterface.UpdateBusinessInvoiceFinancings(savedIF.ID)
+	time.NewTimer(1 * time.Second)
+	go institutionInterface.UpdateBusinessCreditCards(savedIF.ID)
 }
 
 func readFile() *[]IF {

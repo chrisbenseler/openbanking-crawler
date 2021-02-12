@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"openbankingcrawler/common"
 	"openbankingcrawler/domain/businessinvoicefinancing"
+	"strconv"
 )
 
 //ForBusinessInvoiceFinancings crawl business credit cards from institution
@@ -24,7 +25,7 @@ func ForBusinessInvoiceFinancings(httpCrawlService func(string, string, int) ([]
 	jsonUnmarshallErr := json.Unmarshal(body, &jsonData)
 
 	if jsonUnmarshallErr != nil {
-		fmt.Println(jsonUnmarshallErr)
+		fmt.Printf("Error crawl business invoice financings for %s %s %s", baseURL, strconv.Itoa(page), jsonUnmarshallErr)
 		return nil, common.NewInternalServerError("Unable to unmarshall data", jsonUnmarshallErr)
 	}
 
@@ -39,7 +40,7 @@ func ForBusinessInvoiceFinancings(httpCrawlService func(string, string, int) ([]
 		return ForBusinessInvoiceFinancings(httpCrawlService, baseURL, page+1, businessinvoicefinancings)
 	}
 
-	fmt.Println("End crawl business invoice financings for", baseURL)
+	fmt.Println("End crawl business invoice financings for", baseURL, page)
 
 	return &businessinvoicefinancings, nil
 

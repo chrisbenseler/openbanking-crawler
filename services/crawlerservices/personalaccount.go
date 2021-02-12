@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"openbankingcrawler/common"
 	"openbankingcrawler/domain/personalaccount"
+	"strconv"
 )
 
 //ForPersonalAccounts crawl personal loans from institution
@@ -22,7 +23,7 @@ func ForPersonalAccounts(httpCrawlService func(string, string, int) ([]byte, com
 	jsonUnmarshallErr := json.Unmarshal(body, &jsonData)
 
 	if jsonUnmarshallErr != nil {
-		fmt.Println(jsonUnmarshallErr)
+		fmt.Printf("Error crawl personal accounts for %s %s %s", baseURL, strconv.Itoa(page), jsonUnmarshallErr)
 		return nil, common.NewInternalServerError("Unable to unmarshall data", jsonUnmarshallErr)
 	}
 
@@ -39,7 +40,7 @@ func ForPersonalAccounts(httpCrawlService func(string, string, int) ([]byte, com
 		return ForPersonalAccounts(httpCrawlService, baseURL, page+1, personalaccounts)
 	}
 
-	fmt.Println("End crawl personal accounts for", baseURL)
+	fmt.Println("End crawl personal accounts for", baseURL, page)
 
 	return &personalaccounts, nil
 

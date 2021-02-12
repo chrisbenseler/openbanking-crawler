@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"openbankingcrawler/common"
 	"openbankingcrawler/domain/businesscreditcard"
+	"strconv"
 )
 
 //ForBusinessCreditCards crawl business credit cards from institution
@@ -22,7 +23,7 @@ func ForBusinessCreditCards(httpCrawlService func(string, string, int) ([]byte, 
 	jsonUnmarshallErr := json.Unmarshal(body, &jsonData)
 
 	if jsonUnmarshallErr != nil {
-		fmt.Println(jsonUnmarshallErr)
+		fmt.Printf("Error crawl business credit cards for %s %s %s", baseURL, strconv.Itoa(page), jsonUnmarshallErr)
 		return nil, common.NewInternalServerError("Unable to unmarshall data", jsonUnmarshallErr)
 	}
 
@@ -39,7 +40,7 @@ func ForBusinessCreditCards(httpCrawlService func(string, string, int) ([]byte, 
 		return ForBusinessCreditCards(httpCrawlService, baseURL, page+1, businesscreditcards)
 	}
 
-	fmt.Println("End crawl business credit cards for", baseURL)
+	fmt.Println("End crawl business credit cards for", baseURL, page)
 
 	return &businesscreditcards, nil
 

@@ -1,6 +1,7 @@
 package services
 
 import (
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -44,10 +45,15 @@ type crawler struct {
 }
 
 //NewCrawler create a new service for crawl
-func NewCrawler(http *http.Client) Crawler {
+func NewCrawler(http1 *http.Client) Crawler {
+
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
+	client := &http.Client{Transport: tr}
 
 	return &crawler{
-		httpClient: http,
+		httpClient: client,
 	}
 }
 
@@ -66,7 +72,7 @@ func (s *crawler) Branches(baseURL string, page int, accumulator []branch.Entity
 	jsonUnmarshallErr := json.Unmarshal(body, &jsonData)
 
 	if jsonUnmarshallErr != nil {
-		fmt.Println(jsonUnmarshallErr)
+
 		return nil, common.NewInternalServerError("Unable to unmarshall data", jsonUnmarshallErr)
 	}
 
@@ -100,13 +106,13 @@ func (s *crawler) ElectronicChannels(baseURL string, page int, accumulator []ele
 	metaInfo := &MetaInfoJSON{}
 	metaInfoErr := json.Unmarshal(body, &metaInfo)
 	if metaInfoErr != nil {
-		fmt.Println(metaInfoErr)
+		fmt.Printf("Error crawl electronic channel: %s %s", metaInfoErr.Error(), baseURL)
 	}
 
 	jsonUnmarshallErr := json.Unmarshal(body, &jsonData)
 
 	if jsonUnmarshallErr != nil {
-		fmt.Println(jsonUnmarshallErr)
+
 		return nil, common.NewInternalServerError("Unable to unmarshall data", jsonUnmarshallErr)
 	}
 
@@ -130,79 +136,109 @@ func (s *crawler) ElectronicChannels(baseURL string, page int, accumulator []ele
 
 //PersonalLoans crawl personal loans from institution
 func (s *crawler) PersonalLoans(baseURL string, page int, accumulator []personalloan.Entity) (*[]personalloan.Entity, common.CustomError) {
-	fmt.Println("Start crawl personal loans for", baseURL, page)
+	fmt.Println("Start crawl personal loans for", baseURL)
 	result, err := crawlerservices.ForPersonalLoans(s.Do, baseURL, page, accumulator)
+	if err != nil {
+		fmt.Printf("Error crawl personal loans for %s %s %s", baseURL, strconv.Itoa(page), err.Message())
+	}
 	fmt.Println("End crawl personal loans for", baseURL)
 	return result, err
 }
 
 //PersonalLoans crawl personal loans from institution
 func (s *crawler) PersonalCreditCards(baseURL string, page int, accumulator []personalcreditcard.Entity) (*[]personalcreditcard.Entity, common.CustomError) {
-	fmt.Println("Start crawl personal credit card cards for", baseURL, page)
+	fmt.Println("Start crawl personal credit cards for", baseURL)
 	result, err := crawlerservices.ForPersonalCreditCards(s.Do, baseURL, page, accumulator)
-	fmt.Println("End crawl personal credit card for", baseURL)
+	if err != nil {
+		fmt.Printf("Error crawl personal credit cards for %s %s %s", baseURL, strconv.Itoa(page), err.Message())
+	}
+	fmt.Println("End crawl personal credit cards for", baseURL)
 	return result, err
 }
 
 func (s *crawler) PersonalAccounts(baseURL string, page int, accumulator []personalaccount.Entity) (*[]personalaccount.Entity, common.CustomError) {
-	fmt.Println("Start crawl personal account cards for", baseURL, page)
+	fmt.Println("Start crawl personal account cards for", baseURL)
 	result, err := crawlerservices.ForPersonalAccounts(s.Do, baseURL, page, accumulator)
+	if err != nil {
+		fmt.Printf("Error crawl personal accounts for %s %s %s", baseURL, strconv.Itoa(page), err.Message())
+	}
 	fmt.Println("End crawl personal accounts for", baseURL)
 	return result, err
 }
 
 //PersonalFinancings PersonalFinancings
 func (s *crawler) PersonalFinancings(baseURL string, page int, accumulator []personalfinancing.Entity) (*[]personalfinancing.Entity, common.CustomError) {
-	fmt.Println("Start crawl personal account cards for", baseURL, page)
+	fmt.Println("Start crawl personal financings for", baseURL)
 	result, err := crawlerservices.ForPersonalFinancings(s.Do, baseURL, page, accumulator)
-	fmt.Println("End crawl personal accounts for", baseURL)
+	if err != nil {
+		fmt.Printf("Error crawl personal financings for %s %s %s", baseURL, strconv.Itoa(page), err.Message())
+	}
+	fmt.Println("End crawl personal financings for", baseURL)
 	return result, err
 }
 
 //PersonalInvoiceFinancings PersonalInvoiceFinancings
 func (s *crawler) PersonalInvoiceFinancings(baseURL string, page int, accumulator []personalinvoicefinancing.Entity) (*[]personalinvoicefinancing.Entity, common.CustomError) {
-	fmt.Println("Start crawl personal account cards for", baseURL, page)
+	fmt.Println("Start crawl personal invoice financings for", baseURL)
 	result, err := crawlerservices.ForPersonalInvoiceFinancings(s.Do, baseURL, page, accumulator)
-	fmt.Println("End crawl personal accounts for", baseURL)
+	if err != nil {
+		fmt.Printf("Error crawl personal invoice financings for %s %s %s", baseURL, strconv.Itoa(page), err.Message())
+	}
+	fmt.Println("End crawl personal invoice financings for", baseURL)
 	return result, err
 }
 
 //BusinessAccounts BusinessAccounts
 func (s *crawler) BusinessAccounts(baseURL string, page int, accumulator []businessaccount.Entity) (*[]businessaccount.Entity, common.CustomError) {
-	fmt.Println("Start crawl business account for", baseURL, page)
+	fmt.Println("Start crawl business account for", baseURL)
 	result, err := crawlerservices.ForBusinessAccounts(s.Do, baseURL, page, accumulator)
+	if err != nil {
+		fmt.Printf("Error crawl business account for %s %s %s", baseURL, strconv.Itoa(page), err.Message())
+	}
 	fmt.Println("End crawl business accounts for", baseURL)
 	return result, err
 }
 
 //BusinessLoans BusinessLoans
 func (s *crawler) BusinessLoans(baseURL string, page int, accumulator []businessloan.Entity) (*[]businessloan.Entity, common.CustomError) {
-	fmt.Println("Start crawl business loan for", baseURL, page)
+	fmt.Println("Start crawl business loan for", baseURL)
 	result, err := crawlerservices.ForBusinessLoans(s.Do, baseURL, page, accumulator)
+	if err != nil {
+		fmt.Printf("Error crawl business loan for %s %s %s", baseURL, strconv.Itoa(page), err.Message())
+	}
 	fmt.Println("End crawl business loan for", baseURL)
 	return result, err
 }
 
 //BusinessFinancings BusinessFinancings
 func (s *crawler) BusinessFinancings(baseURL string, page int, accumulator []businessfinancing.Entity) (*[]businessfinancing.Entity, common.CustomError) {
-	fmt.Println("Start crawl business financings for", baseURL, page)
+	fmt.Println("Start crawl business financings for", baseURL)
 	result, err := crawlerservices.ForBusinessFinancings(s.Do, baseURL, page, accumulator)
+	if err != nil {
+		fmt.Printf("Error crawl business financing for %s %s %s", baseURL, strconv.Itoa(page), err.Message())
+	}
 	fmt.Println("End crawl business financings for", baseURL)
 	return result, err
 }
 
 //BusinessInvoiceFinancings BusinessFinancings
 func (s *crawler) BusinessInvoiceFinancings(baseURL string, page int, accumulator []businessinvoicefinancing.Entity) (*[]businessinvoicefinancing.Entity, common.CustomError) {
-	fmt.Println("Start crawl business invoice financings for", baseURL, page)
+	fmt.Println("Start crawl business invoice financings for", baseURL)
 	result, err := crawlerservices.ForBusinessInvoiceFinancings(s.Do, baseURL, page, accumulator)
+	if err != nil {
+		fmt.Printf("Error crawl business invoice financing for %s %s %s", baseURL, strconv.Itoa(page), err.Message())
+	}
 	fmt.Println("End crawl business invoice financings for", baseURL)
 	return result, err
 }
 
 //BusinessCreditCards crawl business credit cards from institution
 func (s *crawler) BusinessCreditCards(baseURL string, page int, accumulator []businesscreditcard.Entity) (*[]businesscreditcard.Entity, common.CustomError) {
-	fmt.Println("Start crawl business business cards for", baseURL, page)
+	fmt.Println("Start crawl business business cards for", baseURL)
 	result, err := crawlerservices.ForBusinessCreditCards(s.Do, baseURL, page, accumulator)
+	if err != nil {
+		fmt.Printf("Error crawl business cards for %s %s %s", baseURL, strconv.Itoa(page), err.Message())
+	}
 	fmt.Println("End crawl business business cards for", baseURL)
 	return result, err
 }
@@ -210,13 +246,13 @@ func (s *crawler) BusinessCreditCards(baseURL string, page int, accumulator []bu
 //Do do
 func (s *crawler) Do(baseURL string, url string, page int) ([]byte, common.CustomError) {
 
-	resp, err := s.httpClient.Get(baseURL + "/open-banking/" + url + "?&page=" + strconv.Itoa(page))
+	fullURL := baseURL + "/open-banking/" + url + "?page=" + strconv.Itoa(page)
 
-	fmt.Println(baseURL + "/open-banking/" + url + "?page=" + strconv.Itoa(page))
+	resp, err := s.httpClient.Get(fullURL)
 
 	if err != nil {
-		fmt.Println(err)
-		return nil, common.NewInternalServerError("Unable to crawl from institution", err)
+		fmt.Printf("Error crawling: %s %s", fullURL, err.Error())
+		return nil, common.NewInternalServerError("Unable to crawl", err)
 	}
 
 	defer resp.Body.Close()
