@@ -5,6 +5,7 @@ import (
 	"openbankingcrawler/domain/businessaccount"
 	"openbankingcrawler/domain/businesscreditcard"
 	"openbankingcrawler/domain/businessfinancing"
+	"openbankingcrawler/domain/businessinvoicefinancing"
 	"openbankingcrawler/domain/businessloan"
 	"openbankingcrawler/domain/electronicchannel"
 	"openbankingcrawler/domain/institution"
@@ -43,7 +44,7 @@ func CreateBasicServices(connection *bongo.Connection) (
 //createProductsServicesRepositories create ProductsServices Repositories
 func createProductsServicesRepositories(connection *bongo.Connection) (
 	personalaccount.Repository, personalloan.Repository, personalfinancing.Repository, personalinvoicefinancing.Repository, personalcreditcard.Repository,
-	businessaccount.Repository, businessloan.Repository, businessfinancing.Repository, businesscreditcard.Repository) {
+	businessaccount.Repository, businessloan.Repository, businessfinancing.Repository, businessinvoicefinancing.Repository, businesscreditcard.Repository) {
 
 	personalLoanRepository := personalloan.NewRepository(connection.Collection("personalLoan"))
 	personalAccountRepository := personalaccount.NewRepository(connection.Collection("personalAccount"))
@@ -54,16 +55,17 @@ func createProductsServicesRepositories(connection *bongo.Connection) (
 	businessAccountRepository := businessaccount.NewRepository(connection.Collection("businessAccount"))
 	businessLoanRepository := businessloan.NewRepository(connection.Collection("businessLoan"))
 	businessFinancingRepository := businessfinancing.NewRepository(connection.Collection("businessFinancing"))
+	businessInvoiceFinancingRepository := businessinvoicefinancing.NewRepository(connection.Collection("businessInvoiceFinancing"))
 	businessCreditCardRepository := businesscreditcard.NewRepository(connection.Collection("businessCreditCard"))
 
 	return personalAccountRepository, personalLoanRepository, personalFinancingRepository, personalInvoiceFinancingRepository, personalCreditCardRepository,
-		businessAccountRepository, businessLoanRepository, businessFinancingRepository, businessCreditCardRepository
+		businessAccountRepository, businessLoanRepository, businessFinancingRepository, businessInvoiceFinancingRepository, businessCreditCardRepository
 }
 
 //CreateProductsServicesServices create products services services
 func CreateProductsServicesServices(connection *bongo.Connection) (
 	personalaccount.Service, personalloan.Service, personalfinancing.Service, personalinvoicefinancing.Service, personalcreditcard.Service,
-	businessaccount.Service, businessloan.Service, businessfinancing.Service, businesscreditcard.Service) {
+	businessaccount.Service, businessloan.Service, businessfinancing.Service, businessinvoicefinancing.Service, businesscreditcard.Service) {
 
 	personalAccountRepository,
 		personalLoanRepository,
@@ -73,6 +75,7 @@ func CreateProductsServicesServices(connection *bongo.Connection) (
 		businessAccountRepository,
 		businessLoanRepository,
 		businessFinancingRepository,
+		businessInvoiceFinancingRepository,
 		businessCreditCardRepository := createProductsServicesRepositories(connection)
 
 	personalAccountService := personalaccount.NewService(personalAccountRepository)
@@ -84,10 +87,11 @@ func CreateProductsServicesServices(connection *bongo.Connection) (
 	businessAccountService := businessaccount.NewService(businessAccountRepository)
 	businessLoanService := businessloan.NewService(businessLoanRepository)
 	businessFinancingService := businessfinancing.NewService(businessFinancingRepository)
+	businessInvoiceFinancingService := businessinvoicefinancing.NewService(businessInvoiceFinancingRepository)
 	businessCreditCardService := businesscreditcard.NewService(businessCreditCardRepository)
 
 	return personalAccountService, personalLoanService, personalFinanceService, personalInvoiceFinanceService, personalCreditCardService,
-		businessAccountService, businessLoanService, businessFinancingService, businessCreditCardService
+		businessAccountService, businessLoanService, businessFinancingService, businessInvoiceFinancingService, businessCreditCardService
 }
 
 //businessCreditCardService businesscreditcard.Service

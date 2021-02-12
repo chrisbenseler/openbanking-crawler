@@ -10,6 +10,7 @@ import (
 	"openbankingcrawler/domain/businessaccount"
 	"openbankingcrawler/domain/businesscreditcard"
 	"openbankingcrawler/domain/businessfinancing"
+	"openbankingcrawler/domain/businessinvoicefinancing"
 	"openbankingcrawler/domain/businessloan"
 	"openbankingcrawler/domain/electronicchannel"
 	"openbankingcrawler/domain/personalaccount"
@@ -33,6 +34,7 @@ type Crawler interface {
 	BusinessAccounts(string, int, []businessaccount.Entity) (*[]businessaccount.Entity, common.CustomError)
 	BusinessLoans(string, int, []businessloan.Entity) (*[]businessloan.Entity, common.CustomError)
 	BusinessFinancings(string, int, []businessfinancing.Entity) (*[]businessfinancing.Entity, common.CustomError)
+	BusinessInvoiceFinancings(string, int, []businessinvoicefinancing.Entity) (*[]businessinvoicefinancing.Entity, common.CustomError)
 	BusinessCreditCards(string, int, []businesscreditcard.Entity) (*[]businesscreditcard.Entity, common.CustomError)
 	Do(string, string, int) ([]byte, common.CustomError)
 }
@@ -183,17 +185,25 @@ func (s *crawler) BusinessLoans(baseURL string, page int, accumulator []business
 
 //BusinessFinancings BusinessFinancings
 func (s *crawler) BusinessFinancings(baseURL string, page int, accumulator []businessfinancing.Entity) (*[]businessfinancing.Entity, common.CustomError) {
-	fmt.Println("Start crawl business account cards for", baseURL, page)
+	fmt.Println("Start crawl business financings for", baseURL, page)
 	result, err := crawlerservices.ForBusinessFinancings(s.Do, baseURL, page, accumulator)
-	fmt.Println("End crawl business accounts for", baseURL)
+	fmt.Println("End crawl business financings for", baseURL)
+	return result, err
+}
+
+//BusinessInvoiceFinancings BusinessFinancings
+func (s *crawler) BusinessInvoiceFinancings(baseURL string, page int, accumulator []businessinvoicefinancing.Entity) (*[]businessinvoicefinancing.Entity, common.CustomError) {
+	fmt.Println("Start crawl business invoice financings for", baseURL, page)
+	result, err := crawlerservices.ForBusinessInvoiceFinancings(s.Do, baseURL, page, accumulator)
+	fmt.Println("End crawl business invoice financings for", baseURL)
 	return result, err
 }
 
 //BusinessCreditCards crawl business credit cards from institution
 func (s *crawler) BusinessCreditCards(baseURL string, page int, accumulator []businesscreditcard.Entity) (*[]businesscreditcard.Entity, common.CustomError) {
-	fmt.Println("Start crawl business business card cards for", baseURL, page)
+	fmt.Println("Start crawl business business cards for", baseURL, page)
 	result, err := crawlerservices.ForBusinessCreditCards(s.Do, baseURL, page, accumulator)
-	fmt.Println("End crawl business business card for", baseURL)
+	fmt.Println("End crawl business business cards for", baseURL)
 	return result, err
 }
 

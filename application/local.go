@@ -62,6 +62,7 @@ func NewLocal() {
 		businessAccountService,
 		businessLoanService,
 		businessFinancingService,
+		businessInvoiceFinancingService,
 		businessCreditCardService := CreateProductsServicesServices(connection)
 
 	httpClient := http.Client{}
@@ -70,7 +71,7 @@ func NewLocal() {
 	institutionInterface := interfaces.NewInstitution(
 		institutionService, branchService, electronicChannelService,
 		personalAccountService, personalLoanService, personalFinancingService, personalInvoiceFinancingService, personalCreditCardService,
-		businessAccountService, businessLoanService, businessFinancingService, businessCreditCardService,
+		businessAccountService, businessLoanService, businessFinancingService, businessInvoiceFinancingService, businessCreditCardService,
 		crawler)
 
 	ifs := readFile()
@@ -88,23 +89,28 @@ func NewLocal() {
 
 		fmt.Println("Start crawl for", _if.Name)
 
-		go institutionInterface.UpdatePersonalAccounts(savedIF.ID)
+		/*
+			go institutionInterface.UpdatePersonalAccounts(savedIF.ID)
+			time.NewTimer(1 * time.Second)
+			go institutionInterface.UpdatePersonalFinancings(savedIF.ID)
+			time.NewTimer(1 * time.Second)
+			go institutionInterface.UpdatePersonalInvoiceFinancings(savedIF.ID)
+			time.NewTimer(1 * time.Second)
+			go institutionInterface.UpdatePersonalLoans(savedIF.ID)
+			time.NewTimer(1 * time.Second)
+			go institutionInterface.UpdatePersonalCreditCards(savedIF.ID)
+			time.NewTimer(1 * time.Second)
+			go institutionInterface.UpdateBusinessAccounts(savedIF.ID)
+			time.NewTimer(1 * time.Second)
+			go institutionInterface.UpdateBusinessLoans(savedIF.ID)
+			time.NewTimer(1 * time.Second)
+			go institutionInterface.UpdateBusinessFinancings(savedIF.ID)
+			time.NewTimer(1 * time.Second)
+			go institutionInterface.UpdateBusinessCreditCards(savedIF.ID)
+		*/
+
+		go institutionInterface.UpdateBusinessInvoiceFinancings(savedIF.ID)
 		time.NewTimer(1 * time.Second)
-		go institutionInterface.UpdatePersonalFinancings(savedIF.ID)
-		time.NewTimer(1 * time.Second)
-		go institutionInterface.UpdatePersonalInvoiceFinancings(savedIF.ID)
-		time.NewTimer(1 * time.Second)
-		go institutionInterface.UpdatePersonalLoans(savedIF.ID)
-		time.NewTimer(1 * time.Second)
-		go institutionInterface.UpdatePersonalCreditCards(savedIF.ID)
-		time.NewTimer(1 * time.Second)
-		go institutionInterface.UpdateBusinessAccounts(savedIF.ID)
-		time.NewTimer(1 * time.Second)
-		go institutionInterface.UpdateBusinessLoans(savedIF.ID)
-		time.NewTimer(1 * time.Second)
-		go institutionInterface.UpdateBusinessFinancings(savedIF.ID)
-		time.NewTimer(1 * time.Second)
-		go institutionInterface.UpdateBusinessCreditCards(savedIF.ID)
 
 	}
 

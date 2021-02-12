@@ -6,6 +6,7 @@ import (
 	"openbankingcrawler/domain/businessaccount"
 	"openbankingcrawler/domain/businesscreditcard"
 	"openbankingcrawler/domain/businessfinancing"
+	"openbankingcrawler/domain/businessinvoicefinancing"
 	"openbankingcrawler/domain/businessloan"
 	"openbankingcrawler/domain/electronicchannel"
 	"openbankingcrawler/domain/institution"
@@ -35,6 +36,7 @@ type InstitutionInterface interface {
 	UpdateBusinessAccounts(string) common.CustomError
 	UpdateBusinessLoans(string) common.CustomError
 	UpdateBusinessFinancings(string) common.CustomError
+	UpdateBusinessInvoiceFinancings(string) common.CustomError
 	UpdateBusinessCreditCards(string) common.CustomError
 }
 
@@ -50,6 +52,7 @@ type institutionInterface struct {
 	businessAccountService          businessaccount.Service
 	businessLoanService             businessloan.Service
 	businessFinancingService        businessfinancing.Service
+	businessInvoiceFinancingService businessinvoicefinancing.Service
 	businessCreditCardService       businesscreditcard.Service
 	crawler                         services.Crawler
 }
@@ -66,6 +69,7 @@ func NewInstitution(institutionService institution.Service,
 	businessAccountService businessaccount.Service,
 	businessLoanService businessloan.Service,
 	businessFinancingService businessfinancing.Service,
+	businessInvoiceFinancingService businessinvoicefinancing.Service,
 	businessCreditCardService businesscreditcard.Service,
 	crawler services.Crawler) InstitutionInterface {
 
@@ -81,6 +85,7 @@ func NewInstitution(institutionService institution.Service,
 		businessAccountService:          businessAccountService,
 		businessLoanService:             businessLoanService,
 		businessFinancingService:        businessFinancingService,
+		businessInvoiceFinancingService: businessInvoiceFinancingService,
 		businessCreditCardService:       businessCreditCardService,
 		crawler:                         crawler,
 	}
@@ -381,6 +386,27 @@ func (i *institutionInterface) UpdateBusinessFinancings(id string) common.Custom
 		return delErr
 	}
 	insertErr := i.businessFinancingService.InsertMany(*businessFinancings, id)
+	if insertErr != nil {
+		return insertErr
+	}
+	return nil
+}
+
+//UpdateBusinessFinancings update business invoice financings from institution
+func (i *institutionInterface) UpdateBusinessInvoiceFinancings(id string) common.CustomError {
+	institution, err := i.institutionService.Read(id)
+	if err != nil {
+		return err
+	}
+	businessInvoiceFinancings, crawlErr := i.crawler.BusinessInvoiceFinancings(institution.BaseURL, 1, []businessinvoicefinancing.Entity{})
+	if crawlErr != nil {
+		return crawlErr
+	}
+	delErr := i.businessInvoiceFinancingService.DeleteAllFromInstitution(id)
+	if delErr != nil {
+		return delErr
+	}
+	insertErr := i.businessInvoiceFinancingService.InsertMany(*businessInvoiceFinancings, id)
 	if insertErr != nil {
 		return insertErr
 	}
