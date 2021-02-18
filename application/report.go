@@ -50,6 +50,7 @@ func NewReport() {
 		_,
 		_,
 		_,
+		_,
 		_ := CreateProductsServicesServices(connection)
 
 	path := "./outputs/"

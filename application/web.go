@@ -52,6 +52,7 @@ func NewWeb() {
 		personalFinancingService,
 		personalInvoiceFinancingService,
 		personalCreditCardService,
+		personalUnarrangedAccountOverdraftService,
 		businessAccountService,
 		businessLoanService,
 		businessFinancingService,
@@ -65,7 +66,8 @@ func NewWeb() {
 
 	institutionInterface := interfaces.NewInstitution(
 		institutionService, branchService, electronicChannelService,
-		personalAccountService, personalLoanService, personalFinancingService, personalInvoiceFinancingService, personalCreditCardService,
+		personalAccountService, personalLoanService, personalFinancingService,
+		personalInvoiceFinancingService, personalCreditCardService, personalUnarrangedAccountOverdraftService,
 		businessAccountService, businessLoanService, businessFinancingService, businessInvoiceFinancingService, businessCreditCardService,
 		crawler)
 

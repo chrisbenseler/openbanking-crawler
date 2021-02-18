@@ -14,6 +14,7 @@ import (
 	"openbankingcrawler/domain/personalfinancing"
 	"openbankingcrawler/domain/personalinvoicefinancing"
 	"openbankingcrawler/domain/personalloan"
+	"openbankingcrawler/domain/personalunarrangedaccountoverdraft"
 
 	"github.com/go-bongo/bongo"
 )
@@ -43,7 +44,8 @@ func CreateBasicServices(connection *bongo.Connection) (
 
 //createProductsServicesRepositories create ProductsServices Repositories
 func createProductsServicesRepositories(connection *bongo.Connection) (
-	personalaccount.Repository, personalloan.Repository, personalfinancing.Repository, personalinvoicefinancing.Repository, personalcreditcard.Repository,
+	personalaccount.Repository, personalloan.Repository, personalfinancing.Repository,
+	personalinvoicefinancing.Repository, personalcreditcard.Repository, personalunarrangedaccountoverdraft.Repository,
 	businessaccount.Repository, businessloan.Repository, businessfinancing.Repository, businessinvoicefinancing.Repository, businesscreditcard.Repository) {
 
 	personalLoanRepository := personalloan.NewRepository(connection.Collection("personalLoan"))
@@ -51,6 +53,7 @@ func createProductsServicesRepositories(connection *bongo.Connection) (
 	personalFinancingRepository := personalfinancing.NewRepository(connection.Collection("personalFinancing"))
 	personalInvoiceFinancingRepository := personalinvoicefinancing.NewRepository(connection.Collection("personalInvoiceFinancing"))
 	personalCreditCardRepository := personalcreditcard.NewRepository(connection.Collection("personalCreditCard"))
+	personalUnarrangedAccountOverdraftsRepository := personalunarrangedaccountoverdraft.NewRepository(connection.Collection("personalUnarrangedAccountOverdrafts"))
 
 	businessAccountRepository := businessaccount.NewRepository(connection.Collection("businessAccount"))
 	businessLoanRepository := businessloan.NewRepository(connection.Collection("businessLoan"))
@@ -58,13 +61,15 @@ func createProductsServicesRepositories(connection *bongo.Connection) (
 	businessInvoiceFinancingRepository := businessinvoicefinancing.NewRepository(connection.Collection("businessInvoiceFinancing"))
 	businessCreditCardRepository := businesscreditcard.NewRepository(connection.Collection("businessCreditCard"))
 
-	return personalAccountRepository, personalLoanRepository, personalFinancingRepository, personalInvoiceFinancingRepository, personalCreditCardRepository,
+	return personalAccountRepository, personalLoanRepository, personalFinancingRepository,
+		personalInvoiceFinancingRepository, personalCreditCardRepository, personalUnarrangedAccountOverdraftsRepository,
 		businessAccountRepository, businessLoanRepository, businessFinancingRepository, businessInvoiceFinancingRepository, businessCreditCardRepository
 }
 
 //CreateProductsServicesServices create products services services
 func CreateProductsServicesServices(connection *bongo.Connection) (
-	personalaccount.Service, personalloan.Service, personalfinancing.Service, personalinvoicefinancing.Service, personalcreditcard.Service,
+	personalaccount.Service, personalloan.Service, personalfinancing.Service,
+	personalinvoicefinancing.Service, personalcreditcard.Service, personalunarrangedaccountoverdraft.Service,
 	businessaccount.Service, businessloan.Service, businessfinancing.Service, businessinvoicefinancing.Service, businesscreditcard.Service) {
 
 	personalAccountRepository,
@@ -72,6 +77,7 @@ func CreateProductsServicesServices(connection *bongo.Connection) (
 		personalFinancingRepository,
 		personalInvoiceFinancingRepository,
 		personalCreditCardRepository,
+		personalUnarrangedAccountOverdraftsRepository,
 		businessAccountRepository,
 		businessLoanRepository,
 		businessFinancingRepository,
@@ -83,6 +89,7 @@ func CreateProductsServicesServices(connection *bongo.Connection) (
 	personalFinanceService := personalfinancing.NewService(personalFinancingRepository)
 	personalInvoiceFinanceService := personalinvoicefinancing.NewService(personalInvoiceFinancingRepository)
 	personalCreditCardService := personalcreditcard.NewService(personalCreditCardRepository)
+	personalUnarrangedAccountOverdraftService := personalunarrangedaccountoverdraft.NewService(personalUnarrangedAccountOverdraftsRepository)
 
 	businessAccountService := businessaccount.NewService(businessAccountRepository)
 	businessLoanService := businessloan.NewService(businessLoanRepository)
@@ -90,7 +97,8 @@ func CreateProductsServicesServices(connection *bongo.Connection) (
 	businessInvoiceFinancingService := businessinvoicefinancing.NewService(businessInvoiceFinancingRepository)
 	businessCreditCardService := businesscreditcard.NewService(businessCreditCardRepository)
 
-	return personalAccountService, personalLoanService, personalFinanceService, personalInvoiceFinanceService, personalCreditCardService,
+	return personalAccountService, personalLoanService, personalFinanceService,
+		personalInvoiceFinanceService, personalCreditCardService, personalUnarrangedAccountOverdraftService,
 		businessAccountService, businessLoanService, businessFinancingService, businessInvoiceFinancingService, businessCreditCardService
 }
 

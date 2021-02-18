@@ -13,7 +13,7 @@ func ForPersonalUnarrangedAccountOverdrafts(httpCrawlService func(string, string
 
 	fmt.Println("Start crawl personal accounts for", baseURL, page)
 
-	body, _ := httpCrawlService(baseURL, "products-services/v1/personal-accounts", page)
+	body, _ := httpCrawlService(baseURL, "products-services/v1/personal-unarranged-account-overdraft", page)
 
 	jsonData := &personalUnarrangedAccountOverdraftJSON{}
 
@@ -50,7 +50,7 @@ type personalUnarrangedAccountOverdraftJSON struct {
 	Data struct {
 		Brand struct {
 			Companies []struct {
-				PersonalUnarrangedAccountOverdrafts []personalunarrangedaccountoverdraft.Entity `json:"personalUnarrangedAccountOverdrafts"`
+				PersonalUnarrangedAccountOverdrafts []personalunarrangedaccountoverdraft.Entity `json:"personalUnarrangedAccountOverdraft"`
 			} `json:"companies"`
 		} `json:"brand"`
 	} `json:"data"`

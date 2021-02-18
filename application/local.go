@@ -36,7 +36,7 @@ func NewLocal() {
 
 	database := os.Getenv("DBNAME")
 	if database == "" {
-		database = "openbankingcrawlerlocals"
+		database = "openbankingcrawlerlocal"
 	}
 
 	config := &bongo.Config{
@@ -60,6 +60,7 @@ func NewLocal() {
 		personalFinancingService,
 		personalInvoiceFinancingService,
 		personalCreditCardService,
+		personalUnarrangedAccountOverdraftService,
 		businessAccountService,
 		businessLoanService,
 		businessFinancingService,
@@ -71,7 +72,8 @@ func NewLocal() {
 
 	institutionInterface := interfaces.NewInstitution(
 		institutionService, branchService, electronicChannelService,
-		personalAccountService, personalLoanService, personalFinancingService, personalInvoiceFinancingService, personalCreditCardService,
+		personalAccountService, personalLoanService, personalFinancingService,
+		personalInvoiceFinancingService, personalCreditCardService, personalUnarrangedAccountOverdraftService,
 		businessAccountService, businessLoanService, businessFinancingService, businessInvoiceFinancingService, businessCreditCardService,
 		crawler)
 
@@ -98,8 +100,6 @@ func crawlForIF(_if IF, institutionService institution.Service, institutionInter
 	}
 	institutionService.Update(dtos.Institution{Name: savedIF.Name, BaseURL: _if.BaseURL, ID: savedIF.ID})
 
-	fmt.Println("Start crawl for", _if.Name)
-
 	go institutionInterface.UpdatePersonalAccounts(savedIF.ID)
 	time.NewTimer(1 * time.Second)
 	go institutionInterface.UpdatePersonalFinancings(savedIF.ID)
@@ -119,6 +119,9 @@ func crawlForIF(_if IF, institutionService institution.Service, institutionInter
 	go institutionInterface.UpdateBusinessInvoiceFinancings(savedIF.ID)
 	time.NewTimer(1 * time.Second)
 	go institutionInterface.UpdateBusinessCreditCards(savedIF.ID)
+
+	time.NewTimer(1 * time.Second)
+	go institutionInterface.UpdatePersonalUnarrangedAccountOverdrafts(savedIF.ID)
 }
 
 func readFile() *[]IF {

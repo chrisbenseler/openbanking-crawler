@@ -19,6 +19,7 @@ import (
 	"openbankingcrawler/domain/personalfinancing"
 	"openbankingcrawler/domain/personalinvoicefinancing"
 	"openbankingcrawler/domain/personalloan"
+	"openbankingcrawler/domain/personalunarrangedaccountoverdraft"
 	"openbankingcrawler/services/crawlerservices"
 	"strconv"
 )
@@ -32,6 +33,7 @@ type Crawler interface {
 	PersonalFinancings(string, int, []personalfinancing.Entity) (*[]personalfinancing.Entity, common.CustomError)
 	PersonalInvoiceFinancings(string, int, []personalinvoicefinancing.Entity) (*[]personalinvoicefinancing.Entity, common.CustomError)
 	PersonalCreditCards(string, int, []personalcreditcard.Entity) (*[]personalcreditcard.Entity, common.CustomError)
+	PersonalUnarrangedAccountOverdrafts(string, int, []personalunarrangedaccountoverdraft.Entity) (*[]personalunarrangedaccountoverdraft.Entity, common.CustomError)
 	BusinessAccounts(string, int, []businessaccount.Entity) (*[]businessaccount.Entity, common.CustomError)
 	BusinessLoans(string, int, []businessloan.Entity) (*[]businessloan.Entity, common.CustomError)
 	BusinessFinancings(string, int, []businessfinancing.Entity) (*[]businessfinancing.Entity, common.CustomError)
@@ -185,6 +187,17 @@ func (s *crawler) PersonalInvoiceFinancings(baseURL string, page int, accumulato
 		fmt.Printf("Error crawl personal invoice financings for %s %s %s", baseURL, strconv.Itoa(page), err.Message())
 	}
 	fmt.Println("End crawl personal invoice financings for", baseURL)
+	return result, err
+}
+
+//PersonalUnarrangedAccountOverdrafts PersonalUnarrangedAccountOverdrafts
+func (s *crawler) PersonalUnarrangedAccountOverdrafts(baseURL string, page int, accumulator []personalunarrangedaccountoverdraft.Entity) (*[]personalunarrangedaccountoverdraft.Entity, common.CustomError) {
+	fmt.Println("Start crawl personal unarranged account overdrafts for", baseURL)
+	result, err := crawlerservices.ForPersonalUnarrangedAccountOverdrafts(s.Do, baseURL, page, accumulator)
+	if err != nil {
+		fmt.Printf("Error crawl personal unarranged account overdrafts for %s %s %s", baseURL, strconv.Itoa(page), err.Message())
+	}
+	fmt.Println("End crawl personal unarranged account overdrafts for", baseURL)
 	return result, err
 }
 
