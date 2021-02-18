@@ -15,7 +15,7 @@ func ForBusinessInvoiceFinancings(httpCrawlService func(string, string, int) ([]
 
 	body, _ := httpCrawlService(baseURL, "products-services/v1/business-invoice-financings", page)
 
-	businessinvoicefinancings := accumulator
+	items := accumulator
 
 	jsonData := &businessInvoiceFinancingJSON{}
 
@@ -33,16 +33,16 @@ func ForBusinessInvoiceFinancings(httpCrawlService func(string, string, int) ([]
 		company := jsonData.Data.Brand.Companies[i]
 		result := company.BusinessInvoiceFinancings
 
-		businessinvoicefinancings = append(businessinvoicefinancings, result...)
+		items = append(items, result...)
 	}
 
 	if metaInfo.Meta.TotalPages > page {
-		return ForBusinessInvoiceFinancings(httpCrawlService, baseURL, page+1, businessinvoicefinancings)
+		return ForBusinessInvoiceFinancings(httpCrawlService, baseURL, page+1, items)
 	}
 
 	fmt.Println("End crawl business invoice financings for", baseURL, page)
 
-	return &businessinvoicefinancings, nil
+	return &items, nil
 
 }
 

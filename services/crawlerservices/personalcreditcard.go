@@ -27,22 +27,22 @@ func ForPersonalCreditCards(httpCrawlService func(string, string, int) ([]byte, 
 		return nil, common.NewInternalServerError("Unable to unmarshall data", jsonUnmarshallErr)
 	}
 
-	personalcreditcards := accumulator
+	items := accumulator
 
 	for i := range jsonData.Data.Brand.Companies {
 		company := jsonData.Data.Brand.Companies[i]
 		result := company.PersonalCreditCards
 
-		personalcreditcards = append(personalcreditcards, result...)
+		items = append(items, result...)
 	}
 
 	if metaInfo.Meta.TotalPages > page {
-		return ForPersonalCreditCards(httpCrawlService, baseURL, page+1, personalcreditcards)
+		return ForPersonalCreditCards(httpCrawlService, baseURL, page+1, items)
 	}
 
 	fmt.Println("End crawl personal credit cards for", baseURL, page)
 
-	return &personalcreditcards, nil
+	return &items, nil
 
 }
 

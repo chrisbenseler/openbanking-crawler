@@ -36,7 +36,7 @@ func NewLocal() {
 
 	database := os.Getenv("DBNAME")
 	if database == "" {
-		database = "openbankingcrawlerlocal"
+		database = "openbankingcrawlerlocals"
 	}
 
 	config := &bongo.Config{

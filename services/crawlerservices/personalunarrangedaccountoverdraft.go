@@ -4,18 +4,18 @@ import (
 	"encoding/json"
 	"fmt"
 	"openbankingcrawler/common"
-	"openbankingcrawler/domain/personalaccount"
+	"openbankingcrawler/domain/personalunarrangedaccountoverdraft"
 	"strconv"
 )
 
-//ForPersonalAccounts crawl personal loans from institution
-func ForPersonalAccounts(httpCrawlService func(string, string, int) ([]byte, common.CustomError), baseURL string, page int, accumulator []personalaccount.Entity) (*[]personalaccount.Entity, common.CustomError) {
+//ForPersonalUnarrangedAccountOverdrafts crawl personal loans from institution
+func ForPersonalUnarrangedAccountOverdrafts(httpCrawlService func(string, string, int) ([]byte, common.CustomError), baseURL string, page int, accumulator []personalunarrangedaccountoverdraft.Entity) (*[]personalunarrangedaccountoverdraft.Entity, common.CustomError) {
 
 	fmt.Println("Start crawl personal accounts for", baseURL, page)
 
 	body, _ := httpCrawlService(baseURL, "products-services/v1/personal-accounts", page)
 
-	jsonData := &personalAccountJSON{}
+	jsonData := &personalUnarrangedAccountOverdraftJSON{}
 
 	metaInfo := &MetaInfoJSON{}
 	json.Unmarshal(body, &metaInfo)
@@ -31,35 +31,27 @@ func ForPersonalAccounts(httpCrawlService func(string, string, int) ([]byte, com
 
 	for i := range jsonData.Data.Brand.Companies {
 		company := jsonData.Data.Brand.Companies[i]
-		result := company.PersonalAccounts
+		result := company.PersonalUnarrangedAccountOverdrafts
 
 		items = append(items, result...)
 	}
 
 	if metaInfo.Meta.TotalPages > page {
-		return ForPersonalAccounts(httpCrawlService, baseURL, page+1, items)
+		return ForPersonalUnarrangedAccountOverdrafts(httpCrawlService, baseURL, page+1, items)
 	}
 
-	fmt.Println("End crawl personal accounts for", baseURL, page)
+	fmt.Println("End crawl personal unarrenged account oversdrafts for", baseURL, page)
 
 	return &items, nil
 
 }
 
-type personalAccountJSON struct {
+type personalUnarrangedAccountOverdraftJSON struct {
 	Data struct {
 		Brand struct {
 			Companies []struct {
-				PersonalAccounts []personalaccount.Entity `json:"personalAccounts"`
+				PersonalUnarrangedAccountOverdrafts []personalunarrangedaccountoverdraft.Entity `json:"personalUnarrangedAccountOverdrafts"`
 			} `json:"companies"`
 		} `json:"brand"`
 	} `json:"data"`
-}
-
-//MetaInfoJSON MetaInfoJSON
-type MetaInfoJSON struct {
-	Meta struct {
-		TotalRecords int `json:"totalRecords"`
-		TotalPages   int `json:"totalPages"`
-	} `json:"meta"`
 }

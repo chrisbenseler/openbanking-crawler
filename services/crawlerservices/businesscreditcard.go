@@ -27,22 +27,22 @@ func ForBusinessCreditCards(httpCrawlService func(string, string, int) ([]byte, 
 		return nil, common.NewInternalServerError("Unable to unmarshall data", jsonUnmarshallErr)
 	}
 
-	businesscreditcards := accumulator
+	items := accumulator
 
 	for i := range jsonData.Data.Brand.Companies {
 		company := jsonData.Data.Brand.Companies[i]
 		result := company.BusinessCreditCards
 
-		businesscreditcards = append(businesscreditcards, result...)
+		items = append(items, result...)
 	}
 
 	if metaInfo.Meta.TotalPages > page {
-		return ForBusinessCreditCards(httpCrawlService, baseURL, page+1, businesscreditcards)
+		return ForBusinessCreditCards(httpCrawlService, baseURL, page+1, items)
 	}
 
 	fmt.Println("End crawl business credit cards for", baseURL, page)
 
-	return &businesscreditcards, nil
+	return &items, nil
 
 }
 

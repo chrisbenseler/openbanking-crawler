@@ -27,22 +27,22 @@ func ForBusinessAccounts(httpCrawlService func(string, string, int) ([]byte, com
 		return nil, common.NewInternalServerError("Unable to unmarshall data", jsonUnmarshallErr)
 	}
 
-	businessaccounts := accumulator
+	items := accumulator
 
 	for i := range jsonData.Data.Brand.Companies {
 		company := jsonData.Data.Brand.Companies[i]
 		result := company.BusinessAccounts
 
-		businessaccounts = append(businessaccounts, result...)
+		items = append(items, result...)
 	}
 
 	if metaInfo.Meta.TotalPages > page {
-		return ForBusinessAccounts(httpCrawlService, baseURL, page+1, businessaccounts)
+		return ForBusinessAccounts(httpCrawlService, baseURL, page+1, items)
 	}
 
 	fmt.Println("End crawl business accounts for", baseURL, page)
 
-	return &businessaccounts, nil
+	return &items, nil
 
 }
 
