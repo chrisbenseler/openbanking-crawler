@@ -8,6 +8,7 @@ import (
 	"openbankingcrawler/domain/businessfinancing"
 	"openbankingcrawler/domain/businessinvoicefinancing"
 	"openbankingcrawler/domain/businessloan"
+	"openbankingcrawler/domain/businessunarrangedaccountoverdraft"
 	"openbankingcrawler/domain/electronicchannel"
 	"openbankingcrawler/domain/institution"
 	"openbankingcrawler/domain/personalaccount"
@@ -40,6 +41,7 @@ type InstitutionInterface interface {
 	UpdateBusinessFinancings(string) common.CustomError
 	UpdateBusinessInvoiceFinancings(string) common.CustomError
 	UpdateBusinessCreditCards(string) common.CustomError
+	UpdateBusinessUnarrangedAccountOverdrafts(string) common.CustomError
 }
 
 type institutionInterface struct {
@@ -57,6 +59,7 @@ type institutionInterface struct {
 	businessFinancingService                  businessfinancing.Service
 	businessInvoiceFinancingService           businessinvoicefinancing.Service
 	businessCreditCardService                 businesscreditcard.Service
+	businessUnarrangedAccountOverdraftService businessunarrangedaccountoverdraft.Service
 	crawler                                   services.Crawler
 }
 
@@ -75,6 +78,7 @@ func NewInstitution(institutionService institution.Service,
 	businessFinancingService businessfinancing.Service,
 	businessInvoiceFinancingService businessinvoicefinancing.Service,
 	businessCreditCardService businesscreditcard.Service,
+	businessUnarrangedAccountOverdraftService businessunarrangedaccountoverdraft.Service,
 	crawler services.Crawler) InstitutionInterface {
 
 	return &institutionInterface{
@@ -92,7 +96,8 @@ func NewInstitution(institutionService institution.Service,
 		businessFinancingService:                  businessFinancingService,
 		businessInvoiceFinancingService:           businessInvoiceFinancingService,
 		businessCreditCardService:                 businessCreditCardService,
-		crawler:                                   crawler,
+		businessUnarrangedAccountOverdraftService: businessUnarrangedAccountOverdraftService,
+		crawler: crawler,
 	}
 }
 
@@ -445,6 +450,27 @@ func (i *institutionInterface) UpdateBusinessCreditCards(id string) common.Custo
 		return delErr
 	}
 	insertErr := i.businessCreditCardService.InsertMany(*businessCreditCards, id)
+	if insertErr != nil {
+		return insertErr
+	}
+	return nil
+}
+
+//UpdateBusinessUnarrangedAccountOverdrafts update creditcards from institution
+func (i *institutionInterface) UpdateBusinessUnarrangedAccountOverdrafts(id string) common.CustomError {
+	institution, err := i.institutionService.Read(id)
+	if err != nil {
+		return err
+	}
+	items, crawlErr := i.crawler.BusinessUnarrangedAccountOverdrafts(institution.BaseURL, 1, []businessunarrangedaccountoverdraft.Entity{})
+	if crawlErr != nil {
+		return crawlErr
+	}
+	delErr := i.businessCreditCardService.DeleteAllFromInstitution(id)
+	if delErr != nil {
+		return delErr
+	}
+	insertErr := i.businessUnarrangedAccountOverdraftService.InsertMany(*items, id)
 	if insertErr != nil {
 		return insertErr
 	}

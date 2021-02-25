@@ -13,6 +13,7 @@ import (
 	"openbankingcrawler/domain/businessfinancing"
 	"openbankingcrawler/domain/businessinvoicefinancing"
 	"openbankingcrawler/domain/businessloan"
+	"openbankingcrawler/domain/businessunarrangedaccountoverdraft"
 	"openbankingcrawler/domain/electronicchannel"
 	"openbankingcrawler/domain/personalaccount"
 	"openbankingcrawler/domain/personalcreditcard"
@@ -39,6 +40,7 @@ type Crawler interface {
 	BusinessFinancings(string, int, []businessfinancing.Entity) (*[]businessfinancing.Entity, common.CustomError)
 	BusinessInvoiceFinancings(string, int, []businessinvoicefinancing.Entity) (*[]businessinvoicefinancing.Entity, common.CustomError)
 	BusinessCreditCards(string, int, []businesscreditcard.Entity) (*[]businesscreditcard.Entity, common.CustomError)
+	BusinessUnarrangedAccountOverdrafts(string, int, []businessunarrangedaccountoverdraft.Entity) (*[]businessunarrangedaccountoverdraft.Entity, common.CustomError)
 	Do(string, string, int) ([]byte, common.CustomError)
 }
 
@@ -253,6 +255,17 @@ func (s *crawler) BusinessCreditCards(baseURL string, page int, accumulator []bu
 		fmt.Printf("Error crawl business cards for %s %s %s", baseURL, strconv.Itoa(page), err.Message())
 	}
 	fmt.Println("End crawl business business cards for", baseURL)
+	return result, err
+}
+
+//BusinessUnarrangedAccountOverdrafts BusinessUnarrangedAccountOverdrafts
+func (s *crawler) BusinessUnarrangedAccountOverdrafts(baseURL string, page int, accumulator []businessunarrangedaccountoverdraft.Entity) (*[]businessunarrangedaccountoverdraft.Entity, common.CustomError) {
+	fmt.Println("Start crawl business unarranged account overdrafts for", baseURL)
+	result, err := crawlerservices.ForBusinessUnarrangedAccountOverdrafts(s.Do, baseURL, page, accumulator)
+	if err != nil {
+		fmt.Printf("Error crawl business unarranged account overdrafts for %s %s %s", baseURL, strconv.Itoa(page), err.Message())
+	}
+	fmt.Println("End crawl business unarranged account overdrafts for", baseURL)
 	return result, err
 }
 
