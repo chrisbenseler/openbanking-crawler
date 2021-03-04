@@ -20,6 +20,8 @@ type Controller interface {
 	GetPersonalCreditCards(c *gin.Context)
 	UpdatePersonalCreditCards(c *gin.Context)
 
+	GetPersonalAccounts(c *gin.Context)
+
 	GetPersonalLoans(c *gin.Context)
 	UpdatePersonalLoans(c *gin.Context)
 }
@@ -160,6 +162,28 @@ func (ctrl *controller) GetElectronicChannels(c *gin.Context) {
 	}
 
 	c.JSON(200, gin.H{"electronicChannels": electronicChannels, "pagination": pagination})
+
+}
+
+//GetPersonalAccounts get personal acccounts from institution controller
+func (ctrl *controller) GetPersonalAccounts(c *gin.Context) {
+
+	id := c.Param("id")
+
+	page, errQuery := strconv.Atoi(c.Query("page"))
+
+	if errQuery != nil {
+		page = 1
+	}
+
+	personalAccounts, pagination, err := ctrl.productsServicesInterface.GetPersonalAccounts(id, page)
+
+	if err != nil {
+		c.JSON(err.Status(), gin.H{"error": err.Message()})
+		return
+	}
+
+	c.JSON(200, gin.H{"personalAccounts": personalAccounts, "pagination": pagination})
 
 }
 
