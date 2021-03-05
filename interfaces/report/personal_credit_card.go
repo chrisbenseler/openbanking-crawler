@@ -3,7 +3,6 @@ package report
 import (
 	"openbankingcrawler/domain/institution"
 	"openbankingcrawler/domain/personalcreditcard"
-	"openbankingcrawler/domain/subentities"
 	"openbankingcrawler/dtos"
 )
 
@@ -55,7 +54,7 @@ func getFromInstitution(personalCreditCardService personalcreditcard.Service, in
 		services := creditCard.Fees.Services
 		for _, service := range services {
 			for _, price := range service.Prices {
-				entry := newOutputPrice(institution, &creditCard, &service, &price)
+				entry := newOutputPrice(institution, creditCard.Name, &service, &price)
 				entries = append(entries, *entry)
 			}
 		}
@@ -64,6 +63,7 @@ func getFromInstitution(personalCreditCardService personalcreditcard.Service, in
 	return entries
 }
 
+/*
 //OutputPrice output price struct
 type OutputPrice struct {
 	InstitutionName string
@@ -86,3 +86,4 @@ func newOutputPrice(institution *dtos.Institution, creditCard *personalcreditcar
 		Currency:        price.Currency,
 	}
 }
+*/

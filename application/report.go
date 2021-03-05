@@ -42,7 +42,7 @@ func NewReport() {
 		_ := CreateBasicServices(connection)
 
 	_,
-		_,
+		personalLoanService,
 		_,
 		_,
 		personalCreditCardService,
@@ -65,6 +65,13 @@ func NewReport() {
 		personalCreditCardReportInterface := report.NewPersonalCreditCard(institutionService, personalCreditCardService)
 		filename = "report_personalcreditcard"
 		output := *personalCreditCardReportInterface.Fees()
+
+		writeErr = write(output, path, filename)
+	}
+	if reportType == "PERSONAL_LOAN" {
+		personalLoanReportInterface := report.NewPersonalLoan(institutionService, personalLoanService)
+		filename = "report_personaloan"
+		output := *personalLoanReportInterface.PersonalLoanFees()
 
 		writeErr = write(output, path, filename)
 	}
