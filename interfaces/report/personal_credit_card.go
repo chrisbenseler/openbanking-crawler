@@ -62,28 +62,3 @@ func getFromInstitution(personalCreditCardService personalcreditcard.Service, in
 
 	return entries
 }
-
-/*
-//OutputPrice output price struct
-type OutputPrice struct {
-	InstitutionName string
-	CreditCardName  string
-	Name            string
-	Code            string
-	Interval        string
-	Value           string
-	Currency        string
-}
-
-func newOutputPrice(institution *dtos.Institution, creditCard *personalcreditcard.Entity, service *subentities.FeeService, price *subentities.ServicePrice) *OutputPrice {
-	return &OutputPrice{
-		InstitutionName: institution.Name,
-		CreditCardName:  creditCard.Name,
-		Name:            service.Name,
-		Code:            service.Code,
-		Interval:        price.Interval,
-		Value:           price.Value,
-		Currency:        price.Currency,
-	}
-}
-*/
