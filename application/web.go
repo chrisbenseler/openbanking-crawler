@@ -74,7 +74,7 @@ func NewWeb() {
 		crawler)
 
 	channelsInterface := interfaces.NewChannels(branchService, electronicChannelService)
-	productsServicesInterface := interfaces.NewProductsServicesInterface(personalLoanService, personalAccountService, personalCreditCardService)
+	productsServicesInterface := interfaces.NewProductsServicesInterface(personalAccountService, personalLoanService, personalFinancingService, personalCreditCardService)
 
 	router := gin.Default()
 	ginConfig := cors.DefaultConfig()
@@ -99,8 +99,10 @@ func NewWeb() {
 	apiRoutes.GET("/institutions/:id", controller.GetInstitution)
 	apiRoutes.GET("/institutions/:id/branches", controller.GetBranches)
 	apiRoutes.GET("/institutions/:id/electronic-channels", controller.GetElectronicChannels)
-	apiRoutes.GET("/institutions/:id/personal-loans", controller.GetPersonalLoans)
+
 	apiRoutes.GET("/institutions/:id/personal-accounts", controller.GetPersonalAccounts)
+	apiRoutes.GET("/institutions/:id/personal-loans", controller.GetPersonalLoans)
+	apiRoutes.GET("/institutions/:id/personal-financings", controller.GetPersonalFinancings)
 	apiRoutes.GET("/institutions/:id/personal-credit-cards", controller.GetPersonalCreditCards)
 
 	apiRoutes.PUT("/institutions/:id/branches/update", authRequired, controller.UpdateInstitutionBranches)
@@ -112,10 +114,6 @@ func NewWeb() {
 	apiRoutes.PUT("/institutions/:id", authRequired, controller.UpdateInstitution)
 
 	apiRoutes.POST("/auth/signin", authController.SignIn)
-
-	//router.Use(static.Serve("/open-banking", static.LocalFile("../mocks/open-banking", false)))
-
-	router.Static("/open-banking", "./mocks/open-banking")
 
 	router.Run(":" + port)
 }

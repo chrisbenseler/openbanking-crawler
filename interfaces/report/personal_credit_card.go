@@ -40,7 +40,7 @@ func (r *report) Fees() *[]OutputPrice {
 }
 
 func getFromInstitution(personalCreditCardService personalcreditcard.Service, institution *dtos.Institution) []OutputPrice {
-	var entries []OutputPrice
+
 	var accumulator []personalcreditcard.Entity
 
 	result, pagination, _ := personalCreditCardService.FindByInstitution(institution.ID, 1)
@@ -50,6 +50,7 @@ func getFromInstitution(personalCreditCardService personalcreditcard.Service, in
 		accumulator = append(accumulator, pageResult...)
 	}
 
+	var entries []OutputPrice
 	for _, creditCard := range accumulator {
 		services := creditCard.Fees.Services
 		for _, service := range services {

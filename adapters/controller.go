@@ -17,13 +17,16 @@ type Controller interface {
 	GetBranches(*gin.Context)
 	GetElectronicChannels(c *gin.Context)
 	UpdateInstitutionElectronicChannels(c *gin.Context)
-	GetPersonalCreditCards(c *gin.Context)
-	UpdatePersonalCreditCards(c *gin.Context)
 
 	GetPersonalAccounts(c *gin.Context)
 
 	GetPersonalLoans(c *gin.Context)
 	UpdatePersonalLoans(c *gin.Context)
+
+	GetPersonalFinancings(c *gin.Context)
+
+	GetPersonalCreditCards(c *gin.Context)
+	UpdatePersonalCreditCards(c *gin.Context)
 }
 
 type controller struct {
@@ -213,6 +216,28 @@ func (ctrl *controller) GetPersonalLoans(c *gin.Context) {
 	}
 
 	c.JSON(200, gin.H{"personalLoans": personalLoans, "pagination": pagination})
+
+}
+
+//GetPersonalFinancings get personal financings from institution controller
+func (ctrl *controller) GetPersonalFinancings(c *gin.Context) {
+
+	id := c.Param("id")
+
+	page, errQuery := strconv.Atoi(c.Query("page"))
+
+	if errQuery != nil {
+		page = 1
+	}
+
+	personalFinancings, pagination, err := ctrl.productsServicesInterface.GetPersonalFinancings(id, page)
+
+	if err != nil {
+		c.JSON(err.Status(), gin.H{"error": err.Message()})
+		return
+	}
+
+	c.JSON(200, gin.H{"personalFinancings": personalFinancings, "pagination": pagination})
 
 }
 

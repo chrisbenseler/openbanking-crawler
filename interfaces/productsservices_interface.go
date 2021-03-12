@@ -4,29 +4,33 @@ import (
 	"openbankingcrawler/common"
 	"openbankingcrawler/domain/personalaccount"
 	"openbankingcrawler/domain/personalcreditcard"
+	"openbankingcrawler/domain/personalfinancing"
 	"openbankingcrawler/domain/personalloan"
 	"openbankingcrawler/domain/subentities"
 )
 
 //ProductsServicesInterface interface
 type ProductsServicesInterface interface {
-	GetPersonalLoans(string, int) ([]personalloan.Entity, *subentities.Pagination, common.CustomError)
 	GetPersonalAccounts(string, int) ([]personalaccount.Entity, *subentities.Pagination, common.CustomError)
+	GetPersonalLoans(string, int) ([]personalloan.Entity, *subentities.Pagination, common.CustomError)
+	GetPersonalFinancings(string, int) ([]personalfinancing.Entity, *subentities.Pagination, common.CustomError)
 	GetPersonalCreditCards(string, int) ([]personalcreditcard.Entity, *subentities.Pagination, common.CustomError)
 }
 
 type productsServicesInterface struct {
-	personalLoanService       personalloan.Service
 	personalAccountService    personalaccount.Service
+	personalLoanService       personalloan.Service
+	personalFinancingService  personalfinancing.Service
 	personalCreditCardService personalcreditcard.Service
 }
 
-//NewProductsServicesInterface create a new interface for NewPersonalLoan
-func NewProductsServicesInterface(personalLoanService personalloan.Service, personalAccountService personalaccount.Service, personalCreditCardService personalcreditcard.Service) ProductsServicesInterface {
+//NewProductsServicesInterface create a new interface for products and services
+func NewProductsServicesInterface(personalAccountService personalaccount.Service, personalLoanService personalloan.Service, personalFinancingService personalfinancing.Service, personalCreditCardService personalcreditcard.Service) ProductsServicesInterface {
 
 	return &productsServicesInterface{
-		personalLoanService:       personalLoanService,
 		personalAccountService:    personalAccountService,
+		personalLoanService:       personalLoanService,
+		personalFinancingService:  personalFinancingService,
 		personalCreditCardService: personalCreditCardService,
 	}
 }
@@ -39,6 +43,11 @@ func (c *productsServicesInterface) GetPersonalLoans(id string, page int) ([]per
 //GetPersonalAccounts get personal accounts from institutution
 func (c *productsServicesInterface) GetPersonalAccounts(id string, page int) ([]personalaccount.Entity, *subentities.Pagination, common.CustomError) {
 	return c.personalAccountService.FindByInstitution(id, page)
+}
+
+//GetPersonalFinancings get personal financins from institutution
+func (c *productsServicesInterface) GetPersonalFinancings(id string, page int) ([]personalfinancing.Entity, *subentities.Pagination, common.CustomError) {
+	return c.personalFinancingService.FindByInstitution(id, page)
 }
 
 //GetFromInstitution get personal credit cards from institutution
