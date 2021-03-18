@@ -117,13 +117,7 @@ func (ctrl *controller) UpdateInstitution(c *gin.Context) {
 //GetBranches get branches from institution controller
 func (ctrl *controller) GetBranches(c *gin.Context) {
 
-	id := c.Param("id")
-
-	page, errQuery := strconv.Atoi(c.Query("page"))
-
-	if errQuery != nil {
-		page = 1
-	}
+	id, page := parseParams(c)
 
 	branches, pagination, err := ctrl.channelsInterface.GetBranches(id, page)
 
@@ -146,13 +140,7 @@ func (ctrl *controller) UpdateInstitutionElectronicChannels(c *gin.Context) {
 //GetElectronicChannels get electronicChannels from institution controller
 func (ctrl *controller) GetElectronicChannels(c *gin.Context) {
 
-	id := c.Param("id")
-
-	page, errQuery := strconv.Atoi(c.Query("page"))
-
-	if errQuery != nil {
-		page = 1
-	}
+	id, page := parseParams(c)
 
 	electronicChannels, pagination, err := ctrl.channelsInterface.GetElectronicChannels(id, page)
 
@@ -168,13 +156,7 @@ func (ctrl *controller) GetElectronicChannels(c *gin.Context) {
 //GetPersonalAccounts get personal acccounts from institution controller
 func (ctrl *controller) GetPersonalAccounts(c *gin.Context) {
 
-	id := c.Param("id")
-
-	page, errQuery := strconv.Atoi(c.Query("page"))
-
-	if errQuery != nil {
-		page = 1
-	}
+	id, page := parseParams(c)
 
 	personalAccounts, pagination, err := ctrl.productsServicesInterface.GetPersonalAccounts(id, page)
 
@@ -190,13 +172,7 @@ func (ctrl *controller) GetPersonalAccounts(c *gin.Context) {
 //GetPersonalLoans get personal loans from institution controller
 func (ctrl *controller) GetPersonalLoans(c *gin.Context) {
 
-	id := c.Param("id")
-
-	page, errQuery := strconv.Atoi(c.Query("page"))
-
-	if errQuery != nil {
-		page = 1
-	}
+	id, page := parseParams(c)
 
 	personalLoans, pagination, err := ctrl.productsServicesInterface.GetPersonalLoans(id, page)
 
@@ -212,13 +188,7 @@ func (ctrl *controller) GetPersonalLoans(c *gin.Context) {
 //GetPersonalFinancings get personal financings from institution controller
 func (ctrl *controller) GetPersonalFinancings(c *gin.Context) {
 
-	id := c.Param("id")
-
-	page, errQuery := strconv.Atoi(c.Query("page"))
-
-	if errQuery != nil {
-		page = 1
-	}
+	id, page := parseParams(c)
 
 	personalFinancings, pagination, err := ctrl.productsServicesInterface.GetPersonalFinancings(id, page)
 
@@ -234,13 +204,7 @@ func (ctrl *controller) GetPersonalFinancings(c *gin.Context) {
 //GetPersonalCreditCards get personal credit cards from institution controller
 func (ctrl *controller) GetPersonalCreditCards(c *gin.Context) {
 
-	id := c.Param("id")
-
-	page, errQuery := strconv.Atoi(c.Query("page"))
-
-	if errQuery != nil {
-		page = 1
-	}
+	id, page := parseParams(c)
 
 	personalCreditCards, pagination, err := ctrl.productsServicesInterface.GetPersonalCreditCards(id, page)
 
@@ -256,13 +220,7 @@ func (ctrl *controller) GetPersonalCreditCards(c *gin.Context) {
 //GetBusinessAccounts get business acccounts from institution controller
 func (ctrl *controller) GetBusinessAccounts(c *gin.Context) {
 
-	id := c.Param("id")
-
-	page, errQuery := strconv.Atoi(c.Query("page"))
-
-	if errQuery != nil {
-		page = 1
-	}
+	id, page := parseParams(c)
 
 	businessAccounts, pagination, err := ctrl.productsServicesInterface.GetBusinessAccounts(id, page)
 
@@ -273,4 +231,16 @@ func (ctrl *controller) GetBusinessAccounts(c *gin.Context) {
 
 	c.JSON(200, gin.H{"personalAccounts": businessAccounts, "pagination": pagination})
 
+}
+
+func parseParams(c *gin.Context) (string, int) {
+	id := c.Param("id")
+
+	page, errQuery := strconv.Atoi(c.Query("page"))
+
+	if errQuery != nil {
+		page = 1
+	}
+
+	return id, page
 }
