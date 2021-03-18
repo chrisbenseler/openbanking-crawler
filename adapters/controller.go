@@ -22,6 +22,8 @@ type Controller interface {
 	GetPersonalLoans(c *gin.Context)
 	GetPersonalFinancings(c *gin.Context)
 	GetPersonalCreditCards(c *gin.Context)
+
+	GetBusinessAccounts(c *gin.Context)
 }
 
 type controller struct {
@@ -248,5 +250,27 @@ func (ctrl *controller) GetPersonalCreditCards(c *gin.Context) {
 	}
 
 	c.JSON(200, gin.H{"personalCreditCards": personalCreditCards, "pagination": pagination})
+
+}
+
+//GetBusinessAccounts get business acccounts from institution controller
+func (ctrl *controller) GetBusinessAccounts(c *gin.Context) {
+
+	id := c.Param("id")
+
+	page, errQuery := strconv.Atoi(c.Query("page"))
+
+	if errQuery != nil {
+		page = 1
+	}
+
+	businessAccounts, pagination, err := ctrl.productsServicesInterface.GetBusinessAccounts(id, page)
+
+	if err != nil {
+		c.JSON(err.Status(), gin.H{"error": err.Message()})
+		return
+	}
+
+	c.JSON(200, gin.H{"personalAccounts": businessAccounts, "pagination": pagination})
 
 }

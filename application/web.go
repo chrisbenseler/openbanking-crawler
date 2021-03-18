@@ -74,7 +74,9 @@ func NewWeb() {
 		crawler)
 
 	channelsInterface := interfaces.NewChannels(branchService, electronicChannelService)
-	productsServicesInterface := interfaces.NewProductsServicesInterface(personalAccountService, personalLoanService, personalFinancingService, personalCreditCardService)
+	productsServicesInterface := interfaces.NewProductsServicesInterface(
+		personalAccountService, personalLoanService, personalFinancingService, personalCreditCardService,
+		businessAccountService)
 
 	router := gin.Default()
 	ginConfig := cors.DefaultConfig()
@@ -104,6 +106,8 @@ func NewWeb() {
 	apiRoutes.GET("/institutions/:id/personal-loans", controller.GetPersonalLoans)
 	apiRoutes.GET("/institutions/:id/personal-financings", controller.GetPersonalFinancings)
 	apiRoutes.GET("/institutions/:id/personal-credit-cards", controller.GetPersonalCreditCards)
+
+	apiRoutes.GET("/institutions/:id/business-accounts", controller.GetBusinessAccounts)
 
 	apiRoutes.PUT("/institutions/:id/branches/update", authRequired, controller.UpdateInstitutionBranches)
 	apiRoutes.PUT("/institutions/:id/electronic-channels/update", authRequired, controller.UpdateInstitutionElectronicChannels)
