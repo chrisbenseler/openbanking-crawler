@@ -19,14 +19,9 @@ type Controller interface {
 	UpdateInstitutionElectronicChannels(c *gin.Context)
 
 	GetPersonalAccounts(c *gin.Context)
-
 	GetPersonalLoans(c *gin.Context)
-	UpdatePersonalLoans(c *gin.Context)
-
 	GetPersonalFinancings(c *gin.Context)
-
 	GetPersonalCreditCards(c *gin.Context)
-	UpdatePersonalCreditCards(c *gin.Context)
 }
 
 type controller struct {
@@ -190,13 +185,6 @@ func (ctrl *controller) GetPersonalAccounts(c *gin.Context) {
 
 }
 
-//UpdatePersonalLoans update an institution electronic electronicChannels controller
-func (ctrl *controller) UpdatePersonalLoans(c *gin.Context) {
-	id := c.Param("id")
-	go ctrl.institutionInterface.UpdatePersonalLoans(id)
-	c.JSON(200, gin.H{})
-}
-
 //GetPersonalLoans get personal loans from institution controller
 func (ctrl *controller) GetPersonalLoans(c *gin.Context) {
 
@@ -239,13 +227,6 @@ func (ctrl *controller) GetPersonalFinancings(c *gin.Context) {
 
 	c.JSON(200, gin.H{"personalFinancings": personalFinancings, "pagination": pagination})
 
-}
-
-//UpdatePersonalCreditCards update an institution credit cards controller
-func (ctrl *controller) UpdatePersonalCreditCards(c *gin.Context) {
-	id := c.Param("id")
-	go ctrl.institutionInterface.UpdatePersonalCreditCards(id)
-	c.JSON(200, gin.H{})
 }
 
 //GetPersonalCreditCards get personal credit cards from institution controller

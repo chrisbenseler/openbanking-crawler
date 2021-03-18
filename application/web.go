@@ -107,8 +107,6 @@ func NewWeb() {
 
 	apiRoutes.PUT("/institutions/:id/branches/update", authRequired, controller.UpdateInstitutionBranches)
 	apiRoutes.PUT("/institutions/:id/electronic-channels/update", authRequired, controller.UpdateInstitutionElectronicChannels)
-	apiRoutes.PUT("/institutions/:id/personal-loans/update", authRequired, controller.UpdatePersonalLoans)
-	apiRoutes.PUT("/institutions/:id/personal-credit-cards/update", authRequired, controller.UpdatePersonalCreditCards)
 
 	apiRoutes.POST("/institutions", authRequired, controller.CreateInstitution)
 	apiRoutes.PUT("/institutions/:id", authRequired, controller.UpdateInstitution)
